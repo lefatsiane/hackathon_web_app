@@ -1,0 +1,454 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>GraduRat | Post a Job</title>
+
+    <link rel="stylesheet" href="post-job.css" />
+  </head>
+
+  <body>
+    <!-- BACKGROUND -->
+    <div class="background">
+      <div class="glow glow-one"></div>
+      <div class="glow glow-two"></div>
+    </div>
+
+    <!-- HEADER -->
+    <header>
+      <a href="home.html" class="logo"> <span>G</span>radu<span>R</span>at </a>
+
+      <div class="page-label">EMPLOYER PORTAL</div>
+    </header>
+
+    <!-- MAIN -->
+    <main>
+      <div class="page-heading">
+        <div class="badge">NEW OPPORTUNITY</div>
+
+        <h1>Post a <span>job.</span></h1>
+
+        <p>
+          Tell GraduRat what you're looking for and we'll help you discover
+          graduates who match the role.
+        </p>
+      </div>
+
+      <!-- FORM -->
+      <form action="employer-dashboard.html" method="POST">
+        <!-- JOB DETAILS -->
+        <section class="form-card">
+          <div class="section-heading">
+            <div class="number">01</div>
+
+            <div>
+              <h2>Job Details</h2>
+
+              <p>Start with the basics of the opportunity.</p>
+            </div>
+          </div>
+
+          <div class="form-grid">
+            <div class="input-group full">
+              <label for="jobTitle"> Job Title </label>
+
+              <input
+                type="text"
+                id="jobTitle"
+                name="jobTitle"
+                placeholder="e.g. Junior Software Developer"
+                required
+              />
+            </div>
+
+            <div class="input-group">
+              <label for="industry"> Industry </label>
+
+              <select id="industry" name="industry" required>
+                <option value="">Select industry</option>
+
+                <option>Technology</option>
+                <option>Finance</option>
+                <option>Healthcare</option>
+                <option>Engineering</option>
+                <option>Education</option>
+                <option>Law</option>
+                <option>Marketing</option>
+                <option>Construction</option>
+                <option>Retail</option>
+                <option>Government</option>
+                <option>Non-Profit</option>
+                <option>Other</option>
+              </select>
+            </div>
+
+            <div class="input-group">
+              <label for="department"> Department </label>
+
+              <input
+                type="text"
+                id="department"
+                name="department"
+                placeholder="e.g. Software Development"
+              />
+            </div>
+
+            <div class="input-group">
+              <label for="jobType"> Job Type </label>
+
+              <select id="jobType" name="jobType" required>
+                <option value="">Select job type</option>
+
+                <option>Full Time</option>
+                <option>Part Time</option>
+                <option>Internship</option>
+                <option>Graduate Programme</option>
+                <option>Contract</option>
+              </select>
+            </div>
+
+            <div class="input-group">
+              <label for="level"> Experience Level </label>
+
+              <select id="level" name="level">
+                <option value="">Select level</option>
+
+                <option>Intern</option>
+                <option>Graduate</option>
+                <option>Entry Level</option>
+                <option>Junior</option>
+                <option>Mid Level</option>
+              </select>
+            </div>
+          </div>
+        </section>
+
+        <!-- LOCATION -->
+        <section class="form-card">
+          <div class="section-heading">
+            <div class="number">02</div>
+
+            <div>
+              <h2>Work Location</h2>
+
+              <p>Where will the successful candidate work?</p>
+            </div>
+          </div>
+
+          <div class="form-grid">
+            <div class="input-group">
+              <label for="location"> Location </label>
+
+              <input
+                type="text"
+                id="location"
+                name="location"
+                placeholder="e.g. Johannesburg"
+              />
+            </div>
+
+            <div class="input-group">
+              <label for="workMode"> Work Arrangement </label>
+
+              <select id="workMode" name="workMode">
+                <option value="">Select arrangement</option>
+
+                <option>On-site</option>
+                <option>Hybrid</option>
+                <option>Remote</option>
+              </select>
+            </div>
+          </div>
+        </section>
+
+        <!-- DESCRIPTION -->
+        <section class="form-card">
+          <div class="section-heading">
+            <div class="number">03</div>
+
+            <div>
+              <h2>Job Description</h2>
+
+              <p>Give graduates a clear idea of the role.</p>
+            </div>
+          </div>
+
+          <div class="input-group full">
+            <label for="description"> Description </label>
+
+            <textarea
+              id="description"
+              name="description"
+              rows="7"
+              placeholder="Describe the role, responsibilities, team and what the successful candidate will be doing..."
+              required
+            ></textarea>
+          </div>
+
+          <div class="input-group full">
+            <label for="responsibilities"> Key Responsibilities </label>
+
+            <textarea
+              id="responsibilities"
+              name="responsibilities"
+              rows="6"
+              placeholder="List the main responsibilities of the role..."
+            ></textarea>
+          </div>
+        </section>
+
+        <!-- REQUIREMENTS -->
+        <section class="form-card">
+          <div class="section-heading">
+            <div class="number">04</div>
+
+            <div>
+              <h2>Candidate Requirements</h2>
+
+              <p>
+                These requirements will help GraduRat calculate candidate
+                matches.
+              </p>
+            </div>
+          </div>
+
+          <div class="form-grid">
+            <div class="input-group full">
+              <label for="qualifications"> Required Qualifications </label>
+
+              <input
+                type="text"
+                id="qualifications"
+                name="qualifications"
+                placeholder="e.g. Diploma or Degree in Computer Science"
+              />
+            </div>
+
+            <div class="input-group full">
+              <label for="skills"> Required Skills </label>
+
+              <input
+                type="text"
+                id="skills"
+                name="skills"
+                placeholder="e.g. Python, JavaScript, SQL, communication"
+              />
+
+              <small> Separate skills with commas. </small>
+            </div>
+
+            <div class="input-group">
+              <label for="experience"> Minimum Experience </label>
+
+              <select id="experience" name="experience">
+                <option value="">Select experience</option>
+
+                <option>No experience required</option>
+                <option>Less than 1 year</option>
+                <option>1 - 2 years</option>
+                <option>2 - 3 years</option>
+                <option>3+ years</option>
+              </select>
+            </div>
+
+            <div class="input-group">
+              <label for="education"> Education Level </label>
+
+              <select id="education" name="education">
+                <option value="">Select education</option>
+
+                <option>High School</option>
+                <option>Certificate</option>
+                <option>Diploma</option>
+                <option>Bachelor's Degree</option>
+                <option>Honours Degree</option>
+                <option>Master's Degree</option>
+              </select>
+            </div>
+          </div>
+        </section>
+
+        <!-- PREFERENCES -->
+        <section class="form-card">
+          <div class="section-heading">
+            <div class="number">05</div>
+
+            <div>
+              <h2>Candidate Preferences</h2>
+
+              <p>Optional information to improve your matches.</p>
+            </div>
+          </div>
+
+          <div class="form-grid">
+            <div class="input-group">
+              <label for="availability"> Preferred Availability </label>
+
+              <select id="availability" name="availability">
+                <option value="">Select availability</option>
+
+                <option>Immediately</option>
+                <option>Within 1 month</option>
+                <option>Within 3 months</option>
+                <option>Flexible</option>
+              </select>
+            </div>
+
+            <div class="input-group">
+              <label for="language"> Required Language </label>
+
+              <input
+                type="text"
+                id="language"
+                name="language"
+                placeholder="e.g. English"
+              />
+            </div>
+
+            <div class="input-group full">
+              <label> Additional Preferences </label>
+
+              <div class="checkbox-grid">
+                <label class="check-option">
+                  <input type="checkbox" name="preferences" value="graduate" />
+
+                  <span></span>
+
+                  Open to recent graduates
+                </label>
+
+                <label class="check-option">
+                  <input
+                    type="checkbox"
+                    name="preferences"
+                    value="internship"
+                  />
+
+                  <span></span>
+
+                  Open to interns
+                </label>
+
+                <label class="check-option">
+                  <input
+                    type="checkbox"
+                    name="preferences"
+                    value="career-change"
+                  />
+
+                  <span></span>
+
+                  Open to career changers
+                </label>
+
+                <label class="check-option">
+                  <input type="checkbox" name="preferences" value="training" />
+
+                  <span></span>
+
+                  Training provided
+                </label>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- COMPENSATION -->
+        <section class="form-card">
+          <div class="section-heading">
+            <div class="number">06</div>
+
+            <div>
+              <h2>Compensation</h2>
+
+              <p>Let candidates know what the role offers.</p>
+            </div>
+          </div>
+
+          <div class="form-grid">
+            <div class="input-group">
+              <label for="salary"> Salary Range </label>
+
+              <input
+                type="text"
+                id="salary"
+                name="salary"
+                placeholder="e.g. R12,000 - R18,000"
+              />
+            </div>
+
+            <div class="input-group">
+              <label for="salaryPeriod"> Salary Period </label>
+
+              <select id="salaryPeriod" name="salaryPeriod">
+                <option value="">Select period</option>
+
+                <option>Per Month</option>
+                <option>Per Year</option>
+                <option>Hourly</option>
+              </select>
+            </div>
+          </div>
+        </section>
+
+        <!-- APPLICATION -->
+        <section class="form-card">
+          <div class="section-heading">
+            <div class="number">07</div>
+
+            <div>
+              <h2>Application Details</h2>
+
+              <p>Tell candidates how they can apply.</p>
+            </div>
+          </div>
+
+          <div class="form-grid">
+            <div class="input-group">
+              <label for="deadline"> Application Deadline </label>
+
+              <input type="date" id="deadline" name="deadline" />
+            </div>
+
+            <div class="input-group">
+              <label for="applicationEmail"> Application Email </label>
+
+              <input
+                type="email"
+                id="applicationEmail"
+                name="applicationEmail"
+                placeholder="careers@company.com"
+              />
+            </div>
+          </div>
+        </section>
+
+        <!-- AI NOTICE -->
+        <div class="ai-notice">
+          <div class="ai-icon">✦</div>
+
+          <div>
+            <strong> GraduRat AI Matching </strong>
+
+            <p>
+              Once your job is published, GraduRat will compare the requirements
+              above with graduate profiles and generate candidate match scores.
+            </p>
+          </div>
+        </div>
+
+        <!-- ACTIONS -->
+        <div class="actions">
+          <a href="employer-dashboard.html" class="cancel"> Cancel </a>
+
+          <button type="submit" class="publish">
+            Publish Job
+            <span>→</span>
+          </button>
+        </div>
+      </form>
+    </main>
+  </body>
+</html>
