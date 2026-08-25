@@ -1,0 +1,342 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>GraduRat | Graduate Registration</title>
+
+    <link rel="stylesheet" href="graduate-register.css" />
+  </head>
+
+  <body>
+    <!-- Background -->
+    <div class="background">
+      <div class="glow glow-one"></div>
+      <div class="glow glow-two"></div>
+    </div>
+
+    <!-- Header -->
+    <header>
+      <a href="home.html" class="logo"> <span>G</span>radu<span>R</span>at </a>
+
+      <div class="step">Step <strong>1</strong> of 3</div>
+    </header>
+
+    <!-- Main -->
+    <main>
+      <div class="form-container">
+        <!-- Heading -->
+        <div class="heading">
+          <div class="badge">GRADUATE PROFILE</div>
+
+          <h1>
+            Let's build your
+            <span>profile.</span>
+          </h1>
+
+          <p>
+            Tell us about yourself so GraduRat can help connect you with
+            opportunities that match your skills and goals.
+          </p>
+        </div>
+
+        <!-- Progress -->
+        <div class="progress-container">
+          <div class="progress-top">
+            <span>Profile Information</span>
+            <span>33%</span>
+          </div>
+
+          <div class="progress-bar">
+            <div></div>
+          </div>
+        </div>
+
+        <!-- Form -->
+        <form action="graduate-dashboard.html" method="POST">
+          <!-- PERSONAL INFORMATION -->
+          <section class="form-section">
+            <div class="section-title">
+              <div class="section-number">01</div>
+
+              <div>
+                <h2>Personal Information</h2>
+                <p>Tell us a little about yourself.</p>
+              </div>
+            </div>
+
+            <div class="form-grid">
+              <div class="input-group">
+                <label for="firstName"> First Name </label>
+
+                <input
+                  type="text"
+                  id="firstName"
+                  name="firstName"
+                  placeholder="Enter your first name"
+                  required
+                />
+              </div>
+
+              <div class="input-group">
+                <label for="lastName"> Last Name </label>
+
+                <input
+                  type="text"
+                  id="lastName"
+                  name="lastName"
+                  placeholder="Enter your last name"
+                  required
+                />
+              </div>
+
+              <div class="input-group">
+                <label for="email"> Email Address </label>
+
+                <input
+                  type="email"
+                  id="email"
+                  name="email"
+                  placeholder="you@example.com"
+                  required
+                />
+              </div>
+
+              <div class="input-group">
+                <label for="phone"> Phone Number </label>
+
+                <input
+                  type="tel"
+                  id="phone"
+                  name="phone"
+                  placeholder="+27 00 000 0000"
+                />
+              </div>
+            </div>
+          </section>
+
+          <!-- EDUCATION -->
+          <section class="form-section">
+            <div class="section-title">
+              <div class="section-number">02</div>
+
+              <div>
+                <h2>Education & Qualifications</h2>
+                <p>Show employers what you've studied.</p>
+              </div>
+            </div>
+
+            <div class="form-grid">
+              <div class="input-group">
+                <label for="qualification"> Highest Qualification </label>
+
+                <input
+                  type="text"
+                  id="qualification"
+                  name="qualification"
+                  placeholder="e.g. Bachelor of Information Technology"
+                  required
+                />
+              </div>
+
+              <div class="input-group">
+                <label for="institution"> Institution </label>
+
+                <input
+                  type="text"
+                  id="institution"
+                  name="institution"
+                  placeholder="University / College"
+                  required
+                />
+              </div>
+
+              <div class="input-group">
+                <label for="field"> Field of Study </label>
+
+                <input
+                  type="text"
+                  id="field"
+                  name="field"
+                  placeholder="e.g. Computer Science"
+                  required
+                />
+              </div>
+
+              <div class="input-group">
+                <label for="graduation"> Graduation Year </label>
+
+                <select id="graduation" name="graduation">
+                  <option value="">Select year</option>
+
+                  <option>2024</option>
+                  <option>2025</option>
+                  <option>2026</option>
+                  <option>2027</option>
+                  <option>2028</option>
+                  <option>2029</option>
+                  <option>2030</option>
+                </select>
+              </div>
+            </div>
+          </section>
+
+          <!-- SKILLS -->
+          <section class="form-section">
+            <div class="section-title">
+              <div class="section-number">03</div>
+
+              <div>
+                <h2>Skills & Experience</h2>
+                <p>Help us understand what you can do.</p>
+              </div>
+            </div>
+
+            <div class="input-group full">
+              <label for="skills"> Skills </label>
+
+              <input
+                type="text"
+                id="skills"
+                name="skills"
+                placeholder="e.g. Python, HTML, CSS, JavaScript"
+              />
+
+              <small> Separate your skills with commas. </small>
+            </div>
+
+            <div class="input-group full">
+              <label for="experience"> Experience </label>
+
+              <textarea
+                id="experience"
+                name="experience"
+                rows="5"
+                placeholder="Tell employers about internships, volunteer work, part-time jobs or other experience..."
+              ></textarea>
+            </div>
+
+            <div class="input-group full">
+              <label for="projects"> Projects </label>
+
+              <textarea
+                id="projects"
+                name="projects"
+                rows="5"
+                placeholder="Tell us about projects you've worked on..."
+              ></textarea>
+            </div>
+          </section>
+
+          <!-- CAREER PREFERENCES -->
+          <section class="form-section">
+            <div class="section-title">
+              <div class="section-number">04</div>
+
+              <div>
+                <h2>Career Preferences</h2>
+                <p>What kind of opportunity are you looking for?</p>
+              </div>
+            </div>
+
+            <div class="form-grid">
+              <div class="input-group">
+                <label for="jobType"> Preferred Job Type </label>
+
+                <select id="jobType" name="jobType">
+                  <option value="">Select job type</option>
+
+                  <option>Full Time</option>
+                  <option>Part Time</option>
+                  <option>Internship</option>
+                  <option>Graduate Programme</option>
+                  <option>Contract</option>
+                </select>
+              </div>
+
+              <div class="input-group">
+                <label for="level"> Career Level </label>
+
+                <select id="level" name="level">
+                  <option value="">Select level</option>
+
+                  <option>Intern</option>
+                  <option>Entry Level</option>
+                  <option>Junior</option>
+                  <option>Mid Level</option>
+                </select>
+              </div>
+
+              <div class="input-group">
+                <label for="industry"> Preferred Industry </label>
+
+                <select id="industry" name="industry">
+                  <option value="">Select industry</option>
+
+                  <option>Technology</option>
+                  <option>Finance</option>
+                  <option>Healthcare</option>
+                  <option>Engineering</option>
+                  <option>Education</option>
+                  <option>Law</option>
+                  <option>Marketing</option>
+                  <option>Government</option>
+                  <option>Other</option>
+                </select>
+              </div>
+
+              <div class="input-group">
+                <label for="location"> Preferred Location </label>
+
+                <input
+                  type="text"
+                  id="location"
+                  name="location"
+                  placeholder="e.g. Johannesburg"
+                />
+              </div>
+            </div>
+          </section>
+
+          <!-- CV UPLOAD -->
+          <section class="form-section">
+            <div class="section-title">
+              <div class="section-number">05</div>
+
+              <div>
+                <h2>Your CV</h2>
+                <p>Upload your CV for employers to view.</p>
+              </div>
+            </div>
+
+            <label class="upload-box">
+              <input type="file" id="cv" name="cv" accept=".pdf,.doc,.docx" />
+
+              <div class="upload-icon">↑</div>
+
+              <h3>Upload your CV</h3>
+
+              <p>
+                Drag & drop your file here or
+                <span>browse</span>
+              </p>
+
+              <small> PDF, DOC or DOCX · Max 5MB </small>
+            </label>
+          </section>
+
+          <!-- ACTIONS -->
+          <div class="form-actions">
+            <a href="register.html" class="back-button"> ← Back </a>
+
+            <button type="submit" class="continue-button">
+              Continue
+              <span>→</span>
+            </button>
+          </div>
+        </form>
+      </div>
+    </main>
+  </body>
+</html>
