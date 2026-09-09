@@ -1,0 +1,6 @@
+# Dependencies and local secrets are generated or supplied per environment and
+# must not be committed with the application source.
+node_modules/
+.env
+.env.local
+.env.*.local

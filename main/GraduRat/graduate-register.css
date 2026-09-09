@@ -1,0 +1,561 @@
+/* This stylesheet gives graduate registration a focused, responsive form while
+  preserving the shared static HTML/CSS architecture. */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Arial, Helvetica, sans-serif;
+
+  background: #02050b;
+
+  color: white;
+
+  min-height: 100vh;
+
+  overflow-x: hidden;
+}
+
+/* =========================
+   BACKGROUND
+========================= */
+
+.background {
+  position: fixed;
+
+  inset: 0;
+
+  z-index: -1;
+
+  overflow: hidden;
+}
+
+.glow {
+  position: absolute;
+
+  width: 500px;
+  height: 500px;
+
+  border-radius: 50%;
+
+  filter: blur(140px);
+
+  opacity: 0.18;
+}
+
+.glow-one {
+  background: #004cff;
+
+  top: -250px;
+  left: -200px;
+}
+
+.glow-two {
+  background: #006eff;
+
+  bottom: -300px;
+  right: -200px;
+}
+
+/* =========================
+   HEADER
+========================= */
+
+header {
+  width: 90%;
+
+  max-width: 1100px;
+
+  height: 85px;
+
+  margin: auto;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+}
+
+.logo {
+  color: inherit;
+  text-decoration: none;
+  font-size: 27px;
+
+  font-weight: bold;
+
+  letter-spacing: -1px;
+}
+
+.logo span {
+  color: #1683ff;
+}
+
+.step {
+  color: #64738b;
+
+  font-size: 13px;
+}
+
+.step strong {
+  color: #3d8cff;
+}
+
+/* =========================
+   MAIN
+========================= */
+
+main {
+  width: 100%;
+
+  padding: 40px 20px 100px;
+}
+
+.form-container {
+  width: 100%;
+
+  max-width: 900px;
+
+  margin: auto;
+}
+
+/* =========================
+   HEADING
+========================= */
+
+.heading {
+  text-align: center;
+
+  margin-bottom: 40px;
+}
+
+.badge {
+  display: inline-block;
+
+  padding: 8px 14px;
+
+  border-radius: 30px;
+
+  border: 1px solid #173b75;
+
+  background: rgba(7, 30, 68, 0.5);
+
+  color: #5f9cff;
+
+  font-size: 10px;
+
+  letter-spacing: 2px;
+
+  margin-bottom: 18px;
+}
+
+.heading h1 {
+  font-size: clamp(40px, 6vw, 62px);
+
+  letter-spacing: -3px;
+
+  margin-bottom: 18px;
+}
+
+.heading h1 span {
+  color: #1677ff;
+
+  text-shadow: 0 0 25px rgba(22, 119, 255, 0.3);
+}
+
+.heading p {
+  max-width: 600px;
+
+  margin: auto;
+
+  color: #7c899d;
+
+  line-height: 1.7;
+
+  font-size: 15px;
+}
+
+/* =========================
+   PROGRESS
+========================= */
+
+.progress-container {
+  margin-bottom: 35px;
+}
+
+.progress-top {
+  display: flex;
+
+  justify-content: space-between;
+
+  margin-bottom: 9px;
+
+  color: #68778d;
+
+  font-size: 12px;
+}
+
+.progress-top span:last-child {
+  color: #3988ff;
+}
+
+.progress-bar {
+  height: 5px;
+
+  background: #0b172a;
+
+  border-radius: 10px;
+
+  overflow: hidden;
+}
+
+.progress-bar div {
+  width: 33%;
+
+  height: 100%;
+
+  background: #1675ff;
+
+  box-shadow: 0 0 15px #1675ff;
+}
+
+/* =========================
+   FORM SECTION
+========================= */
+
+.form-section {
+  background: linear-gradient(
+    145deg,
+    rgba(9, 22, 45, 0.9),
+    rgba(3, 8, 17, 0.95)
+  );
+
+  border: 1px solid #132b4e;
+
+  border-radius: 15px;
+
+  padding: 30px;
+
+  margin-bottom: 20px;
+}
+
+.section-title {
+  display: flex;
+
+  align-items: center;
+
+  gap: 15px;
+
+  margin-bottom: 28px;
+}
+
+.section-number {
+  width: 40px;
+
+  height: 40px;
+
+  display: grid;
+
+  place-items: center;
+
+  border-radius: 9px;
+
+  background: #092d68;
+
+  border: 1px solid #174c99;
+
+  color: #4d94ff;
+
+  font-size: 12px;
+
+  font-weight: bold;
+}
+
+.section-title h2 {
+  font-size: 18px;
+
+  margin-bottom: 5px;
+}
+
+.section-title p {
+  color: #66758b;
+
+  font-size: 12px;
+}
+
+/* =========================
+   FORM GRID
+========================= */
+
+.form-grid {
+  display: grid;
+
+  grid-template-columns: 1fr 1fr;
+
+  gap: 22px;
+}
+
+.input-group {
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 8px;
+}
+
+.input-group.full {
+  margin-bottom: 22px;
+}
+
+.input-group label {
+  color: #aeb9c9;
+
+  font-size: 12px;
+
+  font-weight: bold;
+}
+
+.input-group input,
+.input-group select,
+.input-group textarea {
+  width: 100%;
+
+  padding: 14px;
+
+  border-radius: 8px;
+
+  border: 1px solid #172d4c;
+
+  background: #050c17;
+
+  color: white;
+
+  outline: none;
+
+  font-family: inherit;
+
+  font-size: 13px;
+
+  transition: 0.3s;
+}
+
+.input-group input::placeholder,
+.input-group textarea::placeholder {
+  color: #46556b;
+}
+
+.input-group input:focus,
+.input-group select:focus,
+.input-group textarea:focus {
+  border-color: #2179ff;
+
+  box-shadow: 0 0 0 3px rgba(33, 121, 255, 0.08);
+}
+
+.input-group select {
+  cursor: pointer;
+}
+
+.input-group textarea {
+  resize: vertical;
+
+  min-height: 120px;
+
+  line-height: 1.6;
+}
+
+.input-group small {
+  color: #526178;
+
+  font-size: 10px;
+}
+
+/* =========================
+   CV UPLOAD
+========================= */
+
+.upload-box {
+  min-height: 200px;
+
+  border: 1px dashed #214678;
+
+  border-radius: 12px;
+
+  background: rgba(5, 17, 35, 0.5);
+
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: center;
+
+  justify-content: center;
+
+  text-align: center;
+
+  cursor: pointer;
+
+  transition: 0.3s;
+}
+
+.upload-box:hover {
+  border-color: #2680ff;
+
+  background: rgba(10, 35, 75, 0.4);
+}
+
+.upload-box input {
+  display: none;
+}
+
+.upload-icon {
+  width: 50px;
+
+  height: 50px;
+
+  display: grid;
+
+  place-items: center;
+
+  border-radius: 50%;
+
+  background: #092c63;
+
+  color: #4c96ff;
+
+  font-size: 24px;
+
+  margin-bottom: 14px;
+}
+
+.upload-box h3 {
+  font-size: 15px;
+
+  margin-bottom: 7px;
+}
+
+.upload-box p {
+  color: #65748a;
+
+  font-size: 12px;
+
+  margin-bottom: 8px;
+}
+
+.upload-box p span {
+  color: #3989ff;
+}
+
+.upload-box small {
+  color: #46556b;
+
+  font-size: 10px;
+}
+
+/* =========================
+   ACTIONS
+========================= */
+
+.form-actions {
+  display: flex;
+
+  justify-content: space-between;
+
+  align-items: center;
+
+  margin-top: 30px;
+}
+
+.back-button {
+  color: #738197;
+
+  text-decoration: none;
+
+  font-size: 13px;
+
+  transition: 0.3s;
+}
+
+.back-button:hover {
+  color: white;
+}
+
+.continue-button {
+  border: none;
+
+  padding: 15px 28px;
+
+  border-radius: 8px;
+
+  background: #1265e9;
+
+  color: white;
+
+  font-weight: bold;
+
+  cursor: pointer;
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 25px;
+
+  transition: 0.3s;
+}
+
+.continue-button:hover {
+  background: #2380ff;
+
+  box-shadow: 0 0 25px rgba(22, 119, 255, 0.3);
+
+  transform: translateY(-2px);
+}
+
+.continue-button span {
+  font-size: 18px;
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media (max-width: 650px) {
+  header {
+    width: 92%;
+  }
+
+  main {
+    padding: 25px 15px 70px;
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .form-section {
+    padding: 22px;
+  }
+
+  .heading h1 {
+    font-size: 42px;
+  }
+
+  .form-actions {
+    flex-direction: column-reverse;
+
+    gap: 20px;
+  }
+
+  .continue-button {
+    width: 100%;
+
+    justify-content: center;
+  }
+
+  .back-button {
+    align-self: flex-start;
+  }
+}

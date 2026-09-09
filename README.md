@@ -1,1 +1,3 @@
+<!-- This repository-level README identifies the workspace; the runnable app documentation lives in main/README.md. -->
+
 # hackathon_web_app

@@ -1,0 +1,19 @@
+{
+    "name": "hackathon-supabase-app",
+    "version": "1.0.0",
+    "private": true,
+    "type": "module",
+    "scripts": {
+        "check:supabase": "node scripts/check-supabase.js",
+        "admin": "node scripts/admin.js",
+        "start": "node src/server.js",
+        "dev": "node --watch src/server.js"
+    },
+    "dependencies": {
+        "@supabase/ssr": "^0.12.5",
+        "@supabase/supabase-js": "^2.109.0",
+        "dotenv": "^17.2.1",
+        "express": "^5.2.1",
+        "ws": "^8.21.3"
+    }
+}

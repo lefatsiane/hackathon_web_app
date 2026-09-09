@@ -1,0 +1,362 @@
+<!doctype html>
+<!-- Graduate dashboard shell: static markup loads immediately, then app.js
+  replaces placeholder matches with data returned by the server API. -->
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>GraduRat | Graduate Dashboard</title>
+
+    <link rel="stylesheet" href="graduate-dashboard.css" />
+  </head>
+
+  <body>
+    <!-- =========================
+         SIDEBAR
+    ========================== -->
+
+    <aside class="sidebar">
+      <a href="home.html" class="logo"> <span>G</span>radu<span>R</span>at </a>
+
+      <nav>
+        <a href="graduate-dashboard.html#dashboard" class="active">
+          <span>⌂</span>
+          Dashboard
+        </a>
+
+        <a href="graduate-dashboard.html#matches">
+          <span>✦</span>
+          AI Matches
+        </a>
+
+        <a href="graduate-dashboard.html#saved-jobs">
+          <span>♡</span>
+          Saved Jobs
+        </a>
+
+        <a href="graduate-dashboard.html#applications">
+          <span>◫</span>
+          Applications
+        </a>
+
+        <a href="graduate-dashboard.html#dashboard">
+          <span>◉</span>
+          Messages
+        </a>
+      </nav>
+
+      <div class="sidebar-bottom">
+        <a href="graduate-register.html">
+          <span>⚙</span>
+          Settings
+        </a>
+
+        <a href="home.html">
+          <span>↪</span>
+          Log Out
+        </a>
+      </div>
+    </aside>
+
+    <!-- =========================
+         MAIN
+    ========================== -->
+
+    <main class="main">
+      <!-- TOP BAR -->
+
+      <header class="topbar">
+        <a href="home.html" class="mobile-logo">
+          <span>G</span>radu<span>R</span>at
+        </a>
+
+        <div class="search">
+          <span>⌕</span>
+
+          <input
+            type="text"
+            placeholder="Search jobs, companies or skills..."
+          />
+        </div>
+
+        <div class="top-actions">
+          <button class="notification">
+            ♢
+            <span></span>
+          </button>
+
+          <div class="user">
+            <div class="avatar">GR</div>
+
+            <div>
+              <strong>Graduate</strong>
+              <small>Job Seeker</small>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- =========================
+             CONTENT
+        ========================== -->
+
+      <div class="content" id="dashboard">
+        <!-- WELCOME -->
+
+        <section class="welcome">
+          <div>
+            <p class="small-title">GRADURAT AI</p>
+
+            <h1>
+              Welcome back,
+              <span>Graduate.</span>
+            </h1>
+
+            <p>
+              We've found new opportunities that match your skills and career
+              preferences.
+            </p>
+          </div>
+
+          <div class="ai-status">
+            <div class="ai-circle">✦</div>
+
+            <div>
+              <strong>AI Matching Active</strong>
+
+              <small> Your profile is being matched </small>
+            </div>
+          </div>
+        </section>
+
+        <!-- =========================
+                 STATISTICS
+            ========================== -->
+
+        <section class="stats">
+          <div class="stat-card">
+            <div class="stat-icon blue">✦</div>
+
+            <div>
+              <small>AI MATCHES</small>
+
+              <strong>24</strong>
+
+              <p>+6 this week</p>
+            </div>
+          </div>
+
+          <div class="stat-card" id="saved-jobs">
+            <div class="stat-icon purple">♡</div>
+
+            <div>
+              <small>SAVED JOBS</small>
+
+              <strong>8</strong>
+
+              <p>2 new</p>
+            </div>
+          </div>
+
+          <div class="stat-card" id="applications">
+            <div class="stat-icon green">✓</div>
+
+            <div>
+              <small>APPLICATIONS</small>
+
+              <strong>5</strong>
+
+              <p>1 awaiting response</p>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-icon orange">★</div>
+
+            <div>
+              <small>PROFILE SCORE</small>
+
+              <strong>86%</strong>
+
+              <p>Almost complete</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- =========================
+                 DASHBOARD GRID
+            ========================== -->
+
+        <div class="dashboard-grid">
+          <!-- =========================
+                     AI MATCHES
+                ========================== -->
+
+          <section class="matches" id="matches">
+            <div class="section-heading">
+              <div>
+                <span>AI POWERED</span>
+
+                <h2>Recommended for you</h2>
+              </div>
+
+              <a href="graduate-dashboard.html#matches"> View all → </a>
+            </div>
+
+            <!-- JOB 1 -->
+
+            <div class="job-card">
+              <div class="company-logo">TC</div>
+
+              <div class="job-info">
+                <div class="job-top">
+                  <div>
+                    <h3>Junior Software Developer</h3>
+
+                    <p>TechCorp · Johannesburg</p>
+                  </div>
+
+                  <button class="save">♡</button>
+                </div>
+
+                <div class="tags">
+                  <span>Python</span>
+                  <span>JavaScript</span>
+                  <span>HTML/CSS</span>
+                </div>
+
+                <div class="job-bottom">
+                  <span> Full Time </span>
+
+                  <span> Entry Level </span>
+
+                  <strong> 94% Match </strong>
+                </div>
+              </div>
+            </div>
+
+            <!-- JOB 2 -->
+
+            <div class="job-card">
+              <div class="company-logo second">IN</div>
+
+              <div class="job-info">
+                <div class="job-top">
+                  <div>
+                    <h3>Graduate Technology Analyst</h3>
+
+                    <p>Innovate SA · Pretoria</p>
+                  </div>
+
+                  <button class="save">♡</button>
+                </div>
+
+                <div class="tags">
+                  <span>Data Analysis</span>
+                  <span>SQL</span>
+                  <span>Python</span>
+                </div>
+
+                <div class="job-bottom">
+                  <span> Graduate Programme </span>
+
+                  <span> Hybrid </span>
+
+                  <strong> 89% Match </strong>
+                </div>
+              </div>
+            </div>
+
+            <!-- JOB 3 -->
+
+            <div class="job-card">
+              <div class="company-logo third">DI</div>
+
+              <div class="job-info">
+                <div class="job-top">
+                  <div>
+                    <h3>Junior Web Developer</h3>
+
+                    <p>Digital Labs · Remote</p>
+                  </div>
+
+                  <button class="save">♡</button>
+                </div>
+
+                <div class="tags">
+                  <span>HTML</span>
+                  <span>CSS</span>
+                  <span>JavaScript</span>
+                </div>
+
+                <div class="job-bottom">
+                  <span> Full Time </span>
+
+                  <span> Remote </span>
+
+                  <strong> 84% Match </strong>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- =========================
+                     PROFILE
+                ========================== -->
+
+          <aside class="profile-panel">
+            <div class="profile-heading">
+              <h2>Your Profile</h2>
+
+              <a href="graduate-register.html"> Edit </a>
+            </div>
+
+            <div class="profile-user">
+              <div class="large-avatar">GR</div>
+
+              <h3>Graduate</h3>
+
+              <p>Information Technology</p>
+            </div>
+
+            <div class="completion">
+              <div class="completion-top">
+                <span> Profile completion </span>
+
+                <strong> 86% </strong>
+              </div>
+
+              <div class="completion-bar">
+                <div></div>
+              </div>
+            </div>
+
+            <div class="profile-skills">
+              <h4>Top Skills</h4>
+
+              <div>
+                <span>Python</span>
+                <span>HTML</span>
+                <span>CSS</span>
+                <span>JavaScript</span>
+                <span>Problem Solving</span>
+              </div>
+            </div>
+
+            <div class="profile-tip">
+              <span>✦</span>
+
+              <div>
+                <strong> Improve your matches </strong>
+
+                <p>Add 2 more projects to increase your profile score.</p>
+              </div>
+            </div>
+          </aside>
+        </div>
+      </div>
+    </main>
+    <script src="app.js"></script>
+  </body>
+</html>
