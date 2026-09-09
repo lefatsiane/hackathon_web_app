@@ -1,3 +1,5 @@
+<!-- This guide documents the PostgreSQL/Supabase migration contract and why migrations must be applied in sequence. -->
+
 # Database setup
 
 Use the migration files in order after the initial schema is already applied in Supabase:

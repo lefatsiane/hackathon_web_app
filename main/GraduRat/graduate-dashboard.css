@@ -1,3 +1,5 @@
+/* Dashboard styles are page-specific because the graduate view has different
+  profile, match, and statistics regions than the employer view. */
 * {
   margin: 0;
   padding: 0;

@@ -1,3 +1,6 @@
+-- This additive migration expands the original schema without rewriting its
+-- tables, preserving data while adding profile, moderation, validation, and
+-- filtering fields required by the Express API.
 BEGIN;
 
 ALTER TABLE public.students

@@ -1,3 +1,6 @@
+// The server-side Supabase client uses the service-role key for trusted writes.
+// It is isolated in this module so frontend code cannot accidentally bundle or
+// expose that credential, while ws supplies the Node realtime transport.
 import { createClient } from "@supabase/supabase-js";
 import WebSocket from "ws";
 

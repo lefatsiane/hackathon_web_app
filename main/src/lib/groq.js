@@ -1,3 +1,6 @@
+// This adapter isolates the external Groq LLM call from the rest of the app.
+// The API is used for semantic skill matching; strict JSON validation keeps the
+// model response compatible with the deterministic dashboard response shape.
 import "dotenv/config";
 
 const groqApiUrl = "https://api.groq.com/openai/v1/chat/completions";

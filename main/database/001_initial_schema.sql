@@ -1,3 +1,7 @@
+-- PostgreSQL is used through Supabase because it supplies relational constraints,
+-- array support for skills, indexes, and row-level security in one managed service.
+-- This first migration creates the compact core model used by the API.
+
 create table if not exists public.students (
   id uuid primary key default gen_random_uuid(),
   full_name text not null,
@@ -45,6 +49,8 @@ alter table public.employers enable row level security;
 alter table public.opportunities enable row level security;
 alter table public.matches enable row level security;
 
+-- Public reads support the prototype's open marketplace. Server writes use the
+-- service-role client and therefore stay outside the browser's trust boundary.
 create policy "Students are publicly readable"
   on public.students for select
   using (true);

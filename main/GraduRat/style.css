@@ -1,3 +1,5 @@
+/* The shared stylesheet defines the landing page's visual language; CSS keeps
+  the static frontend fast and usable without a component framework. */
 * {
   margin: 0;
   padding: 0;

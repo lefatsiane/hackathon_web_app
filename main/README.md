@@ -1,6 +1,13 @@
+<!-- This document explains how the Express server, static browser client, Supabase database, and Groq matching service fit together. -->
+
 # GraduRat Full Stack App
 
 GraduRat is served by an Express backend that hosts the static `GraduRat` frontend and exposes Supabase-backed API routes.
+
+<!-- package.json and package-lock.json are strict JSON; JSON has no comment
+syntax, so their technology and dependency rationale is documented here. -->
+
+The project uses Node.js with ES modules, Express for HTTP/static serving, Supabase JavaScript clients for PostgreSQL access, and Groq for narrowly scoped semantic skill scoring. The lockfile records exact dependency resolution and intentionally remains machine-readable.
 
 ## Setup
 

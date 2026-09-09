@@ -1,3 +1,5 @@
+/* This stylesheet gives graduate registration a focused, responsive form while
+  preserving the shared static HTML/CSS architecture. */
 * {
   margin: 0;
   padding: 0;

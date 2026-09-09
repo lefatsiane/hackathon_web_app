@@ -1,3 +1,5 @@
+<!-- These repository instructions keep future changes aligned with the plain Node, browser, and Supabase architecture. -->
+
 # Project Guidelines
 
 ## Project Layout

@@ -1,3 +1,5 @@
+/* Employer dashboard CSS controls the dense candidate and job workspace while
+  keeping the browser client framework-free and easy to serve from Express. */
 * {
   margin: 0;
   padding: 0;

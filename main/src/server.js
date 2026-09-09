@@ -1,3 +1,7 @@
+// Express is used as the small HTTP boundary: it parses browser form payloads,
+// serves the static frontend, validates API input, and delegates persistence to
+// the server-only Supabase client. Keeping these concerns here makes the public
+// browser contract explicit while credentials and database writes stay private.
 import "dotenv/config";
 import express from "express";
 import path from "node:path";
@@ -32,11 +36,13 @@ const asArray = (value) => {
 const errorResponse = (response, error, fallback = "Request failed") => {
   // PostgreSQL's unique-constraint code is translated to 409 so duplicate
   // registrations are distinguishable from malformed requests.
+  // Supabase errors may include a statusCode, but other errors (like validation)
   const status = error?.statusCode || (error?.code === "23505" ? 409 : 400);
   response.status(status).json({ error: error?.message || fallback });
 };
 
 const normalizeSkills = (skills = []) => {
+  // Skills are stored in lowercase, trimmed, and deduplicated to keep the
   const seen = new Set();
   const normalized = [];
   for (const skill of asArray(skills)) {
@@ -96,6 +102,8 @@ const coerceText = (value, fallback = null) => {
 };
 
 const computeProfileCompleteness = (profile, type = "student") => {
+  // Profile completeness is a simple percentage of non-empty fields. 
+  // This is not a perfect measure of quality, but it gives students and employers a sense of how much information they have provided.
   const fields = {
     student: [
       "full_name",
@@ -855,11 +863,9 @@ app.post("/api/employers", async (request, response) => {
   const website = coerceText(body.website, null);
   const contactEmail = coerceText(body.contactEmail ?? body.email, null);
   if (!isValidEmail(email) || !isValidEmail(contactEmail)) {
-    return response
-      .status(422)
-      .json({
-        error: "Employer and contact email must be valid email addresses.",
-      });
+    return response.status(422).json({
+      error: "Employer and contact email must be valid email addresses.",
+    });
   }
   if (website && !isValidUrl(website)) {
     return response

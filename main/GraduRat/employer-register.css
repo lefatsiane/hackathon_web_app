@@ -1,3 +1,5 @@
+/* This stylesheet isolates employer registration layout and responsive states;
+  plain CSS keeps the page deployable as a static asset. */
 * {
   margin: 0;
   padding: 0;

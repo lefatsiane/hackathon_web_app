@@ -1,3 +1,6 @@
+// This shared browser module keeps form submission and dashboard rendering in
+// one dependency-free layer. Plain JavaScript suits the static Express-hosted
+// pages and avoids a client build step for this prototype.
 const formEndpoints = {
   student: "/api/students",
   employer: "/api/employers",

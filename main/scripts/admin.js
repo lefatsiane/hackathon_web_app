@@ -1,13 +1,21 @@
+// This Node CLI provides server-side moderation and export operations. It uses
+// an environment-protected admin key because these actions must never be
+// reachable through the public browser API.
 import "dotenv/config";
 import { supabaseServer } from "../src/lib/supabase-server.js";
 
 const args = process.argv.slice(2);
 const adminKey = process.env.ADMIN_API_KEY || process.env.GRADURAT_ADMIN_KEY;
 const adminFlagIndex = args.indexOf("--admin-key");
-const providedKey = adminFlagIndex >= 0 ? args[adminFlagIndex + 1] : process.env.ADMIN_API_KEY || process.env.GRADURAT_ADMIN_KEY;
+const providedKey =
+  adminFlagIndex >= 0
+    ? args[adminFlagIndex + 1]
+    : process.env.ADMIN_API_KEY || process.env.GRADURAT_ADMIN_KEY;
 
 if (!adminKey || !providedKey || providedKey !== adminKey) {
-  console.error("Protected admin script: provide a matching ADMIN_API_KEY value via .env or --admin-key.");
+  console.error(
+    "Protected admin script: provide a matching ADMIN_API_KEY value via .env or --admin-key.",
+  );
   process.exit(1);
 }
 
@@ -25,15 +33,30 @@ const toCsv = (rows) => {
   const headers = Object.keys(rows[0]);
   const escape = (value) => {
     const stringValue = value == null ? "" : String(value);
-    return /[",\n]/.test(stringValue) ? `"${stringValue.replace(/"/g, '""')}"` : stringValue;
+    return /[",\n]/.test(stringValue)
+      ? `"${stringValue.replace(/"/g, '""')}"`
+      : stringValue;
   };
-  return [headers.join(","), ...rows.map((row) => headers.map((header) => escape(row[header])).join(","))].join("\n");
+  return [
+    headers.join(","),
+    ...rows.map((row) =>
+      headers.map((header) => escape(row[header])).join(","),
+    ),
+  ].join("\n");
 };
 
 const listPending = async () => {
   const [opportunities, employers] = await Promise.all([
-    supabaseServer.from("opportunities").select("*").in("status", ["draft", "published"]).order("created_at", { ascending: false }),
-    supabaseServer.from("employers").select("*").eq("verification_status", "pending").order("created_at", { ascending: false }),
+    supabaseServer
+      .from("opportunities")
+      .select("*")
+      .in("status", ["draft", "published"])
+      .order("created_at", { ascending: false }),
+    supabaseServer
+      .from("employers")
+      .select("*")
+      .eq("verification_status", "pending")
+      .order("created_at", { ascending: false }),
   ]);
 
   if (opportunities.error) throw opportunities.error;
@@ -45,7 +68,11 @@ const listPending = async () => {
 const approveOpportunity = async (id) => {
   const { data, error } = await supabaseServer
     .from("opportunities")
-    .update({ status: "published", published_at: new Date().toISOString(), updated_at: new Date().toISOString() })
+    .update({
+      status: "published",
+      published_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    })
     .eq("id", id)
     .select()
     .single();
@@ -56,7 +83,11 @@ const approveOpportunity = async (id) => {
 const rejectOpportunity = async (id, reason = "Rejected by admin") => {
   const { data, error } = await supabaseServer
     .from("opportunities")
-    .update({ status: "closed", closing_reason: reason, updated_at: new Date().toISOString() })
+    .update({
+      status: "closed",
+      closing_reason: reason,
+      updated_at: new Date().toISOString(),
+    })
     .eq("id", id)
     .select()
     .single();
@@ -67,7 +98,11 @@ const rejectOpportunity = async (id, reason = "Rejected by admin") => {
 const archiveOpportunity = async (id) => {
   const { data, error } = await supabaseServer
     .from("opportunities")
-    .update({ status: "archived", archived_at: new Date().toISOString(), updated_at: new Date().toISOString() })
+    .update({
+      status: "archived",
+      archived_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    })
     .eq("id", id)
     .select()
     .single();
@@ -78,7 +113,11 @@ const archiveOpportunity = async (id) => {
 const markEmployerVerified = async (id) => {
   const { data, error } = await supabaseServer
     .from("employers")
-    .update({ verification_status: "verified", verification_timestamp: new Date().toISOString(), updated_at: new Date().toISOString() })
+    .update({
+      verification_status: "verified",
+      verification_timestamp: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    })
     .eq("id", id)
     .select()
     .single();
@@ -88,8 +127,14 @@ const markEmployerVerified = async (id) => {
 
 const exportCsv = async () => {
   const [employers, opportunities] = await Promise.all([
-    supabaseServer.from("employers").select("*").order("created_at", { ascending: false }),
-    supabaseServer.from("opportunities").select("*").order("created_at", { ascending: false }),
+    supabaseServer
+      .from("employers")
+      .select("*")
+      .order("created_at", { ascending: false }),
+    supabaseServer
+      .from("opportunities")
+      .select("*")
+      .order("created_at", { ascending: false }),
   ]);
 
   if (employers.error) throw employers.error;
@@ -110,7 +155,9 @@ const detectDuplicates = async () => {
 
   const employerGroups = new Map();
   for (const employer of employers.data) {
-    const key = String(employer.company_name || "").trim().toLowerCase();
+    const key = String(employer.company_name || "")
+      .trim()
+      .toLowerCase();
     if (!key) continue;
     if (!employerGroups.has(key)) employerGroups.set(key, []);
     employerGroups.get(key).push(employer);
@@ -118,15 +165,21 @@ const detectDuplicates = async () => {
 
   const opportunityGroups = new Map();
   for (const opportunity of opportunities.data) {
-    const key = String(opportunity.title || "").trim().toLowerCase();
+    const key = String(opportunity.title || "")
+      .trim()
+      .toLowerCase();
     if (!key) continue;
     if (!opportunityGroups.has(key)) opportunityGroups.set(key, []);
     opportunityGroups.get(key).push(opportunity);
   }
 
   return {
-    duplicate_employers: [...employerGroups.entries()].filter(([, rows]) => rows.length > 1).map(([key, rows]) => ({ key, rows })),
-    duplicate_opportunities: [...opportunityGroups.entries()].filter(([, rows]) => rows.length > 1).map(([key, rows]) => ({ key, rows })),
+    duplicate_employers: [...employerGroups.entries()]
+      .filter(([, rows]) => rows.length > 1)
+      .map(([key, rows]) => ({ key, rows })),
+    duplicate_opportunities: [...opportunityGroups.entries()]
+      .filter(([, rows]) => rows.length > 1)
+      .map(([key, rows]) => ({ key, rows })),
   };
 };
 
@@ -166,7 +219,10 @@ try {
     }
     case "reject-opportunity": {
       guard(targetId, "Provide an opportunity id.");
-      const result = await rejectOpportunity(targetId, args[2] || "Rejected by admin");
+      const result = await rejectOpportunity(
+        targetId,
+        args[2] || "Rejected by admin",
+      );
       console.log(JSON.stringify(result, null, 2));
       break;
     }
@@ -204,7 +260,9 @@ try {
       break;
     }
     default:
-      console.log("Usage: node scripts/admin.js <command> [id] [flags]\nCommands: list-pending | approve-opportunity | reject-opportunity | archive-opportunity | mark-employer-verified | export-csv | detect-duplicates | detect-expired | toggle-featured");
+      console.log(
+        "Usage: node scripts/admin.js <command> [id] [flags]\nCommands: list-pending | approve-opportunity | reject-opportunity | archive-opportunity | mark-employer-verified | export-csv | detect-duplicates | detect-expired | toggle-featured",
+      );
       process.exit(1);
   }
 } catch (error) {

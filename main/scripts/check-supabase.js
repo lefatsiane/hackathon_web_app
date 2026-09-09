@@ -1,3 +1,5 @@
+// This diagnostic uses the publishable Supabase client to confirm configuration
+// and network access without pretending that authentication is implemented.
 import "dotenv/config";
 import { supabase } from "../src/lib/supabase.js";
 

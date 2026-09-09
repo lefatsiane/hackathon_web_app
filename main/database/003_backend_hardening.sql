@@ -1,3 +1,5 @@
+-- This hardening migration moves repeated timestamp maintenance into a trigger,
+-- normalizes legacy skill arrays for reliable matching, and indexes public lists.
 BEGIN;
 
 CREATE OR REPLACE FUNCTION public.set_updated_at()

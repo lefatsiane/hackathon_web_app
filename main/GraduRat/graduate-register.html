@@ -1,4 +1,6 @@
 <!doctype html>
+<!-- Graduate profile form: named controls are read by app.js FormData and sent
+  as JSON to Express, keeping the browser contract declarative. -->
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -54,7 +56,11 @@
         </div>
 
         <!-- Form -->
-        <form data-api-form="student" action="graduate-dashboard.html" method="POST">
+        <form
+          data-api-form="student"
+          action="graduate-dashboard.html"
+          method="POST"
+        >
           <!-- PERSONAL INFORMATION -->
           <section class="form-section">
             <div class="section-title">

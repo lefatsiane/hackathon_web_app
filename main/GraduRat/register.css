@@ -1,3 +1,5 @@
+/* Role selection uses standalone CSS so this static page can load directly from
+  Express without a frontend build pipeline. */
 * {
   margin: 0;
   padding: 0;
