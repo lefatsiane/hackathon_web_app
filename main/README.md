@@ -1,5 +1,23 @@
 <!-- This document explains how the Express server, static browser client, Supabase database, and Groq matching service fit together. -->
 
+# GraduRat
+
+## Deploy with Vercel
+
+In Vercel, import the repository and set the project **Root Directory** to
+`main`. Vercel will use `api/index.js` as the serverless entrypoint.
+
+Add these environment variables in the Vercel project settings:
+
+- `SUPABASE_URL`
+- `SUPABASE_SERVICE_ROLE_KEY`
+- `GROQ_API_KEY`
+- `GROQ_MODEL` (optional)
+
+Deploy from `main/` with `npx vercel`, or deploy to production with
+`npx vercel --prod`. The `vercel` plugin command is not required for this
+project; the Vercel CLI and the included configuration are sufficient.
+
 # GraduRat Full Stack App
 
 GraduRat is served by an Express backend that hosts the static `GraduRat` frontend and exposes Supabase-backed API routes.

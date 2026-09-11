@@ -102,7 +102,7 @@ const coerceText = (value, fallback = null) => {
 };
 
 const computeProfileCompleteness = (profile, type = "student") => {
-  // Profile completeness is a simple percentage of non-empty fields. 
+  // Profile completeness is a simple percentage of non-empty fields.
   // This is not a perfect measure of quality, but it gives students and employers a sense of how much information they have provided.
   const fields = {
     student: [
@@ -1470,6 +1470,10 @@ app.use((_request, response) =>
   response.sendFile(path.join(__dirname, "../GraduRat/home.html")),
 );
 
-app.listen(port, () =>
-  console.log(`GraduRat running at http://localhost:${port}`),
-);
+export { app };
+
+if (!process.env.VERCEL) {
+  app.listen(port, () =>
+    console.log(`GraduRat running at http://localhost:${port}`),
+  );
+}
