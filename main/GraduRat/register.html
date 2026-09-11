@@ -1,316 +1,761 @@
 <!DOCTYPE html>
-
 <html lang="en">
+
 <head>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Gradurat | Create Account</title>
 
 
-<title>Gradurat | Create Account</title>
+    <!-- GOOGLE FONT -->
 
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link
+        rel="preconnect"
+        href="https://fonts.googleapis.com"
+    >
 
-<style>
-    * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-    }
+    <link
+        rel="preconnect"
+        href="https://fonts.gstatic.com"
+        crossorigin
+    >
 
-    body {
-        font-family: 'Inter', sans-serif;
-        background: #05070d;
-        color: white;
-        min-height: 100vh;
-    }
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet"
+    >
 
-    /* NAVBAR */
 
-    .navbar {
-        height: 80px;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 0 7%;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-    }
+    <style>
 
-    .brand {
-        display: flex;
-        align-items: center;
-        text-decoration: none;
-    }
+        /* =====================================================
+           RESET
+        ===================================================== */
 
-    .brand img {
-        width: 48px;
-        height: 48px;
-        object-fit: contain;
-    }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-    .home-link {
-        color: #aab3c5;
-        text-decoration: none;
-        font-size: 14px;
-        transition: 0.3s;
-    }
 
-    .home-link:hover {
-        color: #258cff;
-    }
+        /* =====================================================
+           BODY
+        ===================================================== */
 
-    /* MAIN */
+        body {
 
-    .register-container {
-        min-height: calc(100vh - 80px);
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        padding: 60px 20px;
-        position: relative;
-        overflow: hidden;
-    }
+            font-family: 'Inter', sans-serif;
 
-    .register-container::before {
-        content: "";
-        position: absolute;
-        width: 500px;
-        height: 500px;
-        background: #0066ff;
-        opacity: 0.08;
-        filter: blur(140px);
-        border-radius: 50%;
-        top: 10%;
-        left: 50%;
-        transform: translateX(-50%);
-    }
+            background: #05070d;
 
-    .register-box {
-        width: 100%;
-        max-width: 560px;
-        background: rgba(12, 16, 27, 0.95);
-        border: 1px solid rgba(37, 140, 255, 0.25);
-        border-radius: 20px;
-        padding: 45px;
-        position: relative;
-        z-index: 1;
-        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
-    }
+            color: white;
 
-    .heading {
-        text-align: center;
-        margin-bottom: 35px;
-    }
+            min-height: 100vh;
 
-    .heading h1 {
-        font-size: 32px;
-        margin-bottom: 12px;
-    }
+        }
 
-    .heading p {
-        color: #8d98ad;
-        font-size: 14px;
-        line-height: 1.6;
-    }
 
-    /* FORM */
-
-    .form-group {
-        margin-bottom: 20px;
-    }
-
-    .form-group label {
-        display: block;
-        margin-bottom: 8px;
-        font-size: 14px;
-        font-weight: 600;
-    }
-
-    .form-group input {
-        width: 100%;
-        padding: 14px 16px;
-        background: #080c15;
-        border: 1px solid #263044;
-        border-radius: 10px;
-        color: white;
-        font-size: 14px;
-        outline: none;
-        transition: 0.3s;
-    }
-
-    .form-group input:focus {
-        border-color: #258cff;
-        box-shadow: 0 0 0 3px rgba(37, 140, 255, 0.08);
-    }
-
-    .form-group input::placeholder {
-        color: #596377;
-    }
-
-    /* ROLE SELECTION */
-
-    .role-title {
-        font-size: 14px;
-        font-weight: 600;
-        margin-bottom: 12px;
-    }
-
-    .roles {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 10px;
-        margin-bottom: 25px;
-    }
-
-    .role {
-        position: relative;
-    }
-
-    .role input {
-        position: absolute;
-        opacity: 0;
-    }
-
-    .role label {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        text-align: center;
-        min-height: 75px;
-        padding: 10px;
-        border: 1px solid #263044;
-        border-radius: 10px;
-        background: #080c15;
-        color: #aab3c5;
-        font-size: 13px;
-        font-weight: 600;
-        cursor: pointer;
-        transition: 0.3s;
-    }
-
-    .role label:hover {
-        border-color: #258cff;
-        color: white;
-    }
-
-    .role input:checked + label {
-        border-color: #258cff;
-        background: rgba(37, 140, 255, 0.12);
-        color: white;
-        box-shadow: 0 0 20px rgba(37, 140, 255, 0.08);
-    }
-
-    /* BUTTON */
-
-    .register-btn {
-        width: 100%;
-        padding: 15px;
-        border: none;
-        border-radius: 10px;
-        background: #258cff;
-        color: white;
-        font-size: 14px;
-        font-weight: 700;
-        cursor: pointer;
-        transition: 0.3s;
-    }
-
-    .register-btn:hover {
-        background: #1478e8;
-        transform: translateY(-1px);
-        box-shadow: 0 10px 25px rgba(37, 140, 255, 0.2);
-    }
-
-    .login-text {
-        text-align: center;
-        margin-top: 25px;
-        color: #7f899d;
-        font-size: 13px;
-    }
-
-    .login-text a {
-        color: #258cff;
-        text-decoration: none;
-        font-weight: 600;
-    }
-
-    .login-text a:hover {
-        text-decoration: underline;
-    }
-
-    /* RESPONSIVE */
-
-    @media (max-width: 600px) {
+        /* =====================================================
+           NAVBAR
+        ===================================================== */
 
         .navbar {
-            padding: 0 5%;
+
+            height: 80px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            padding: 0 7%;
+
+            border-bottom:
+                1px solid rgba(255, 255, 255, 0.08);
+
         }
+
+
+        .brand {
+
+            display: flex;
+
+            align-items: center;
+
+            text-decoration: none;
+
+        }
+
+
+        .brand img {
+
+            width: 48px;
+
+            height: 48px;
+
+            object-fit: contain;
+
+        }
+
+
+        .home-link {
+
+            color: #aab3c5;
+
+            text-decoration: none;
+
+            font-size: 14px;
+
+            transition: 0.3s;
+
+        }
+
+
+        .home-link:hover {
+
+            color: #258cff;
+
+        }
+
+
+        /* =====================================================
+           MAIN CONTAINER
+        ===================================================== */
+
+        .register-container {
+
+            min-height:
+                calc(100vh - 80px);
+
+            display: flex;
+
+            justify-content: center;
+
+            align-items: center;
+
+            padding: 60px 20px;
+
+            position: relative;
+
+            overflow: hidden;
+
+        }
+
+
+        /* BLUE GLOW */
+
+        .register-container::before {
+
+            content: "";
+
+            position: absolute;
+
+            width: 500px;
+
+            height: 500px;
+
+            background: #0066ff;
+
+            opacity: 0.08;
+
+            filter: blur(140px);
+
+            border-radius: 50%;
+
+            top: 10%;
+
+            left: 50%;
+
+            transform:
+                translateX(-50%);
+
+        }
+
+
+        /* =====================================================
+           REGISTER BOX
+        ===================================================== */
 
         .register-box {
-            padding: 30px 22px;
+
+            width: 100%;
+
+            max-width: 560px;
+
+            background:
+                rgba(12, 16, 27, 0.95);
+
+            border:
+                1px solid rgba(37, 140, 255, 0.25);
+
+            border-radius: 20px;
+
+            padding: 45px;
+
+            position: relative;
+
+            z-index: 1;
+
+            box-shadow:
+                0 20px 60px rgba(0, 0, 0, 0.45);
+
         }
+
+
+        /* =====================================================
+           HEADING
+        ===================================================== */
+
+        .heading {
+
+            text-align: center;
+
+            margin-bottom: 35px;
+
+        }
+
 
         .heading h1 {
-            font-size: 26px;
+
+            font-size: 32px;
+
+            margin-bottom: 12px;
+
         }
+
+
+        .heading h1 span {
+
+            color: #258cff;
+
+        }
+
+
+        .heading p {
+
+            color: #8d98ad;
+
+            font-size: 14px;
+
+            line-height: 1.6;
+
+        }
+
+
+        /* =====================================================
+           FORM
+        ===================================================== */
+
+        .form-group {
+
+            margin-bottom: 20px;
+
+        }
+
+
+        .form-group label {
+
+            display: block;
+
+            margin-bottom: 8px;
+
+            font-size: 14px;
+
+            font-weight: 600;
+
+        }
+
+
+        .form-group input {
+
+            width: 100%;
+
+            padding: 14px 16px;
+
+            background: #080c15;
+
+            border:
+                1px solid #263044;
+
+            border-radius: 10px;
+
+            color: white;
+
+            font-size: 14px;
+
+            outline: none;
+
+            transition: 0.3s;
+
+        }
+
+
+        .form-group input:focus {
+
+            border-color: #258cff;
+
+            box-shadow:
+                0 0 0 3px
+                rgba(37, 140, 255, 0.08);
+
+        }
+
+
+        .form-group input::placeholder {
+
+            color: #596377;
+
+        }
+
+
+        /* =====================================================
+           ROLE SELECTION
+        ===================================================== */
+
+        .role-title {
+
+            font-size: 14px;
+
+            font-weight: 600;
+
+            margin-bottom: 12px;
+
+        }
+
 
         .roles {
-            grid-template-columns: 1fr;
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(2, 1fr);
+
+            gap: 12px;
+
+            margin-bottom: 25px;
+
         }
+
+
+        .role {
+
+            position: relative;
+
+        }
+
+
+        .role input {
+
+            position: absolute;
+
+            opacity: 0;
+
+        }
+
 
         .role label {
-            min-height: 55px;
-        }
-    }
-</style>
 
+            display: flex;
+
+            justify-content: center;
+
+            align-items: center;
+
+            text-align: center;
+
+            min-height: 75px;
+
+            padding: 10px;
+
+            border:
+                1px solid #263044;
+
+            border-radius: 10px;
+
+            background: #080c15;
+
+            color: #aab3c5;
+
+            font-size: 13px;
+
+            font-weight: 600;
+
+            cursor: pointer;
+
+            transition: 0.3s;
+
+        }
+
+
+        .role label:hover {
+
+            border-color: #258cff;
+
+            color: white;
+
+            transform:
+                translateY(-2px);
+
+        }
+
+
+        /* SELECTED ROLE */
+
+        .role input:checked + label {
+
+            border-color: #258cff;
+
+            background:
+                rgba(37, 140, 255, 0.12);
+
+            color: white;
+
+            box-shadow:
+                0 0 20px
+                rgba(37, 140, 255, 0.08);
+
+        }
+
+
+        /* =====================================================
+           BUTTON
+        ===================================================== */
+
+        .register-btn {
+
+            width: 100%;
+
+            padding: 15px;
+
+            border: none;
+
+            border-radius: 10px;
+
+            background: #258cff;
+
+            color: white;
+
+            font-size: 14px;
+
+            font-weight: 700;
+
+            cursor: pointer;
+
+            transition: 0.3s;
+
+        }
+
+
+        .register-btn:hover {
+
+            background: #1478e8;
+
+            transform:
+                translateY(-1px);
+
+            box-shadow:
+                0 10px 25px
+                rgba(37, 140, 255, 0.2);
+
+        }
+
+
+        /* =====================================================
+           SIGN IN
+        ===================================================== */
+
+        .login-text {
+
+            text-align: center;
+
+            margin-top: 25px;
+
+            color: #7f899d;
+
+            font-size: 13px;
+
+        }
+
+
+        .login-text a {
+
+            color: #258cff;
+
+            text-decoration: none;
+
+            font-weight: 600;
+
+        }
+
+
+        .login-text a:hover {
+
+            text-decoration: underline;
+
+        }
+
+
+        /* =====================================================
+           ADMIN ACCESS
+        ===================================================== */
+
+        .admin-access {
+
+            text-align: center;
+
+            margin-top: 22px;
+
+            padding-top: 22px;
+
+            border-top:
+                1px solid
+                rgba(255, 255, 255, 0.08);
+
+        }
+
+
+        .admin-access p {
+
+            color: #596377;
+
+            font-size: 12px;
+
+            margin-bottom: 8px;
+
+        }
+
+
+        .admin-access a {
+
+            color: #258cff;
+
+            text-decoration: none;
+
+            font-size: 13px;
+
+            font-weight: 600;
+
+        }
+
+
+        .admin-access a:hover {
+
+            text-decoration: underline;
+
+        }
+
+
+        /* =====================================================
+           MESSAGE
+        ===================================================== */
+
+        .message {
+
+            display: none;
+
+            padding: 12px;
+
+            margin-bottom: 20px;
+
+            border-radius: 8px;
+
+            font-size: 13px;
+
+            text-align: center;
+
+        }
+
+
+        .message.error {
+
+            display: block;
+
+            background:
+                rgba(255, 70, 70, 0.08);
+
+            border:
+                1px solid
+                rgba(255, 70, 70, 0.2);
+
+            color: #ff7b7b;
+
+        }
+
+
+        .message.success {
+
+            display: block;
+
+            background:
+                rgba(40, 200, 120, 0.08);
+
+            border:
+                1px solid
+                rgba(40, 200, 120, 0.2);
+
+            color: #4ee09b;
+
+        }
+
+
+        /* =====================================================
+           RESPONSIVE
+        ===================================================== */
+
+        @media (max-width: 600px) {
+
+            .navbar {
+
+                padding: 0 5%;
+
+            }
+
+
+            .register-container {
+
+                padding:
+                    40px 15px;
+
+            }
+
+
+            .register-box {
+
+                padding:
+                    30px 22px;
+
+            }
+
+
+            .heading h1 {
+
+                font-size: 26px;
+
+            }
+
+
+            .roles {
+
+                grid-template-columns: 1fr;
+
+            }
+
+
+            .role label {
+
+                min-height: 55px;
+
+            }
+
+        }
+
+    </style>
 
 </head>
+
 
 <body>
 
 
-<!-- NAVBAR -->
+<!-- =====================================================
+     NAVBAR
+===================================================== -->
 
 <nav class="navbar">
 
-    <a href="index.html" class="brand">
-        <img src="logo1.jpg" alt="Gradurat Logo">
+
+    <a
+        href="index.html"
+        class="brand"
+    >
+
+        <img
+            src="logo1.jpg"
+            alt="Gradurat Logo"
+        >
+
     </a>
 
-    <a href="index.html" class="home-link">
+
+    <a
+        href="index.html"
+        class="home-link"
+    >
+
         Back to Home
+
     </a>
+
 
 </nav>
 
 
-<!-- REGISTRATION -->
+
+<!-- =====================================================
+     REGISTRATION
+===================================================== -->
 
 <main class="register-container">
 
+
     <div class="register-box">
+
+
+        <!-- HEADING -->
 
         <div class="heading">
 
-            <h1>Create Your Account</h1>
+            <h1>
+                Create Your
+                <span>Account</span>
+            </h1>
 
             <p>
-                Start your Gradurat journey and discover where
-                your skills can take you.
+
+                Start your Gradurat journey
+                and discover where your
+                skills can take you.
+
             </p>
 
         </div>
 
 
+
+        <!-- MESSAGE -->
+
+        <div
+            id="message"
+            class="message"
+        ></div>
+
+
+
+        <!-- =================================================
+             FORM
+        ================================================== -->
+
         <form id="registrationForm">
+
+
+            <!-- FULL NAME -->
 
             <div class="form-group">
 
                 <label for="fullName">
+
                     Full Name
+
                 </label>
+
 
                 <input
                     type="text"
@@ -323,11 +768,17 @@
             </div>
 
 
+
+            <!-- EMAIL -->
+
             <div class="form-group">
 
                 <label for="email">
+
                     Email Address
+
                 </label>
+
 
                 <input
                     type="email"
@@ -340,46 +791,69 @@
             </div>
 
 
+
+            <!-- PASSWORD -->
+
             <div class="form-group">
 
                 <label for="password">
+
                     Password
+
                 </label>
+
 
                 <input
                     type="password"
                     id="password"
                     name="password"
                     placeholder="Create a password"
+                    minlength="6"
                     required
                 >
 
             </div>
 
 
+
+            <!-- CONFIRM PASSWORD -->
+
             <div class="form-group">
 
                 <label for="confirmPassword">
+
                     Confirm Password
+
                 </label>
+
 
                 <input
                     type="password"
                     id="confirmPassword"
                     name="confirmPassword"
                     placeholder="Confirm your password"
+                    minlength="6"
                     required
                 >
 
             </div>
 
 
+
+            <!-- ROLE -->
+
             <div class="role-title">
+
                 I am registering as a:
+
             </div>
 
 
+
             <div class="roles">
+
+
+                <!-- STUDENT -->
 
                 <div class="role">
 
@@ -392,11 +866,16 @@
                     >
 
                     <label for="student">
+
                         Student
+
                     </label>
 
                 </div>
 
+
+
+                <!-- GRADUATE -->
 
                 <div class="role">
 
@@ -408,11 +887,16 @@
                     >
 
                     <label for="graduate">
+
                         Graduate
+
                     </label>
 
                 </div>
 
+
+
+                <!-- EMPLOYER -->
 
                 <div class="role">
 
@@ -424,92 +908,344 @@
                     >
 
                     <label for="employer">
+
                         Employer
+
                     </label>
 
                 </div>
 
+
+
+                <!-- LECTURER -->
+
+                <div class="role">
+
+                    <input
+                        type="radio"
+                        id="lecturer"
+                        name="role"
+                        value="lecturer"
+                    >
+
+                    <label for="lecturer">
+
+                        Lecturer
+
+                    </label>
+
+                </div>
+
+
             </div>
 
+
+
+            <!-- SUBMIT -->
 
             <button
                 type="submit"
                 class="register-btn"
             >
+
                 Create Account
-            </button><br><br>
-            <button
-                type="button"
-                class="register-btn"
-                onclick="window.location.href='login.html'"
-            >
-                Sign in
+
             </button>
+
 
         </form>
 
+
+
+        <!-- =================================================
+             LOGIN
+        ================================================== -->
 
         <div class="login-text">
 
             Already have an account?
 
             <a href="login.html">
+
                 Sign in
+
             </a>
 
         </div>
 
+
+
+        <!-- =================================================
+             ADMIN LOGIN
+        ================================================== -->
+
+        <div class="admin-access">
+
+            <p>
+
+                Platform administrator?
+
+            </p>
+
+
+            <a href="admin-login.html">
+
+                Admin Login
+
+            </a>
+
+        </div>
+
+
     </div>
+
 
 </main>
 
 
 
+<!-- =====================================================
+     JAVASCRIPT
+===================================================== -->
 
 <script>
-document.getElementById("registrationForm").addEventListener("submit", function(event) {
 
-    event.preventDefault();
 
-    // Get information from the registration form
-    const fullName = document.getElementById("fullName").value.trim();
-    const email = document.getElementById("email").value.trim();
-    const password = document.getElementById("password").value;
-    const confirmPassword = document.getElementById("confirmPassword").value;
+const registrationForm =
+    document.getElementById(
+        "registrationForm"
+    );
 
-    // Get selected role
-    const selectedRole = document.querySelector('input[name="role"]:checked');
 
-    // Check role
-    if (!selectedRole) {
-        alert("Please select your role.");
-        return;
+const message =
+    document.getElementById(
+        "message"
+    );
+
+
+
+registrationForm.addEventListener(
+    "submit",
+    function(event) {
+
+        event.preventDefault();
+
+
+
+        /* ============================================
+           GET FORM VALUES
+        ============================================ */
+
+        const fullName =
+            document
+                .getElementById("fullName")
+                .value
+                .trim();
+
+
+        const email =
+            document
+                .getElementById("email")
+                .value
+                .trim();
+
+
+        const password =
+            document
+                .getElementById("password")
+                .value;
+
+
+        const confirmPassword =
+            document
+                .getElementById("confirmPassword")
+                .value;
+
+
+        const selectedRole =
+            document.querySelector(
+                'input[name="role"]:checked'
+            );
+
+
+
+        /* ============================================
+           RESET MESSAGE
+        ============================================ */
+
+        message.className = "message";
+
+        message.textContent = "";
+
+
+
+        /* ============================================
+           CHECK ROLE
+        ============================================ */
+
+        if (!selectedRole) {
+
+            message.className =
+                "message error";
+
+            message.textContent =
+                "Please select your role.";
+
+            return;
+
+        }
+
+
+
+        /* ============================================
+           CHECK PASSWORD
+        ============================================ */
+
+        if (password !== confirmPassword) {
+
+            message.className =
+                "message error";
+
+            message.textContent =
+                "Passwords do not match.";
+
+            return;
+
+        }
+
+
+
+        /* ============================================
+           CHECK PASSWORD LENGTH
+        ============================================ */
+
+        if (password.length < 6) {
+
+            message.className =
+                "message error";
+
+            message.textContent =
+                "Password must be at least 6 characters.";
+
+            return;
+
+        }
+
+
+
+        /* ============================================
+           CREATE USER
+        ============================================ */
+
+        const user = {
+
+            fullName: fullName,
+
+            email: email,
+
+            password: password,
+
+            role: selectedRole.value
+
+        };
+
+
+
+        /* ============================================
+           SAVE USER
+        ============================================ */
+
+        localStorage.setItem(
+            "graduratUser",
+            JSON.stringify(user)
+        );
+
+
+
+        /* ============================================
+           SAVE ROLE
+        ============================================ */
+
+        localStorage.setItem(
+            "graduratRole",
+            selectedRole.value
+        );
+
+
+
+        /* ============================================
+           SUCCESS MESSAGE
+        ============================================ */
+
+        message.className =
+            "message success";
+
+        message.textContent =
+            "Account created successfully!";
+
+
+
+        /* ============================================
+           REDIRECT BASED ON ROLE
+        ============================================ */
+
+        setTimeout(function() {
+
+
+            if (
+                selectedRole.value ===
+                "student"
+            ) {
+
+                window.location.href =
+                    "dashboard.html";
+
+            }
+
+
+            else if (
+                selectedRole.value ===
+                "graduate"
+            ) {
+
+                window.location.href =
+                    "dashboard.html";
+
+            }
+
+
+            else if (
+                selectedRole.value ===
+                "employer"
+            ) {
+
+                window.location.href =
+                    "employer-dashboard.html";
+
+            }
+
+
+            else if (
+                selectedRole.value ===
+                "lecturer"
+            ) {
+
+                window.location.href =
+                    "lecturer-dashboard.html";
+
+            }
+
+
+        }, 800);
+
+
     }
 
-    // Check passwords
-    if (password !== confirmPassword) {
-        alert("Passwords do not match.");
-        return;
-    }
+);
 
-    // Create the user object
-    const user = {
-        fullName: fullName,
-        email: email,
-        password: password,
-        role: selectedRole.value
-    };
-
-    // Save registration information
-    localStorage.setItem("graduratUser", JSON.stringify(user));
-
-    // Send user directly to profile page
-    window.location.href = "profile.html";
-
-});
 </script>
 
 
-
 </body>
+
 </html>
