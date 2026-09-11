@@ -1,0 +1,1823 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Career Explorer | Gradurat</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Inter", sans-serif;
+            background: #05070d;
+            color: #ffffff;
+            min-height: 100vh;
+        }
+
+        /* ================= NAVBAR ================= */
+
+        nav {
+            height: 75px;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            padding: 0 6%;
+
+            background: rgba(5, 7, 13, 0.95);
+            border-bottom: 1px solid rgba(0, 136, 255, 0.15);
+
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo img {
+            width: 145px;
+            height: auto;
+            object-fit: contain;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: #b8c0cc;
+            text-decoration: none;
+            font-size: 14px;
+            transition: 0.3s;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: #168cff;
+        }
+
+        .profile-btn {
+            border: 1px solid #168cff;
+            padding: 10px 18px;
+            border-radius: 8px;
+            color: #ffffff !important;
+        }
+
+        .profile-btn:hover {
+            background: #168cff;
+        }
+
+        /* ================= HERO ================= */
+
+        .hero {
+            text-align: center;
+            padding: 75px 20px 45px;
+        }
+
+        .hero-badge {
+            display: inline-block;
+
+            padding: 8px 16px;
+            border-radius: 30px;
+
+            background: rgba(22, 140, 255, 0.1);
+            border: 1px solid rgba(22, 140, 255, 0.3);
+
+            color: #168cff;
+            font-size: 13px;
+            font-weight: 600;
+
+            margin-bottom: 20px;
+        }
+
+        .hero h1 {
+            font-size: clamp(38px, 6vw, 62px);
+            line-height: 1.1;
+            margin-bottom: 18px;
+        }
+
+        .hero h1 span {
+            color: #168cff;
+        }
+
+        .hero p {
+            max-width: 700px;
+            margin: auto;
+
+            color: #9ca6b5;
+            font-size: 17px;
+            line-height: 1.7;
+        }
+
+        /* ================= SEARCH ================= */
+
+        .search-section {
+            width: 90%;
+            max-width: 1050px;
+            margin: 20px auto 50px;
+        }
+
+        .search-box {
+            display: flex;
+            align-items: center;
+
+            background: #0b1019;
+            border: 1px solid #1d2938;
+
+            border-radius: 14px;
+            padding: 7px;
+
+            transition: 0.3s;
+        }
+
+        .search-box:focus-within {
+            border-color: #168cff;
+            box-shadow: 0 0 25px rgba(22, 140, 255, 0.12);
+        }
+
+        .search-icon {
+            font-size: 20px;
+            padding: 0 14px;
+            color: #168cff;
+        }
+
+        .search-box input {
+            flex: 1;
+
+            background: transparent;
+            border: none;
+            outline: none;
+
+            color: white;
+            font-size: 15px;
+
+            padding: 14px 5px;
+        }
+
+        .search-box input::placeholder {
+            color: #667080;
+        }
+
+        /* ================= FILTERS ================= */
+
+        .filters {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+
+            margin-top: 18px;
+        }
+
+        .filter-btn {
+            background: #0b1019;
+            color: #9ca6b5;
+
+            border: 1px solid #1d2938;
+
+            padding: 10px 17px;
+            border-radius: 8px;
+
+            cursor: pointer;
+            font-family: inherit;
+
+            transition: 0.3s;
+        }
+
+        .filter-btn:hover,
+        .filter-btn.active {
+            color: white;
+            border-color: #168cff;
+            background: rgba(22, 140, 255, 0.1);
+        }
+
+        /* ================= CAREER AREA ================= */
+
+        .career-area {
+            width: 90%;
+            max-width: 1200px;
+            margin: auto;
+
+            padding-bottom: 80px;
+        }
+
+        .section-heading {
+            margin-bottom: 25px;
+        }
+
+        .section-heading h2 {
+            font-size: 25px;
+            margin-bottom: 7px;
+        }
+
+        .section-heading p {
+            color: #778292;
+            font-size: 14px;
+        }
+
+        /* ================= CAREER GRID ================= */
+
+        .career-grid {
+            display: grid;
+
+            grid-template-columns: repeat(3, 1fr);
+
+            gap: 20px;
+        }
+
+        .career-card {
+            background: #0b1019;
+
+            border: 1px solid #1b2735;
+
+            border-radius: 15px;
+
+            padding: 25px;
+
+            cursor: pointer;
+
+            transition: 0.3s;
+        }
+
+        .career-card:hover {
+            transform: translateY(-5px);
+
+            border-color: #168cff;
+
+            box-shadow: 0 12px 35px rgba(22, 140, 255, 0.08);
+        }
+
+        .career-icon {
+            width: 48px;
+            height: 48px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            background: rgba(22, 140, 255, 0.1);
+
+            border-radius: 10px;
+
+            font-size: 22px;
+
+            margin-bottom: 18px;
+        }
+
+        .career-card h3 {
+            font-size: 18px;
+            margin-bottom: 9px;
+        }
+
+        .career-card p {
+            color: #8994a4;
+
+            font-size: 13px;
+            line-height: 1.6;
+
+            margin-bottom: 17px;
+        }
+
+        .career-tag {
+            display: inline-block;
+
+            padding: 6px 10px;
+
+            border-radius: 6px;
+
+            background: rgba(22, 140, 255, 0.08);
+
+            color: #168cff;
+
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        /* ================= EMPTY STATE ================= */
+
+        .empty-state {
+            display: none;
+
+            text-align: center;
+
+            padding: 70px 20px;
+
+            border: 1px dashed #263446;
+            border-radius: 15px;
+
+            background: #090e16;
+        }
+
+        .empty-state .empty-icon {
+            font-size: 42px;
+            margin-bottom: 15px;
+        }
+
+        .empty-state h3 {
+            margin-bottom: 8px;
+        }
+
+        .empty-state p {
+            color: #778292;
+        }
+
+        /* ================= MODAL ================= */
+
+        .modal {
+            display: none;
+
+            position: fixed;
+
+            inset: 0;
+
+            background: rgba(0, 0, 0, 0.78);
+
+            z-index: 500;
+
+            padding: 30px;
+
+            overflow-y: auto;
+        }
+
+        .modal.show {
+            display: flex;
+
+            justify-content: center;
+            align-items: flex-start;
+        }
+
+        .career-details {
+            width: 100%;
+            max-width: 950px;
+
+            background: #080d15;
+
+            border: 1px solid #1e2d40;
+
+            border-radius: 18px;
+
+            margin: 30px auto;
+
+            overflow: hidden;
+        }
+
+        .details-header {
+            padding: 35px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    rgba(22, 140, 255, 0.15),
+                    rgba(5, 7, 13, 0.5)
+                );
+
+            border-bottom: 1px solid #1d2938;
+
+            position: relative;
+        }
+
+        .close-btn {
+            position: absolute;
+
+            right: 25px;
+            top: 22px;
+
+            width: 38px;
+            height: 38px;
+
+            border-radius: 50%;
+
+            border: 1px solid #334155;
+
+            background: #0b1019;
+
+            color: white;
+
+            font-size: 20px;
+
+            cursor: pointer;
+        }
+
+        .close-btn:hover {
+            border-color: #168cff;
+            color: #168cff;
+        }
+
+        .details-header .career-icon {
+            margin-bottom: 15px;
+        }
+
+        .details-header h2 {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        .details-header p {
+            color: #8f9aaa;
+            line-height: 1.7;
+            max-width: 700px;
+        }
+
+        .details-body {
+            padding: 35px;
+        }
+
+        /* ================= QUICK STATS ================= */
+
+        .stats-grid {
+            display: grid;
+
+            grid-template-columns: repeat(3, 1fr);
+
+            gap: 15px;
+
+            margin-bottom: 35px;
+        }
+
+        .stat-card {
+            background: #0c131d;
+
+            border: 1px solid #1d2938;
+
+            padding: 20px;
+
+            border-radius: 12px;
+        }
+
+        .stat-label {
+            color: #748094;
+
+            font-size: 12px;
+
+            margin-bottom: 9px;
+        }
+
+        .stat-value {
+            color: white;
+
+            font-size: 16px;
+
+            font-weight: 700;
+        }
+
+        .stat-value.pending {
+            color: #667080;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        /* ================= DETAILS SECTIONS ================= */
+
+        .details-section {
+            margin-bottom: 35px;
+        }
+
+        .details-section h3 {
+            font-size: 18px;
+
+            margin-bottom: 15px;
+
+            display: flex;
+            align-items: center;
+            gap: 9px;
+        }
+
+        .details-section h3::before {
+            content: "";
+
+            width: 4px;
+            height: 20px;
+
+            background: #168cff;
+
+            border-radius: 5px;
+        }
+
+        .details-section p {
+            color: #919baa;
+
+            font-size: 14px;
+
+            line-height: 1.8;
+        }
+
+        .info-list {
+            display: grid;
+
+            grid-template-columns: repeat(2, 1fr);
+
+            gap: 12px;
+        }
+
+        .info-item {
+            padding: 14px;
+
+            border-radius: 9px;
+
+            background: #0c131d;
+
+            border: 1px solid #182535;
+
+            color: #aeb7c4;
+
+            font-size: 13px;
+        }
+
+        .info-item strong {
+            display: block;
+
+            color: white;
+
+            margin-bottom: 5px;
+        }
+
+        /* ================= USER MATCH ================= */
+
+        .match-section {
+            padding: 25px;
+
+            border-radius: 14px;
+
+            border: 1px solid rgba(22, 140, 255, 0.25);
+
+            background:
+                linear-gradient(
+                    135deg,
+                    rgba(22, 140, 255, 0.08),
+                    rgba(8, 13, 21, 0.5)
+                );
+
+            margin-top: 10px;
+        }
+
+        .match-section h3 {
+            margin-bottom: 8px;
+        }
+
+        .match-section h3::before {
+            display: none;
+        }
+
+        .match-score {
+            font-size: 40px;
+
+            font-weight: 800;
+
+            color: #168cff;
+
+            margin: 12px 0;
+        }
+
+        .match-pending {
+            color: #788494;
+
+            font-size: 14px;
+
+            line-height: 1.6;
+        }
+
+        /* ================= FOOTER ================= */
+
+        footer {
+            text-align: center;
+
+            padding: 30px;
+
+            border-top: 1px solid #121d29;
+
+            color: #596575;
+
+            font-size: 12px;
+        }
+
+        /* ================= RESPONSIVE ================= */
+
+        @media (max-width: 900px) {
+
+            .career-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 650px) {
+
+            nav {
+                padding: 0 4%;
+            }
+
+            .nav-links {
+                gap: 12px;
+            }
+
+            .nav-links a:not(.profile-btn) {
+                display: none;
+            }
+
+            .hero {
+                padding-top: 50px;
+            }
+
+            .career-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .info-list {
+                grid-template-columns: 1fr;
+            }
+
+            .details-header,
+            .details-body {
+                padding: 25px;
+            }
+
+            .modal {
+                padding: 10px;
+            }
+        }
+
+    </style>
+</head>
+
+<body>
+
+<!-- ================= NAVBAR ================= -->
+
+<nav>
+
+    <div class="logo">
+        <img src="logo1.jpg" alt="Gradurat Logo">
+    </div>
+
+    <div class="nav-links">
+
+        <a href="dashboard.html">
+            Dashboard
+        </a>
+
+        <a href="careers.html" class="active">
+            Career Explorer
+        </a>
+
+        <a href="fyp.html">
+            FYP
+        </a>
+
+        <a href="profile.html" class="profile-btn">
+            Profile
+        </a>
+
+    </div>
+
+</nav>
+
+
+<!-- ================= HERO ================= -->
+
+<section class="hero">
+
+    <div class="hero-badge">
+        GRADURAT CAREER EXPLORER
+    </div>
+
+    <h1>
+        Discover Your <span>Career.</span>
+    </h1>
+
+    <p>
+        Explore careers, understand what they involve,
+        discover the qualifications and skills you need,
+        and see what the employment outlook looks like.
+    </p>
+
+</section>
+
+
+<!-- ================= SEARCH ================= -->
+
+<section class="search-section">
+
+    <div class="search-box">
+
+        <div class="search-icon">
+            🔎
+        </div>
+
+        <input
+            type="text"
+            id="careerSearch"
+            placeholder="Search for a career..."
+            autocomplete="off"
+        >
+
+    </div>
+
+
+    <div class="filters">
+
+        <button
+            class="filter-btn active"
+            data-category="all">
+            All Careers
+        </button>
+
+        <button
+            class="filter-btn"
+            data-category="technology">
+            Technology
+        </button>
+
+        <button
+            class="filter-btn"
+            data-category="business">
+            Business
+        </button>
+
+        <button
+            class="filter-btn"
+            data-category="healthcare">
+            Healthcare
+        </button>
+
+        <button
+            class="filter-btn"
+            data-category="engineering">
+            Engineering
+        </button>
+
+        <button
+            class="filter-btn"
+            data-category="creative">
+            Creative
+        </button>
+
+        <button
+            class="filter-btn"
+            data-category="science">
+            Science
+        </button>
+
+    </div>
+
+</section>
+
+
+<!-- ================= CAREERS ================= -->
+
+<section class="career-area">
+
+    <div class="section-heading">
+
+        <h2>
+            Explore Careers
+        </h2>
+
+        <p id="careerCount">
+            Careers available through Gradurat
+        </p>
+
+    </div>
+
+
+    <!--
+
+        IMPORTANT:
+
+        Career cards are intentionally NOT hard-coded.
+
+        Your backend will eventually return career data
+        and JavaScript will generate these cards.
+
+    -->
+
+    <div
+        class="career-grid"
+        id="careerGrid">
+    </div>
+
+
+    <div
+        class="empty-state"
+        id="emptyState">
+
+        <div class="empty-icon">
+            🔍
+        </div>
+
+        <h3>
+            No careers found
+        </h3>
+
+        <p>
+            Try searching for another career or selecting
+            a different industry.
+        </p>
+
+    </div>
+
+</section>
+
+
+<!-- ================= CAREER DETAILS MODAL ================= -->
+
+<div
+    class="modal"
+    id="careerModal">
+
+    <div class="career-details">
+
+        <div class="details-header">
+
+            <button
+                class="close-btn"
+                id="closeModal">
+                ×
+            </button>
+
+            <div
+                class="career-icon"
+                id="detailIcon">
+                💼
+            </div>
+
+            <h2 id="detailTitle">
+                Career
+            </h2>
+
+            <p id="detailDescription">
+                Career description will appear here.
+            </p>
+
+        </div>
+
+
+        <div class="details-body">
+
+
+            <!-- QUICK INFORMATION -->
+
+            <div class="stats-grid">
+
+                <div class="stat-card">
+
+                    <div class="stat-label">
+                        QUALIFICATION
+                    </div>
+
+                    <div
+                        class="stat-value"
+                        id="detailQualification">
+                        Awaiting data
+                    </div>
+
+                </div>
+
+
+                <div class="stat-card">
+
+                    <div class="stat-label">
+                        EMPLOYMENT OUTLOOK
+                    </div>
+
+                    <div
+                        class="stat-value"
+                        id="detailOutlook">
+                        Awaiting data
+                    </div>
+
+                </div>
+
+
+                <div class="stat-card">
+
+                    <div class="stat-label">
+                        PROJECTED GROWTH
+                    </div>
+
+                    <div
+                        class="stat-value"
+                        id="detailGrowth">
+                        Awaiting data
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- WHAT THEY DO -->
+
+            <div class="details-section">
+
+                <h3>
+                    What is this career?
+                </h3>
+
+                <p id="detailWhat">
+                    Career information will be supplied
+                    by the Gradurat career database.
+                </p>
+
+            </div>
+
+
+            <!-- NORMAL DAY -->
+
+            <div class="details-section">
+
+                <h3>
+                    What does a normal day look like?
+                </h3>
+
+                <p id="detailDay">
+                    Daily responsibilities will appear here.
+                </p>
+
+            </div>
+
+
+            <!-- QUALIFICATIONS -->
+
+            <div class="details-section">
+
+                <h3>
+                    Qualifications & Requirements
+                </h3>
+
+                <div
+                    class="info-list"
+                    id="detailRequirements">
+                </div>
+
+            </div>
+
+
+            <!-- SKILLS -->
+
+            <div class="details-section">
+
+                <h3>
+                    Skills You Need
+                </h3>
+
+                <div
+                    class="info-list"
+                    id="detailSkills">
+                </div>
+
+            </div>
+
+
+            <!-- WORK ENVIRONMENT -->
+
+            <div class="details-section">
+
+                <h3>
+                    Work Environment
+                </h3>
+
+                <p id="detailEnvironment">
+                    Work environment information will appear here.
+                </p>
+
+            </div>
+
+
+            <!-- EMPLOYMENT -->
+
+            <div class="details-section">
+
+                <h3>
+                    Employment & Job Outlook
+                </h3>
+
+                <p id="detailEmployment">
+                    Employment information will be supplied
+                    by the Gradurat career database.
+                </p>
+
+            </div>
+
+
+            <!-- SALARY -->
+
+            <div class="details-section">
+
+                <h3>
+                    Salary Information
+                </h3>
+
+                <div
+                    class="info-list"
+                    id="detailSalary">
+                </div>
+
+            </div>
+
+
+            <!-- CAREER PROGRESSION -->
+
+            <div class="details-section">
+
+                <h3>
+                    Career Progression
+                </h3>
+
+                <p id="detailProgression">
+                    Career progression information will appear here.
+                </p>
+
+            </div>
+
+
+            <!-- ADVANTAGES -->
+
+            <div class="details-section">
+
+                <h3>
+                    Advantages
+                </h3>
+
+                <p id="detailAdvantages">
+                    Advantages will appear here.
+                </p>
+
+            </div>
+
+
+            <!-- CHALLENGES -->
+
+            <div class="details-section">
+
+                <h3>
+                    Challenges
+                </h3>
+
+                <p id="detailChallenges">
+                    Challenges will appear here.
+                </p>
+
+            </div>
+
+
+            <!-- RELATED CAREERS -->
+
+            <div class="details-section">
+
+                <h3>
+                    Related Careers
+                </h3>
+
+                <div
+                    class="info-list"
+                    id="detailRelated">
+                </div>
+
+            </div>
+
+
+            <!-- ================= YOUR MATCH ================= -->
+
+            <div class="match-section">
+
+                <h3>
+                    How well does this career fit YOU?
+                </h3>
+
+                <div
+                    class="match-score"
+                    id="matchScore">
+                    --
+                </div>
+
+                <p class="match-pending">
+
+                    Your personalised career match will appear
+                    after Gradurat analyses your profile.
+
+                    Your qualification, skills, interests,
+                    experience and career goals will be compared
+                    with the requirements of this career.
+
+                </p>
+
+            </div>
+
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- ================= FOOTER ================= -->
+
+<footer>
+
+    © 2026 Gradurat.
+    Discover yourself. Discover your future.
+
+</footer>
+
+
+<script>
+
+/*
+==========================================================
+GRADURAT CAREER EXPLORER
+==========================================================
+
+IMPORTANT:
+
+There is intentionally NO fake career data here.
+
+The frontend expects your backend to eventually return
+career information in this structure:
+
+{
+    id: 1,
+    title: "...",
+    category: "...",
+    icon: "...",
+    shortDescription: "...",
+
+    description: "...",
+    normalDay: "...",
+
+    qualification: "...",
+    requirements: [],
+    skills: [],
+
+    environment: "...",
+
+    employment: "...",
+    employmentOutlook: "...",
+    projectedGrowth: "...",
+
+    salary: {
+        entry: "...",
+        average: "...",
+        experienced: "..."
+    },
+
+    progression: "...",
+    advantages: "...",
+    challenges: "...",
+
+    relatedCareers: [],
+
+    matchScore: null
+}
+
+Later your Node.js + Express backend can provide
+this data through an API such as:
+
+GET /api/careers
+
+and:
+
+GET /api/careers/:id
+
+==========================================================
+*/
+
+
+let careers = [];
+
+let selectedCategory = "all";
+
+
+const careerGrid =
+    document.getElementById("careerGrid");
+
+const emptyState =
+    document.getElementById("emptyState");
+
+const searchInput =
+    document.getElementById("careerSearch");
+
+const careerCount =
+    document.getElementById("careerCount");
+
+const modal =
+    document.getElementById("careerModal");
+
+const closeModal =
+    document.getElementById("closeModal");
+
+
+/*
+==========================================================
+LOAD CAREERS
+
+For now this function is ready for the backend.
+
+When your Express API exists, replace the temporary
+empty array with:
+
+const response = await fetch("/api/careers");
+careers = await response.json();
+
+==========================================================
+*/
+
+async function loadCareers() {
+
+    try {
+
+        /*
+        ==============================================
+        BACKEND CONNECTION — ADD LATER
+
+        const response =
+            await fetch("/api/careers");
+
+        if (!response.ok) {
+            throw new Error("Could not load careers");
+        }
+
+        careers = await response.json();
+
+        renderCareers();
+
+        ==============================================
+        */
+
+
+        careers = [];
+
+        renderCareers();
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Career loading error:",
+            error
+        );
+
+        careers = [];
+
+        renderCareers();
+
+    }
+
+}
+
+
+/*
+==========================================================
+DISPLAY CAREERS
+==========================================================
+*/
+
+function renderCareers() {
+
+    const searchTerm =
+        searchInput.value
+            .trim()
+            .toLowerCase();
+
+
+    const filteredCareers =
+        careers.filter(career => {
+
+            const matchesSearch =
+                career.title
+                    ?.toLowerCase()
+                    .includes(searchTerm);
+
+            const matchesCategory =
+                selectedCategory === "all" ||
+                career.category === selectedCategory;
+
+            return matchesSearch &&
+                   matchesCategory;
+
+        });
+
+
+    careerGrid.innerHTML = "";
+
+
+    if (filteredCareers.length === 0) {
+
+        careerGrid.style.display = "none";
+
+        emptyState.style.display = "block";
+
+        if (careers.length === 0) {
+
+            emptyState.querySelector("h3")
+                .textContent =
+                "Career database ready for connection";
+
+            emptyState.querySelector("p")
+                .textContent =
+                "Career information will appear here once the Gradurat backend is connected.";
+
+        }
+
+        careerCount.textContent =
+            "Waiting for career data";
+
+        return;
+    }
+
+
+    careerGrid.style.display = "grid";
+
+    emptyState.style.display = "none";
+
+
+    careerCount.textContent =
+        `${filteredCareers.length} career(s) available`;
+
+
+    filteredCareers.forEach(career => {
+
+        const card =
+            document.createElement("div");
+
+        card.className = "career-card";
+
+
+        card.innerHTML = `
+
+            <div class="career-icon">
+                ${career.icon || "💼"}
+            </div>
+
+            <h3>
+                ${escapeHTML(career.title)}
+            </h3>
+
+            <p>
+                ${escapeHTML(
+                    career.shortDescription ||
+                    "Career information available through Gradurat."
+                )}
+            </p>
+
+            <span class="career-tag">
+                ${escapeHTML(
+                    career.category ||
+                    "Career"
+                )}
+            </span>
+
+        `;
+
+
+        card.addEventListener(
+            "click",
+            () => openCareer(career)
+        );
+
+
+        careerGrid.appendChild(card);
+
+    });
+
+}
+
+
+/*
+==========================================================
+OPEN CAREER
+==========================================================
+*/
+
+function openCareer(career) {
+
+    document.getElementById("detailIcon")
+        .textContent =
+        career.icon || "💼";
+
+
+    document.getElementById("detailTitle")
+        .textContent =
+        career.title || "Career";
+
+
+    document.getElementById("detailDescription")
+        .textContent =
+        career.shortDescription ||
+        "Career description will appear here.";
+
+
+    document.getElementById("detailQualification")
+        .textContent =
+        career.qualification ||
+        "Awaiting data";
+
+
+    document.getElementById("detailOutlook")
+        .textContent =
+        career.employmentOutlook ||
+        "Awaiting data";
+
+
+    document.getElementById("detailGrowth")
+        .textContent =
+        career.projectedGrowth ||
+        "Awaiting data";
+
+
+    document.getElementById("detailWhat")
+        .textContent =
+        career.description ||
+        "Career information will appear here.";
+
+
+    document.getElementById("detailDay")
+        .textContent =
+        career.normalDay ||
+        "Daily responsibilities will appear here.";
+
+
+    document.getElementById("detailEnvironment")
+        .textContent =
+        career.environment ||
+        "Work environment information will appear here.";
+
+
+    document.getElementById("detailEmployment")
+        .textContent =
+        career.employment ||
+        "Employment information will appear here.";
+
+
+    document.getElementById("detailProgression")
+        .textContent =
+        career.progression ||
+        "Career progression information will appear here.";
+
+
+    document.getElementById("detailAdvantages")
+        .textContent =
+        career.advantages ||
+        "Advantages will appear here.";
+
+
+    document.getElementById("detailChallenges")
+        .textContent =
+        career.challenges ||
+        "Challenges will appear here.";
+
+
+    renderList(
+        "detailRequirements",
+        career.requirements
+    );
+
+
+    renderList(
+        "detailSkills",
+        career.skills
+    );
+
+
+    renderSalary(
+        career.salary
+    );
+
+
+    renderList(
+        "detailRelated",
+        career.relatedCareers
+    );
+
+
+    /*
+    ==============================================
+    AI MATCH SCORE
+
+    We deliberately do NOT invent a score.
+
+    Later:
+
+    career.matchScore
+
+    will come from the backend/AI system.
+    ==============================================
+    */
+
+    const matchScore =
+        document.getElementById("matchScore");
+
+
+    if (
+        career.matchScore !== null &&
+        career.matchScore !== undefined
+    ) {
+
+        matchScore.textContent =
+            `${career.matchScore}%`;
+
+    }
+
+    else {
+
+        matchScore.textContent =
+            "--";
+
+    }
+
+
+    modal.classList.add("show");
+
+    document.body.style.overflow = "hidden";
+
+}
+
+
+/*
+==========================================================
+RENDER LIST
+==========================================================
+*/
+
+function renderList(elementId, items) {
+
+    const container =
+        document.getElementById(elementId);
+
+    container.innerHTML = "";
+
+
+    if (!items || items.length === 0) {
+
+        const item =
+            document.createElement("div");
+
+        item.className = "info-item";
+
+        item.innerHTML = `
+            <strong>Awaiting data</strong>
+            This information will be supplied by the Gradurat backend.
+        `;
+
+        container.appendChild(item);
+
+        return;
+
+    }
+
+
+    items.forEach(itemText => {
+
+        const item =
+            document.createElement("div");
+
+        item.className = "info-item";
+
+        item.textContent = itemText;
+
+        container.appendChild(item);
+
+    });
+
+}
+
+
+/*
+==========================================================
+RENDER SALARY
+==========================================================
+*/
+
+function renderSalary(salary) {
+
+    const container =
+        document.getElementById("detailSalary");
+
+    container.innerHTML = "";
+
+
+    if (!salary) {
+
+        renderList(
+            "detailSalary",
+            []
+        );
+
+        return;
+
+    }
+
+
+    const salaryItems = [
+
+        {
+            title: "Entry Level",
+            value: salary.entry
+        },
+
+        {
+            title: "Average",
+            value: salary.average
+        },
+
+        {
+            title: "Experienced",
+            value: salary.experienced
+        }
+
+    ];
+
+
+    salaryItems.forEach(itemData => {
+
+        const item =
+            document.createElement("div");
+
+        item.className =
+            "info-item";
+
+
+        item.innerHTML = `
+
+            <strong>
+                ${escapeHTML(itemData.title)}
+            </strong>
+
+            ${escapeHTML(
+                itemData.value ||
+                "Awaiting data"
+            )}
+
+        `;
+
+
+        container.appendChild(item);
+
+    });
+
+}
+
+
+/*
+==========================================================
+SEARCH
+==========================================================
+*/
+
+searchInput.addEventListener(
+    "input",
+    renderCareers
+);
+
+
+/*
+==========================================================
+CATEGORY FILTERS
+==========================================================
+*/
+
+document
+    .querySelectorAll(".filter-btn")
+    .forEach(button => {
+
+        button.addEventListener(
+            "click",
+            function() {
+
+                document
+                    .querySelectorAll(".filter-btn")
+                    .forEach(btn =>
+                        btn.classList.remove("active")
+                    );
+
+
+                this.classList.add("active");
+
+
+                selectedCategory =
+                    this.dataset.category;
+
+
+                renderCareers();
+
+            }
+        );
+
+    });
+
+
+/*
+==========================================================
+CLOSE MODAL
+==========================================================
+*/
+
+closeModal.addEventListener(
+    "click",
+    closeCareer
+);
+
+
+modal.addEventListener(
+    "click",
+    function(event) {
+
+        if (event.target === modal) {
+
+            closeCareer();
+
+        }
+
+    }
+);
+
+
+function closeCareer() {
+
+    modal.classList.remove("show");
+
+    document.body.style.overflow = "";
+
+}
+
+
+/*
+==========================================================
+ESCAPE KEY
+==========================================================
+*/
+
+document.addEventListener(
+    "keydown",
+    function(event) {
+
+        if (event.key === "Escape") {
+
+            closeCareer();
+
+        }
+
+    }
+);
+
+
+/*
+==========================================================
+SECURITY HELPER
+
+Prevents backend text from being interpreted as HTML
+when we insert career information into the page.
+==========================================================
+*/
+
+function escapeHTML(value) {
+
+    if (!value) {
+        return "";
+    }
+
+
+    return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+
+}
+
+
+/*
+==========================================================
+START
+==========================================================
+*/
+
+loadCareers();
+
+</script>
+
+</body>
+</html>
+

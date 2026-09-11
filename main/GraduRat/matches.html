@@ -1,0 +1,1257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Matches | Gradurat</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet"
+    >
+
+    <style>
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Inter", sans-serif;
+            background: #05070d;
+            color: #ffffff;
+            min-height: 100vh;
+        }
+
+        /* ================= NAVBAR ================= */
+
+        nav {
+            height: 75px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            padding: 0 6%;
+
+            background: #080b13;
+
+            border-bottom:
+                1px solid rgba(255,255,255,0.08);
+
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo img {
+            width: 42px;
+            height: 42px;
+
+            border-radius: 50%;
+
+            object-fit: cover;
+        }
+
+        .logo-text {
+            font-size: 22px;
+            font-weight: 800;
+        }
+
+        .logo-text span {
+            color: #168cff;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 28px;
+        }
+
+        .nav-links a {
+            color: #9da7ba;
+            text-decoration: none;
+            font-size: 14px;
+
+            transition: 0.3s;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: #168cff;
+        }
+
+        .account-btn {
+            background: rgba(22,140,255,0.08);
+
+            border:
+                1px solid rgba(22,140,255,0.35);
+
+            color: white;
+
+            padding: 10px 16px;
+
+            border-radius: 10px;
+
+            cursor: pointer;
+        }
+
+        /* ================= MAIN ================= */
+
+        main {
+            width: 88%;
+            max-width: 1250px;
+
+            margin: auto;
+
+            padding: 55px 0 80px;
+        }
+
+        .page-header {
+            margin-bottom: 35px;
+        }
+
+        .page-header h1 {
+            font-size: clamp(32px, 5vw, 48px);
+
+            margin-bottom: 10px;
+        }
+
+        .page-header p {
+            color: #858fa3;
+
+            max-width: 650px;
+
+            line-height: 1.7;
+        }
+
+        /* ================= STATS ================= */
+
+        .stats {
+            display: grid;
+
+            grid-template-columns:
+                repeat(3, 1fr);
+
+            gap: 18px;
+
+            margin-bottom: 35px;
+        }
+
+        .stat-card {
+            background: #0b0f19;
+
+            border:
+                1px solid rgba(255,255,255,0.08);
+
+            border-radius: 16px;
+
+            padding: 22px;
+        }
+
+        .stat-card span {
+            color: #7f899c;
+
+            font-size: 13px;
+        }
+
+        .stat-card strong {
+            display: block;
+
+            font-size: 28px;
+
+            margin-top: 8px;
+
+            color: #168cff;
+        }
+
+        /* ================= MATCHES ================= */
+
+        .matches-section {
+            background: #0b0f19;
+
+            border:
+                1px solid rgba(255,255,255,0.08);
+
+            border-radius: 18px;
+
+            padding: 28px;
+        }
+
+        .section-header {
+            margin-bottom: 25px;
+        }
+
+        .section-header h2 {
+            font-size: 21px;
+
+            margin-bottom: 6px;
+        }
+
+        .section-header p {
+            color: #7f899c;
+
+            font-size: 13px;
+        }
+
+        .matches-grid {
+            display: grid;
+
+            grid-template-columns:
+                repeat(auto-fit, minmax(280px, 1fr));
+
+            gap: 20px;
+        }
+
+        /* ================= MATCH CARD ================= */
+
+        .match-card {
+            background: #080c15;
+
+            border:
+                1px solid rgba(255,255,255,0.08);
+
+            border-radius: 16px;
+
+            padding: 22px;
+
+            transition: 0.3s;
+        }
+
+        .match-card:hover {
+            transform: translateY(-3px);
+
+            border-color:
+                rgba(22,140,255,0.35);
+        }
+
+        .profile-top {
+            display: flex;
+
+            align-items: center;
+
+            gap: 15px;
+        }
+
+        .profile-image {
+            width: 58px;
+            height: 58px;
+
+            border-radius: 50%;
+
+            object-fit: cover;
+
+            background: #111725;
+
+            border:
+                1px solid rgba(255,255,255,0.1);
+        }
+
+        .profile-placeholder {
+            width: 58px;
+            height: 58px;
+
+            border-radius: 50%;
+
+            background: #111725;
+
+            border:
+                1px solid rgba(255,255,255,0.1);
+        }
+
+        .profile-top h3 {
+            font-size: 17px;
+
+            margin-bottom: 5px;
+        }
+
+        .profile-type {
+            color: #7f899c;
+
+            font-size: 12px;
+        }
+
+        /* ================= MATCH SCORE ================= */
+
+        .match-score {
+            margin: 20px 0;
+
+            padding: 13px;
+
+            border-radius: 10px;
+
+            background:
+                rgba(22,140,255,0.07);
+
+            border:
+                1px solid rgba(22,140,255,0.15);
+        }
+
+        .match-score span {
+            color: #7f899c;
+
+            font-size: 12px;
+        }
+
+        .match-score strong {
+            color: #168cff;
+
+            font-size: 21px;
+
+            display: block;
+
+            margin-top: 3px;
+        }
+
+        /* ================= INFO ================= */
+
+        .profile-info {
+            color: #8e98aa;
+
+            font-size: 13px;
+
+            line-height: 1.7;
+
+            margin-bottom: 18px;
+        }
+
+        .profile-info strong {
+            color: #c8d0df;
+        }
+
+        /* ================= BUTTONS ================= */
+
+        .card-actions {
+            display: flex;
+
+            gap: 9px;
+        }
+
+        button {
+            font-family: inherit;
+        }
+
+        .primary-btn {
+            flex: 1;
+
+            background: #168cff;
+
+            color: white;
+
+            border: none;
+
+            padding: 11px 15px;
+
+            border-radius: 9px;
+
+            font-weight: 600;
+
+            cursor: pointer;
+
+            transition: 0.3s;
+        }
+
+        .primary-btn:hover {
+            background: #0878e8;
+        }
+
+        .secondary-btn {
+            flex: 1;
+
+            background: transparent;
+
+            color: #b9c3d3;
+
+            border:
+                1px solid rgba(255,255,255,0.12);
+
+            padding: 11px 15px;
+
+            border-radius: 9px;
+
+            cursor: pointer;
+        }
+
+        /* ================= EMPTY ================= */
+
+        .empty-state {
+            text-align: center;
+
+            padding: 80px 20px;
+        }
+
+        .empty-icon {
+            font-size: 45px;
+
+            margin-bottom: 20px;
+        }
+
+        .empty-state h3 {
+            color: #d3d9e5;
+
+            margin-bottom: 8px;
+        }
+
+        .empty-state p {
+            color: #747e92;
+
+            font-size: 14px;
+
+            line-height: 1.6;
+
+            max-width: 500px;
+
+            margin: auto;
+        }
+
+        /* ================= LOADING ================= */
+
+        .loading {
+            text-align: center;
+
+            padding: 70px 20px;
+
+            color: #7f899c;
+        }
+
+        /* ================= ERROR ================= */
+
+        .error-message {
+            display: none;
+
+            margin-bottom: 20px;
+
+            padding: 13px;
+
+            border-radius: 9px;
+
+            background:
+                rgba(255,70,70,0.08);
+
+            border:
+                1px solid rgba(255,70,70,0.2);
+
+            color: #ff8585;
+        }
+
+        /* ================= RESPONSIVE ================= */
+
+        @media (max-width: 800px) {
+
+            .nav-links {
+                display: none;
+            }
+
+            main {
+                width: 92%;
+            }
+
+            .stats {
+                grid-template-columns: 1fr;
+            }
+
+            .matches-section {
+                padding: 20px;
+            }
+
+        }
+
+    </style>
+</head>
+
+
+<body>
+
+
+<!-- ================= NAVBAR ================= -->
+
+<nav>
+
+    <div class="logo">
+
+        <img
+            src="logo1.jpg"
+            alt="Gradurat Logo"
+        >
+
+        <div class="logo-text">
+            Gradu<span>rat</span>
+        </div>
+
+    </div>
+
+
+    <div class="nav-links">
+
+        <a href="dashboard.html">
+            Dashboard
+        </a>
+
+        <a href="careers.html">
+            Career Explorer
+        </a>
+
+        <a href="fyp.html">
+            Find Your People
+        </a>
+
+        <a
+            href="matches.html"
+            class="active"
+        >
+            Matches
+        </a>
+
+        <a href="settings.html">
+            Settings
+        </a>
+
+    </div>
+
+
+    <button
+        class="account-btn"
+        onclick="window.location.href='settings.html'"
+    >
+        Account
+    </button>
+
+</nav>
+
+
+
+<!-- ================= MAIN ================= -->
+
+<main>
+
+
+    <div class="page-header">
+
+        <h1>
+            Your Matches
+        </h1>
+
+        <p>
+            These are the people and opportunities where
+            interest has been mutual. Start building
+            professional connections.
+        </p>
+
+    </div>
+
+
+    <div
+        id="errorMessage"
+        class="error-message"
+    ></div>
+
+
+
+    <!-- ================= STATS ================= -->
+
+    <section class="stats">
+
+
+        <div class="stat-card">
+
+            <span>
+                Total Matches
+            </span>
+
+            <strong id="totalMatches">
+                --
+            </strong>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <span>
+                Active Connections
+            </span>
+
+            <strong id="activeConnections">
+                --
+            </strong>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <span>
+                CV Access
+            </span>
+
+            <strong id="cvAccess">
+                --
+            </strong>
+
+        </div>
+
+
+    </section>
+
+
+
+    <!-- ================= MATCHES ================= -->
+
+    <section class="matches-section">
+
+
+        <div class="section-header">
+
+            <h2>
+                Mutual Connections
+            </h2>
+
+            <p>
+                Your mutual interests appear here.
+            </p>
+
+        </div>
+
+
+        <div
+            id="matchesContainer"
+            class="matches-grid"
+        >
+
+            <div class="loading">
+                Loading your matches...
+            </div>
+
+        </div>
+
+
+    </section>
+
+
+</main>
+
+
+
+<script>
+
+    /*
+    ============================================================
+    GRADURAT MATCHES PAGE
+    ============================================================
+
+    BACKEND ENDPOINTS EXPECTED:
+
+    GET /api/matches
+
+    GET /api/matches/:id
+
+    ============================================================
+    */
+
+
+    const API_BASE = "/api";
+
+
+    // =========================================================
+    // ERROR
+    // =========================================================
+
+    function showError(message) {
+
+        const error =
+            document.getElementById("errorMessage");
+
+        error.textContent = message;
+
+        error.style.display = "block";
+
+    }
+
+
+    // =========================================================
+    // LOAD MATCHES
+    // =========================================================
+
+    async function loadMatches() {
+
+        const container =
+            document.getElementById(
+                "matchesContainer"
+            );
+
+
+        container.innerHTML = `
+            <div class="loading">
+                Loading your matches...
+            </div>
+        `;
+
+
+        try {
+
+            const response =
+                await fetch(
+                    `${API_BASE}/matches`
+                );
+
+
+            if (!response.ok) {
+
+                throw new Error(
+                    "Unable to load matches."
+                );
+
+            }
+
+
+            const data =
+                await response.json();
+
+
+            /*
+                Backend can return either:
+
+                [
+                    {...},
+                    {...}
+                ]
+
+                OR
+
+                {
+                    matches: [...],
+                    totalMatches: 2,
+                    activeConnections: 2,
+                    cvAccess: 1
+                }
+            */
+
+
+            const matches =
+                Array.isArray(data)
+                    ? data
+                    : data.matches || [];
+
+
+            updateStats(
+                Array.isArray(data)
+                    ? matches
+                    : data
+            );
+
+
+            if (matches.length === 0) {
+
+                showEmptyState();
+
+                return;
+
+            }
+
+
+            container.innerHTML = "";
+
+
+            matches.forEach(match => {
+
+                const card =
+                    document.createElement(
+                        "div"
+                    );
+
+                card.className =
+                    "match-card";
+
+
+                card.innerHTML =
+                    createMatchCard(match);
+
+
+                container.appendChild(card);
+
+            });
+
+
+        } catch (error) {
+
+            console.error(error);
+
+
+            container.innerHTML = `
+                <div class="empty-state">
+
+                    <div class="empty-icon">
+                        💙
+                    </div>
+
+                    <h3>
+                        Your matches will appear here
+                    </h3>
+
+                    <p>
+                        We couldn't connect to your
+                        matches right now. Please try again
+                        when the backend is available.
+                    </p>
+
+                </div>
+            `;
+
+        }
+
+    }
+
+
+    // =========================================================
+    // CREATE MATCH CARD
+    // =========================================================
+
+    function createMatchCard(match) {
+
+        const person =
+            match.user ||
+            match.candidate ||
+            match.employer ||
+            match;
+
+
+        const name =
+            person.name ||
+            "Connection";
+
+
+        const role =
+            person.role ||
+            person.type ||
+            "Professional Connection";
+
+
+        const qualification =
+            person.qualification ||
+            "";
+
+
+        const field =
+            person.field ||
+            "";
+
+
+        const score =
+            match.matchScore ??
+            person.matchScore;
+
+
+        const photo =
+            person.photo ||
+            person.profilePhoto ||
+            person.logo;
+
+
+        return `
+
+            <div class="profile-top">
+
+                ${
+                    photo
+                    ?
+                    `
+                        <img
+                            src="${escapeHTML(photo)}"
+                            alt="${escapeHTML(name)}"
+                            class="profile-image"
+                        >
+                    `
+                    :
+                    `
+                        <div class="profile-placeholder">
+                        </div>
+                    `
+                }
+
+
+                <div>
+
+                    <h3>
+                        ${escapeHTML(name)}
+                    </h3>
+
+                    <div class="profile-type">
+                        ${escapeHTML(role)}
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="match-score">
+
+                <span>
+                    Gradurat Match
+                </span>
+
+                <strong>
+                    ${
+                        score !== undefined &&
+                        score !== null
+                        ? escapeHTML(score) + "%"
+                        : "--"
+                    }
+                </strong>
+
+            </div>
+
+
+            <div class="profile-info">
+
+                ${
+                    qualification
+                    ?
+                    `
+                        <p>
+                            <strong>
+                                Qualification:
+                            </strong>
+
+                            ${escapeHTML(
+                                qualification
+                            )}
+                        </p>
+                    `
+                    :
+                    ""
+                }
+
+
+                ${
+                    field
+                    ?
+                    `
+                        <p>
+                            <strong>
+                                Field:
+                            </strong>
+
+                            ${escapeHTML(field)}
+                        </p>
+                    `
+                    :
+                    ""
+                }
+
+
+                ${
+                    match.connectedAt
+                    ?
+                    `
+                        <p>
+                            <strong>
+                                Connected:
+                            </strong>
+
+                            ${escapeHTML(
+                                formatDate(
+                                    match.connectedAt
+                                )
+                            )}
+                        </p>
+                    `
+                    :
+                    ""
+                }
+
+            </div>
+
+
+            <div class="card-actions">
+
+                <button
+                    class="primary-btn"
+                    onclick="viewMatch(${match.id})"
+                >
+                    View Connection
+                </button>
+
+
+                ${
+                    match.cvUnlocked
+                    ?
+                    `
+                        <button
+                            class="secondary-btn"
+                            onclick="viewCV(${match.id})"
+                        >
+                            View CV
+                        </button>
+                    `
+                    :
+                    `
+                        <button
+                            class="secondary-btn"
+                            disabled
+                            title="CV access is not available yet"
+                        >
+                            CV Locked
+                        </button>
+                    `
+                }
+
+            </div>
+
+        `;
+
+    }
+
+
+    // =========================================================
+    // VIEW MATCH
+    // =========================================================
+
+    function viewMatch(matchId) {
+
+        if (!matchId) {
+
+            return;
+
+        }
+
+
+        window.location.href =
+            `candidate.html?id=${encodeURIComponent(matchId)}`;
+
+    }
+
+
+    // =========================================================
+    // VIEW CV
+    // =========================================================
+
+    async function viewCV(matchId) {
+
+        try {
+
+            const response =
+                await fetch(
+                    `${API_BASE}/matches/${matchId}`
+                );
+
+
+            if (!response.ok) {
+
+                throw new Error(
+                    "CV access denied."
+                );
+
+            }
+
+
+            const match =
+                await response.json();
+
+
+            if (!match.cvUnlocked) {
+
+                alert(
+                    "The CV is not available for this connection."
+                );
+
+                return;
+
+            }
+
+
+            if (!match.cvUrl) {
+
+                alert(
+                    "The CV is currently unavailable."
+                );
+
+                return;
+
+            }
+
+
+            window.open(
+                match.cvUrl,
+                "_blank"
+            );
+
+
+        } catch (error) {
+
+            console.error(error);
+
+            alert(
+                "Unable to access this CV."
+            );
+
+        }
+
+    }
+
+
+    // =========================================================
+    // UPDATE STATS
+    // =========================================================
+
+    function updateStats(data) {
+
+        const matches =
+            data.matches || [];
+
+
+        document.getElementById(
+            "totalMatches"
+        ).textContent =
+            data.totalMatches ??
+            matches.length ??
+            "--";
+
+
+        document.getElementById(
+            "activeConnections"
+        ).textContent =
+            data.activeConnections ??
+            "--";
+
+
+        document.getElementById(
+            "cvAccess"
+        ).textContent =
+            data.cvAccess ??
+            "--";
+
+    }
+
+
+    // =========================================================
+    // EMPTY STATE
+    // =========================================================
+
+    function showEmptyState() {
+
+        const container =
+            document.getElementById(
+                "matchesContainer"
+            );
+
+
+        container.innerHTML = `
+
+            <div
+                class="empty-state"
+                style="grid-column:1/-1;"
+            >
+
+                <div class="empty-icon">
+                    💙
+                </div>
+
+                <h3>
+                    No matches yet
+                </h3>
+
+                <p>
+                    Keep exploring Gradurat and
+                    connecting with people and
+                    opportunities that align with
+                    your goals.
+                </p>
+
+            </div>
+
+        `;
+
+    }
+
+
+    // =========================================================
+    // FORMAT DATE
+    // =========================================================
+
+    function formatDate(date) {
+
+        if (!date) {
+
+            return "";
+
+        }
+
+
+        const parsed =
+            new Date(date);
+
+
+        if (isNaN(parsed)) {
+
+            return date;
+
+        }
+
+
+        return parsed.toLocaleDateString();
+
+    }
+
+
+    // =========================================================
+    // SECURITY
+    // =========================================================
+
+    function escapeHTML(value) {
+
+        if (
+            value === null ||
+            value === undefined
+        ) {
+
+            return "";
+
+        }
+
+
+        return String(value)
+            .replace(/&/g, "&amp;")
+            .replace(
+                /</g,
+                "&lt;"
+            )
+            .replace(
+                />/g,
+                "&gt;"
+            )
+            .replace(
+                /"/g,
+                "&quot;"
+            )
+            .replace(
+                /'/g,
+                "&#039;"
+            );
+
+    }
+
+
+    // =========================================================
+    // INITIALIZE
+    // =========================================================
+
+    loadMatches();
+
+</script>
+
+
+</body>
+</html>

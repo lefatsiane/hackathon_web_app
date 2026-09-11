@@ -1,108 +1,1772 @@
-<!doctype html>
-<!-- Role router: a lightweight HTML page lets visitors choose a graduate or
-  employer flow before either form begins collecting API-bound data. -->
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>GraduRat | Get Started</title>
+    <title>Register | Gradurat</title>
 
-    <link rel="stylesheet" href="register.css" />
-  </head>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, Helvetica, sans-serif;
+        }
 
-  <body>
-    <!-- Background -->
-    <div class="background">
-      <div class="glow glow-one"></div>
-      <div class="glow glow-two"></div>
-    </div>
+        body {
+            background: #050816;
+            color: white;
+            min-height: 100vh;
+        }
 
-    <!-- Navigation -->
-    <header>
-      <a href="home.html" class="logo"> <span>G</span>radu<span>R</span>at </a>
+        /* =========================
+           NAVBAR
+        ========================= */
 
-      <a href="home.html" class="back"> ← Back to Home </a>
-    </header>
+        nav {
+            height: 75px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 7%;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            background: #060a1a;
+        }
 
-    <!-- Main -->
-    <main>
-      <div class="container">
-        <div class="badge">
-          <span></span>
-          GET STARTED
+        .logo {
+            font-size: 26px;
+            font-weight: bold;
+            color: #ffffff;
+        }
+
+        .logo span {
+            color: #315cff;
+        }
+
+        .back-home {
+            text-decoration: none;
+            color: #b8c1d9;
+            font-size: 14px;
+            transition: 0.3s;
+        }
+
+        .back-home:hover {
+            color: white;
+        }
+
+        /* =========================
+           PAGE
+        ========================= */
+
+        .page {
+            min-height: calc(100vh - 75px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 50px 20px;
+        }
+
+        .register-container {
+            width: 100%;
+            max-width: 850px;
+            background: #0b1126;
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 20px;
+            padding: 45px;
+            box-shadow: 0 25px 70px rgba(0,0,0,0.4);
+        }
+
+        /* =========================
+           HEADER
+        ========================= */
+
+        .header {
+            text-align: center;
+            margin-bottom: 35px;
+        }
+
+        .header h1 {
+            font-size: 34px;
+            margin-bottom: 10px;
+        }
+
+        .header h1 span {
+            color: #315cff;
+        }
+
+        .header p {
+            color: #8993ad;
+            font-size: 15px;
+            line-height: 1.6;
+        }
+
+        /* =========================
+           FORM
+        ========================= */
+
+        .form-section {
+            margin-bottom: 30px;
+        }
+
+        .section-title {
+            font-size: 17px;
+            font-weight: bold;
+            margin-bottom: 18px;
+            color: #ffffff;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .input-group.full {
+            grid-column: 1 / -1;
+        }
+
+        label {
+            color: #c5cce0;
+            font-size: 14px;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 14px 15px;
+            border-radius: 10px;
+            border: 1px solid #202b49;
+            background: #070c1d;
+            color: white;
+            outline: none;
+            font-size: 14px;
+            transition: 0.3s;
+        }
+
+        input:focus,
+        select:focus {
+            border-color: #315cff;
+            box-shadow: 0 0 0 3px rgba(49,92,255,0.1);
+        }
+
+        select option {
+            background: #070c1d;
+            color: white;
+        }
+
+        /* =========================
+           ROLE CARDS
+        ========================= */
+
+        .roles {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .role-card {
+            position: relative;
+        }
+
+        .role-card input {
+            position: absolute;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .role-label {
+            display: block;
+            padding: 20px;
+            background: #070c1d;
+            border: 1px solid #202b49;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .role-label:hover {
+            border-color: #315cff;
+            transform: translateY(-2px);
+        }
+
+        .role-card input:checked + .role-label {
+            border-color: #315cff;
+            background: rgba(49,92,255,0.10);
+            box-shadow: 0 0 0 2px rgba(49,92,255,0.15);
+        }
+
+        .role-icon {
+            font-size: 26px;
+            margin-bottom: 10px;
+        }
+
+        .role-name {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .role-description {
+            color: #8993ad;
+            font-size: 12px;
+            line-height: 1.5;
+        }
+
+        /* =========================
+           CONDITIONAL SECTIONS
+        ========================= */
+
+        .role-fields {
+            display: none;
+        }
+
+        .role-fields.active {
+            display: block;
+        }
+
+        /* =========================
+           BUTTON
+        ========================= */
+
+        .submit-button {
+            width: 100%;
+            border: none;
+            padding: 16px;
+            border-radius: 10px;
+            background: #315cff;
+            color: white;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+            margin-top: 10px;
+        }
+
+        .submit-button:hover {
+            background: #2449dc;
+            transform: translateY(-1px);
+        }
+
+        .submit-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* =========================
+           MESSAGE
+        ========================= */
+
+        .message {
+            display: none;
+            margin-bottom: 20px;
+            padding: 13px 15px;
+            border-radius: 10px;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .message.show {
+            display: block;
+        }
+
+        .message.error {
+            background: rgba(255, 70, 70, 0.1);
+            border: 1px solid rgba(255,70,70,0.3);
+            color: #ff8d8d;
+        }
+
+        .message.success {
+            background: rgba(50, 200, 120, 0.1);
+            border: 1px solid rgba(50,200,120,0.3);
+            color: #79e6a7;
+        }
+
+        /* =========================
+           FOOTER
+        ========================= */
+
+        .login-text {
+            text-align: center;
+            margin-top: 25px;
+            color: #8993ad;
+            font-size: 14px;
+        }
+
+        .login-text a {
+            color: #5e80ff;
+            text-decoration: none;
+        }
+
+        .login-text a:hover {
+            text-decoration: underline;
+        }
+
+        .admin-link {
+            text-align: center;
+            margin-top: 18px;
+        }
+
+        .admin-link a {
+            color: #8993ad;
+            font-size: 13px;
+            text-decoration: none;
+        }
+
+        .admin-link a:hover {
+            color: white;
+        }
+
+        .required {
+            color: #ff6b6b;
+        }
+
+        /* =========================
+           MOBILE
+        ========================= */
+
+        @media (max-width: 700px) {
+
+            .register-container {
+                padding: 30px 22px;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .input-group.full {
+                grid-column: auto;
+            }
+
+            .roles {
+                grid-template-columns: 1fr;
+            }
+
+            .header h1 {
+                font-size: 28px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- =========================
+         NAVBAR
+    ========================= -->
+
+    <nav>
+        <div class="logo">
+            Gradu<span>rat</span>
         </div>
 
-        <h1>
-          Welcome to
-          <span>GraduRat.</span>
-        </h1>
+        <a href="index.html" class="back-home">
+            ← Back to Home
+        </a>
+    </nav>
 
-        <p class="intro">
-          Let's get you connected with the right opportunities. Tell us what
-          brings you to GraduRat.
-        </p>
 
-        <!-- Role Cards -->
-        <div class="roles">
-          <!-- Graduate -->
-          <div class="role-card">
-            <div class="icon">🎓</div>
+    <!-- =========================
+         REGISTRATION PAGE
+    ========================= -->
 
-            <div class="role-content">
-              <h2>I'm a Graduate</h2>
+    <main class="page">
 
-              <p>
-                Looking for internships, graduate programmes, jobs or your next
-                career opportunity?
-              </p>
+        <div class="register-container">
 
-              <ul>
-                <li>✓ Create your professional profile</li>
-                <li>✓ Add your qualifications & skills</li>
-                <li>✓ Upload your CV & projects</li>
-                <li>✓ Discover matching jobs</li>
-              </ul>
+            <div class="header">
+                <h1>Create your <span>Gradurat</span> account</h1>
+
+                <p>
+                    Join the platform connecting students, graduates,
+                    employers and universities.
+                </p>
             </div>
 
-            <a href="graduate-register.html" class="role-button">
-              Continue as Graduate
-              <span>→</span>
-            </a>
-          </div>
 
-          <!-- Employer -->
-          <div class="role-card employer">
-            <div class="icon">🏢</div>
+            <!-- MESSAGE -->
 
-            <div class="role-content">
-              <h2>I'm an Employer</h2>
+            <div id="message" class="message"></div>
 
-              <p>
-                Looking for talented graduates with the skills your organisation
-                needs?
-              </p>
 
-              <ul>
-                <li>✓ Create your company profile</li>
-                <li>✓ Post available positions</li>
-                <li>✓ Discover qualified graduates</li>
-                <li>✓ Find your next team member</li>
-              </ul>
+            <!-- =========================
+                 REGISTRATION FORM
+            ========================= -->
+
+            <form id="registerForm">
+
+                <!-- =====================
+                     BASIC INFORMATION
+                ====================== -->
+
+                <div class="form-section">
+
+                    <div class="section-title">
+                        Basic Information
+                    </div>
+
+                    <div class="form-grid">
+
+                        <div class="input-group">
+                            <label for="firstName">
+                                First Name <span class="required">*</span>
+                            </label>
+
+                            <input
+                                type="text"
+                                id="firstName"
+                                name="firstName"
+                                placeholder="Enter your first name"
+                                required
+                            >
+                        </div>
+
+
+                        <div class="input-group">
+                            <label for="lastName">
+                                Last Name <span class="required">*</span>
+                            </label>
+
+                            <input
+                                type="text"
+                                id="lastName"
+                                name="lastName"
+                                placeholder="Enter your last name"
+                                required
+                            >
+                        </div>
+
+
+                        <div class="input-group">
+                            <label for="email">
+                                Email Address <span class="required">*</span>
+                            </label>
+
+                            <input
+                                type="email"
+                                id="email"
+                                name="email"
+                                placeholder="you@example.com"
+                                required
+                            >
+                        </div>
+
+
+                        <div class="input-group">
+                            <label for="location">
+                                Location
+                            </label>
+
+                            <input
+                                type="text"
+                                id="location"
+                                name="location"
+                                placeholder="e.g. Johannesburg"
+                            >
+                        </div>
+
+
+                        <div class="input-group">
+                            <label for="password">
+                                Password <span class="required">*</span>
+                            </label>
+
+                            <input
+                                type="password"
+                                id="password"
+                                name="password"
+                                placeholder="Create a password"
+                                required
+                            >
+                        </div>
+
+
+                        <div class="input-group">
+                            <label for="confirmPassword">
+                                Confirm Password <span class="required">*</span>
+                            </label>
+
+                            <input
+                                type="password"
+                                id="confirmPassword"
+                                name="confirmPassword"
+                                placeholder="Confirm your password"
+                                required
+                            >
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- =====================
+                     ROLE
+                ====================== -->
+
+                <div class="form-section">
+
+                    <div class="section-title">
+                        I am registering as...
+                    </div>
+
+                    <div class="roles">
+
+                        <!-- STUDENT -->
+
+                        <div class="role-card">
+
+                            <input
+                                type="radio"
+                                id="student"
+                                name="role"
+                                value="student"
+                                checked
+                            >
+
+                            <label
+                                for="student"
+                                class="role-label"
+                            >
+
+                                <div class="role-icon">
+                                    🎓
+                                </div>
+
+                                <span class="role-name">
+                                    Student
+                                </span>
+
+                                <span class="role-description">
+                                    Currently studying and looking for
+                                    opportunities, internships and career guidance.
+                                </span>
+
+                            </label>
+
+                        </div>
+
+
+                        <!-- GRADUATE -->
+
+                        <div class="role-card">
+
+                            <input
+                                type="radio"
+                                id="graduate"
+                                name="role"
+                                value="graduate"
+                            >
+
+                            <label
+                                for="graduate"
+                                class="role-label"
+                            >
+
+                                <div class="role-icon">
+                                    👨‍💻
+                                </div>
+
+                                <span class="role-name">
+                                    Graduate
+                                </span>
+
+                                <span class="role-description">
+                                    Recently graduated and looking for
+                                    jobs and career opportunities.
+                                </span>
+
+                            </label>
+
+                        </div>
+
+
+                        <!-- EMPLOYER -->
+
+                        <div class="role-card">
+
+                            <input
+                                type="radio"
+                                id="employer"
+                                name="role"
+                                value="employer"
+                            >
+
+                            <label
+                                for="employer"
+                                class="role-label"
+                            >
+
+                                <div class="role-icon">
+                                    🏢
+                                </div>
+
+                                <span class="role-name">
+                                    Employer
+                                </span>
+
+                                <span class="role-description">
+                                    Find talented students and graduates
+                                    for your organisation.
+                                </span>
+
+                            </label>
+
+                        </div>
+
+
+                        <!-- LECTURER -->
+
+                        <div class="role-card">
+
+                            <input
+                                type="radio"
+                                id="lecturer"
+                                name="role"
+                                value="lecturer"
+                            >
+
+                            <label
+                                for="lecturer"
+                                class="role-label"
+                            >
+
+                                <div class="role-icon">
+                                    👩‍🏫
+                                </div>
+
+                                <span class="role-name">
+                                    Lecturer
+                                </span>
+
+                                <span class="role-description">
+                                    Monitor and support students,
+                                    projects and career development.
+                                </span>
+
+                            </label>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- =========================
+                     STUDENT / GRADUATE FIELDS
+                ========================== -->
+
+                <div
+                    id="studentFields"
+                    class="role-fields active"
+                >
+
+                    <div class="form-section">
+
+                        <div class="section-title">
+                            Education Information
+                        </div>
+
+                        <div class="form-grid">
+
+                            <div class="input-group">
+
+                                <label for="qualification">
+                                    Qualification
+                                    <span class="required">*</span>
+                                </label>
+
+                                <input
+                                    type="text"
+                                    id="qualification"
+                                    name="qualification"
+                                    placeholder="e.g. Bachelor of Information Technology"
+                                    required
+                                >
+
+                            </div>
+
+
+                            <div class="input-group">
+
+                                <label for="institution">
+                                    Institution
+                                    <span class="required">*</span>
+                                </label>
+
+                                <input
+                                    type="text"
+                                    id="institution"
+                                    name="institution"
+                                    placeholder="e.g. Richfield"
+                                    required
+                                >
+
+                            </div>
+
+
+                            <div class="input-group">
+
+                                <label for="field">
+                                    Field of Study
+                                    <span class="required">*</span>
+                                </label>
+
+                                <input
+                                    type="text"
+                                    id="field"
+                                    name="field"
+                                    placeholder="e.g. Information Technology"
+                                    required
+                                >
+
+                            </div>
+
+
+                            <div class="input-group">
+
+                                <label for="graduationYear">
+                                    Graduation Year
+                                </label>
+
+                                <input
+                                    type="number"
+                                    id="graduationYear"
+                                    name="graduationYear"
+                                    placeholder="e.g. 2029"
+                                    min="1900"
+                                    max="2100"
+                                >
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- STUDENT PREFERENCES -->
+
+                    <div class="form-section">
+
+                        <div class="section-title">
+                            Career Information
+                        </div>
+
+                        <div class="form-grid">
+
+                            <div class="input-group full">
+
+                                <label for="skills">
+                                    Skills
+                                </label>
+
+                                <input
+                                    type="text"
+                                    id="skills"
+                                    name="skills"
+                                    placeholder="e.g. Python, HTML, CSS, JavaScript"
+                                >
+
+                            </div>
+
+
+                            <div class="input-group full">
+
+                                <label for="experience">
+                                    Experience
+                                </label>
+
+                                <input
+                                    type="text"
+                                    id="experience"
+                                    name="experience"
+                                    placeholder="Describe your work or project experience"
+                                >
+
+                            </div>
+
+
+                            <div class="input-group">
+
+                                <label for="jobType">
+                                    Preferred Job Type
+                                </label>
+
+                                <select
+                                    id="jobType"
+                                    name="jobType"
+                                >
+
+                                    <option value="">
+                                        Select one
+                                    </option>
+
+                                    <option value="internship">
+                                        Internship
+                                    </option>
+
+                                    <option value="graduate">
+                                        Graduate Programme
+                                    </option>
+
+                                    <option value="part-time">
+                                        Part-time
+                                    </option>
+
+                                    <option value="full-time">
+                                        Full-time
+                                    </option>
+
+                                </select>
+
+                            </div>
+
+
+                            <div class="input-group">
+
+                                <label for="workMode">
+                                    Work Preference
+                                </label>
+
+                                <select
+                                    id="workMode"
+                                    name="workMode"
+                                >
+
+                                    <option value="">
+                                        Select one
+                                    </option>
+
+                                    <option value="remote">
+                                        Remote
+                                    </option>
+
+                                    <option value="hybrid">
+                                        Hybrid
+                                    </option>
+
+                                    <option value="onsite">
+                                        On-site
+                                    </option>
+
+                                    <option value="flexible">
+                                        Flexible
+                                    </option>
+
+                                </select>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- =========================
+                     EMPLOYER FIELDS
+                ========================== -->
+
+                <div
+                    id="employerFields"
+                    class="role-fields"
+                >
+
+                    <div class="form-section">
+
+                        <div class="section-title">
+                            Company Information
+                        </div>
+
+                        <div class="form-grid">
+
+                            <div class="input-group">
+
+                                <label for="companyName">
+                                    Company Name
+                                    <span class="required">*</span>
+                                </label>
+
+                                <input
+                                    type="text"
+                                    id="companyName"
+                                    name="companyName"
+                                    placeholder="e.g. Gradurat Technologies"
+                                >
+
+                            </div>
+
+
+                            <div class="input-group">
+
+                                <label for="industry">
+                                    Industry
+                                    <span class="required">*</span>
+                                </label>
+
+                                <input
+                                    type="text"
+                                    id="industry"
+                                    name="industry"
+                                    placeholder="e.g. Technology"
+                                >
+
+                            </div>
+
+
+                            <div class="input-group">
+
+                                <label for="companyLocation">
+                                    Company Location
+                                </label>
+
+                                <input
+                                    type="text"
+                                    id="companyLocation"
+                                    name="companyLocation"
+                                    placeholder="e.g. Johannesburg"
+                                >
+
+                            </div>
+
+
+                            <div class="input-group">
+
+                                <label for="website">
+                                    Website
+                                </label>
+
+                                <input
+                                    type="url"
+                                    id="website"
+                                    name="website"
+                                    placeholder="https://example.com"
+                                >
+
+                            </div>
+
+
+                            <div class="input-group full">
+
+                                <label for="companyDescription">
+                                    Company Description
+                                </label>
+
+                                <input
+                                    type="text"
+                                    id="companyDescription"
+                                    name="companyDescription"
+                                    placeholder="Tell graduates about your organisation"
+                                >
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- =========================
+                     LECTURER FIELDS
+                ========================== -->
+
+                <div
+                    id="lecturerFields"
+                    class="role-fields"
+                >
+
+                    <div class="form-section">
+
+                        <div class="section-title">
+                            Lecturer Information
+                        </div>
+
+                        <div class="form-grid">
+
+                            <div class="input-group">
+
+                                <label for="lecturerInstitution">
+                                    Institution
+                                    <span class="required">*</span>
+                                </label>
+
+                                <input
+                                    type="text"
+                                    id="lecturerInstitution"
+                                    name="lecturerInstitution"
+                                    placeholder="e.g. Richfield"
+                                >
+
+                            </div>
+
+
+                            <div class="input-group">
+
+                                <label for="department">
+                                    Department
+                                    <span class="required">*</span>
+                                </label>
+
+                                <input
+                                    type="text"
+                                    id="department"
+                                    name="department"
+                                    placeholder="e.g. Information Technology"
+                                >
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- =========================
+                     SUBMIT
+                ========================== -->
+
+                <button
+                    type="submit"
+                    class="submit-button"
+                    id="submitButton"
+                >
+                    Create Account
+                </button>
+
+            </form>
+
+
+            <!-- =========================
+                 LOGIN
+            ========================== -->
+
+            <div class="login-text">
+
+                Already have an account?
+
+                <a href="login.html">
+                    Sign in
+                </a>
+
             </div>
 
-            <a href="employer-register.html" class="role-button">
-              Continue as Employer
-              <span>→</span>
-            </a>
-          </div>
+
+            <!-- ADMIN LOGIN -->
+
+            <div class="admin-link">
+
+                <a href="admin-login.html">
+                    Administrator Login →
+                </a>
+
+            </div>
+
         </div>
 
-        <p class="login">
-          Already have an account?
-          <a href="home.html">Return to home</a>
-        </p>
-      </div>
     </main>
-  </body>
+
+
+    <!-- =========================
+         JAVASCRIPT
+    ========================== -->
+
+    <script>
+
+        const form = document.getElementById("registerForm");
+
+        const message = document.getElementById("message");
+
+        const submitButton =
+            document.getElementById("submitButton");
+
+
+        /*
+         * ROLE SECTIONS
+         */
+
+        const roleInputs =
+            document.querySelectorAll(
+                'input[name="role"]'
+            );
+
+        const studentFields =
+            document.getElementById("studentFields");
+
+        const employerFields =
+            document.getElementById("employerFields");
+
+        const lecturerFields =
+            document.getElementById("lecturerFields");
+
+
+        /*
+         * SHOW MESSAGE
+         */
+
+        function showMessage(text, type) {
+
+            message.textContent = text;
+
+            message.className =
+                "message show " + type;
+
+        }
+
+
+        /*
+         * GET SELECTED ROLE
+         */
+
+        function getSelectedRole() {
+
+            const selected =
+                document.querySelector(
+                    'input[name="role"]:checked'
+                );
+
+            return selected
+                ? selected.value
+                : null;
+        }
+
+
+        /*
+         * CHANGE ROLE
+         */
+
+        function updateRoleFields() {
+
+            const role = getSelectedRole();
+
+            studentFields.classList.remove("active");
+
+            employerFields.classList.remove("active");
+
+            lecturerFields.classList.remove("active");
+
+
+            /*
+             * STUDENT / GRADUATE
+             */
+
+            if (
+                role === "student" ||
+                role === "graduate"
+            ) {
+
+                studentFields.classList.add("active");
+
+                document
+                    .getElementById("qualification")
+                    .required = true;
+
+                document
+                    .getElementById("institution")
+                    .required = true;
+
+                document
+                    .getElementById("field")
+                    .required = true;
+
+            }
+
+
+            /*
+             * EMPLOYER
+             */
+
+            if (role === "employer") {
+
+                employerFields.classList.add("active");
+
+                document
+                    .getElementById("companyName")
+                    .required = true;
+
+                document
+                    .getElementById("industry")
+                    .required = true;
+
+            }
+
+
+            /*
+             * LECTURER
+             */
+
+            if (role === "lecturer") {
+
+                lecturerFields.classList.add("active");
+
+                document
+                    .getElementById("lecturerInstitution")
+                    .required = true;
+
+                document
+                    .getElementById("department")
+                    .required = true;
+
+            }
+
+        }
+
+
+        /*
+         * ROLE LISTENERS
+         */
+
+        roleInputs.forEach((input) => {
+
+            input.addEventListener(
+                "change",
+                updateRoleFields
+            );
+
+        });
+
+
+        /*
+         * SUBMIT REGISTRATION
+         */
+
+        form.addEventListener(
+            "submit",
+            async function(event) {
+
+                event.preventDefault();
+
+                showMessage("", "");
+
+                const role = getSelectedRole();
+
+
+                /*
+                 * PASSWORD CHECK
+                 */
+
+                const password =
+                    document.getElementById(
+                        "password"
+                    ).value;
+
+                const confirmPassword =
+                    document.getElementById(
+                        "confirmPassword"
+                    ).value;
+
+
+                if (password.length < 8) {
+
+                    showMessage(
+                        "Password must be at least 8 characters long.",
+                        "error"
+                    );
+
+                    return;
+                }
+
+
+                if (password !== confirmPassword) {
+
+                    showMessage(
+                        "Passwords do not match.",
+                        "error"
+                    );
+
+                    return;
+                }
+
+
+                /*
+                 * BASIC VALUES
+                 */
+
+                const firstName =
+                    document.getElementById(
+                        "firstName"
+                    ).value.trim();
+
+                const lastName =
+                    document.getElementById(
+                        "lastName"
+                    ).value.trim();
+
+                const email =
+                    document.getElementById(
+                        "email"
+                    ).value.trim()
+                    .toLowerCase();
+
+
+                /*
+                 * DISABLE BUTTON
+                 */
+
+                submitButton.disabled = true;
+
+                submitButton.textContent =
+                    "Creating Account...";
+
+
+                try {
+
+                    /*
+                     * ==================================
+                     * STUDENT / GRADUATE
+                     * ==================================
+                     */
+
+                    if (
+                        role === "student" ||
+                        role === "graduate"
+                    ) {
+
+                        const skillsText =
+                            document.getElementById(
+                                "skills"
+                            ).value;
+
+                        const skills =
+                            skillsText
+                                .split(",")
+                                .map(skill => skill.trim())
+                                .filter(Boolean);
+
+
+                        const graduationYearValue =
+                            document.getElementById(
+                                "graduationYear"
+                            ).value;
+
+
+                        const payload = {
+
+                            firstName: firstName,
+
+                            lastName: lastName,
+
+                            email: email,
+
+                            qualification:
+                                document.getElementById(
+                                    "qualification"
+                                ).value.trim(),
+
+                            institution:
+                                document.getElementById(
+                                    "institution"
+                                ).value.trim(),
+
+                            field:
+                                document.getElementById(
+                                    "field"
+                                ).value.trim(),
+
+                            skills: skills,
+
+                            location:
+                                document.getElementById(
+                                    "location"
+                                ).value.trim(),
+
+                            graduationYear:
+                                graduationYearValue
+                                    ? Number(graduationYearValue)
+                                    : null,
+
+                            experience:
+                                document.getElementById(
+                                    "experience"
+                                ).value.trim(),
+
+                            jobType:
+                                document.getElementById(
+                                    "jobType"
+                                ).value,
+
+                            workMode:
+                                document.getElementById(
+                                    "workMode"
+                                ).value
+
+                        };
+
+
+                        const response =
+                            await fetch(
+                                "/api/students",
+                                {
+                                    method: "POST",
+
+                                    headers: {
+                                        "Content-Type":
+                                            "application/json"
+                                    },
+
+                                    body:
+                                        JSON.stringify(
+                                            payload
+                                        )
+                                }
+                            );
+
+
+                        const result =
+                            await response.json();
+
+
+                        if (!response.ok) {
+
+                            throw new Error(
+                                result.error ||
+                                "Could not create student account."
+                            );
+
+                        }
+
+
+                        /*
+                         * SAVE USER
+                         */
+
+                        const user = {
+
+                            fullName:
+                                `${firstName} ${lastName}`,
+
+                            email: email,
+
+                            role: role,
+
+                            studentId:
+                                result.student?.id || null
+
+                        };
+
+
+                        localStorage.setItem(
+                            "graduratUser",
+                            JSON.stringify(user)
+                        );
+
+
+                        if (
+                            result.student?.id
+                        ) {
+
+                            localStorage.setItem(
+                                "graduRatStudentId",
+                                result.student.id
+                            );
+
+                        }
+
+
+                        showMessage(
+                            "Account created successfully! Redirecting...",
+                            "success"
+                        );
+
+
+                        setTimeout(
+                            () => {
+
+                                window.location.href =
+                                    "dashboard.html";
+
+                            },
+                            800
+                        );
+
+
+                        return;
+
+                    }
+
+
+                    /*
+                     * ==================================
+                     * EMPLOYER
+                     * ==================================
+                     */
+
+                    if (role === "employer") {
+
+                        const companyName =
+                            document.getElementById(
+                                "companyName"
+                            ).value.trim();
+
+                        const industry =
+                            document.getElementById(
+                                "industry"
+                            ).value.trim();
+
+                        const companyLocation =
+                            document.getElementById(
+                                "companyLocation"
+                            ).value.trim();
+
+                        const website =
+                            document.getElementById(
+                                "website"
+                            ).value.trim();
+
+                        const companyDescription =
+                            document.getElementById(
+                                "companyDescription"
+                            ).value.trim();
+
+
+                        const payload = {
+
+                            companyName:
+                                companyName,
+
+                            email:
+                                email,
+
+                            industry:
+                                industry,
+
+                            location:
+                                companyLocation,
+
+                            website:
+                                website,
+
+                            companyDescription:
+                                companyDescription,
+
+                            contactPersonName:
+                                `${firstName} ${lastName}`,
+
+                            contactEmail:
+                                email
+
+                        };
+
+
+                        const response =
+                            await fetch(
+                                "/api/employers",
+                                {
+                                    method: "POST",
+
+                                    headers: {
+                                        "Content-Type":
+                                            "application/json"
+                                    },
+
+                                    body:
+                                        JSON.stringify(
+                                            payload
+                                        )
+                                }
+                            );
+
+
+                        const result =
+                            await response.json();
+
+
+                        if (!response.ok) {
+
+                            throw new Error(
+                                result.error ||
+                                "Could not create employer account."
+                            );
+
+                        }
+
+
+                        /*
+                         * SAVE USER
+                         */
+
+                        const user = {
+
+                            fullName:
+                                `${firstName} ${lastName}`,
+
+                            email:
+                                email,
+
+                            role:
+                                "employer",
+
+                            companyName:
+                                companyName,
+
+                            employerId:
+                                result.employer?.id ||
+                                null
+
+                        };
+
+
+                        localStorage.setItem(
+                            "graduratUser",
+                            JSON.stringify(user)
+                        );
+
+
+                        if (
+                            result.employer?.id
+                        ) {
+
+                            localStorage.setItem(
+                                "graduRatEmployerId",
+                                result.employer.id
+                            );
+
+                        }
+
+
+                        showMessage(
+                            "Employer account created successfully! Redirecting...",
+                            "success"
+                        );
+
+
+                        setTimeout(
+                            () => {
+
+                                window.location.href =
+                                    "employer-dashboard.html";
+
+                            },
+                            800
+                        );
+
+
+                        return;
+
+                    }
+
+
+                    /*
+                     * ==================================
+                     * LECTURER
+                     * ==================================
+                     *
+                     * Lecturer registration is currently
+                     * saved locally until the lecturer
+                     * database table/API is added.
+                     */
+
+                    if (role === "lecturer") {
+
+                        const institution =
+                            document.getElementById(
+                                "lecturerInstitution"
+                            ).value.trim();
+
+                        const department =
+                            document.getElementById(
+                                "department"
+                            ).value.trim();
+
+
+                        const user = {
+
+                            fullName:
+                                `${firstName} ${lastName}`,
+
+                            email:
+                                email,
+
+                            role:
+                                "lecturer",
+
+                            institution:
+                                institution,
+
+                            department:
+                                department
+
+                        };
+
+
+                        localStorage.setItem(
+                            "graduratUser",
+                            JSON.stringify(user)
+                        );
+
+
+                        showMessage(
+                            "Lecturer account created. Redirecting...",
+                            "success"
+                        );
+
+
+                        setTimeout(
+                            () => {
+
+                                window.location.href =
+                                    "lecturer-dashboard.html";
+
+                            },
+                            800
+                        );
+
+
+                        return;
+
+                    }
+
+                }
+
+                catch (error) {
+
+                    console.error(
+                        "Registration error:",
+                        error
+                    );
+
+                    showMessage(
+                        error.message ||
+                        "Something went wrong while creating your account.",
+                        "error"
+                    );
+
+                }
+
+                finally {
+
+                    submitButton.disabled = false;
+
+                    submitButton.textContent =
+                        "Create Account";
+
+                }
+
+            }
+        );
+
+
+        /*
+         * INITIAL ROLE
+         */
+
+        updateRoleFields();
+
+    </script>
+
+</body>
 </html>

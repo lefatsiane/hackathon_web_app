@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Admin Login | Gradurat</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #020617, #06142f, #0b1f3a);
+            color: white;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ================= NAVBAR ================= */
+
+        header {
+            width: 100%;
+            padding: 20px 7%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: bold;
+            color: white;
+            text-decoration: none;
+        }
+
+        .logo span {
+            color: #3b82f6;
+        }
+
+        .back-home {
+            color: #cbd5e1;
+            text-decoration: none;
+            font-size: 14px;
+            transition: 0.3s;
+        }
+
+        .back-home:hover {
+            color: #60a5fa;
+        }
+
+        /* ================= MAIN ================= */
+
+        main {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 50px 20px;
+        }
+
+        .login-container {
+            width: 100%;
+            max-width: 450px;
+        }
+
+        .admin-badge {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .admin-icon {
+            width: 75px;
+            height: 75px;
+            margin: 0 auto 15px;
+            border-radius: 50%;
+            background: rgba(59, 130, 246, 0.15);
+            border: 1px solid rgba(59, 130, 246, 0.4);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 32px;
+        }
+
+        .admin-badge h1 {
+            font-size: 30px;
+            margin-bottom: 8px;
+        }
+
+        .admin-badge p {
+            color: #94a3b8;
+            font-size: 14px;
+        }
+
+        /* ================= LOGIN CARD ================= */
+
+        .login-card {
+            background: rgba(15, 23, 42, 0.95);
+            border: 1px solid rgba(96, 165, 250, 0.2);
+            border-radius: 18px;
+            padding: 35px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.4);
+        }
+
+        .form-group {
+            margin-bottom: 22px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: #e2e8f0;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 14px 15px;
+            background: #020617;
+            border: 1px solid #334155;
+            border-radius: 10px;
+            color: white;
+            font-size: 15px;
+            outline: none;
+            transition: 0.3s;
+        }
+
+        .form-group input:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59,130,246,0.12);
+        }
+
+        .password-wrapper {
+            position: relative;
+        }
+
+        .password-wrapper input {
+            padding-right: 75px;
+        }
+
+        .show-password {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #60a5fa;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        /* ================= LOGIN BUTTON ================= */
+
+        .login-btn {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            background: #2563eb;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .login-btn:hover {
+            background: #1d4ed8;
+            transform: translateY(-1px);
+        }
+
+        /* ================= MESSAGE ================= */
+
+        .message {
+            display: none;
+            padding: 12px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        .error {
+            display: block;
+            background: rgba(239,68,68,0.12);
+            border: 1px solid rgba(239,68,68,0.3);
+            color: #fca5a5;
+        }
+
+        .success {
+            display: block;
+            background: rgba(34,197,94,0.12);
+            border: 1px solid rgba(34,197,94,0.3);
+            color: #86efac;
+        }
+
+        /* ================= SECURITY NOTE ================= */
+
+        .security-note {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 10px;
+            background: rgba(30,41,59,0.7);
+            border: 1px solid rgba(148,163,184,0.12);
+            color: #94a3b8;
+            font-size: 12px;
+            line-height: 1.6;
+            text-align: center;
+        }
+
+        /* ================= FOOTER ================= */
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: #64748b;
+            font-size: 12px;
+        }
+
+        /* ================= MOBILE ================= */
+
+        @media (max-width: 600px) {
+
+            header {
+                padding: 18px 5%;
+            }
+
+            .logo {
+                font-size: 24px;
+            }
+
+            main {
+                padding: 30px 15px;
+            }
+
+            .login-card {
+                padding: 25px 20px;
+            }
+
+            .admin-badge h1 {
+                font-size: 26px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ================= NAVBAR ================= -->
+
+    <header>
+
+        <a href="index.html" class="logo">
+            Gradu<span>Rat</span>
+        </a>
+
+        <a href="index.html" class="back-home">
+            ← Back to Home
+        </a>
+
+    </header>
+
+
+    <!-- ================= MAIN ================= -->
+
+    <main>
+
+        <div class="login-container">
+
+            <!-- Admin Heading -->
+
+            <div class="admin-badge">
+
+                <div class="admin-icon">
+                    🛡️
+                </div>
+
+                <h1>Admin Login</h1>
+
+                <p>
+                    Access the Gradurat administration portal
+                </p>
+
+            </div>
+
+
+            <!-- Login Card -->
+
+            <div class="login-card">
+
+                <div id="message" class="message"></div>
+
+
+                <form id="adminLoginForm">
+
+                    <!-- Email -->
+
+                    <div class="form-group">
+
+                        <label for="email">
+                            Admin Email
+                        </label>
+
+                        <input
+                            type="email"
+                            id="email"
+                            placeholder="Enter admin email"
+                            required
+                        >
+
+                    </div>
+
+
+                    <!-- Password -->
+
+                    <div class="form-group">
+
+                        <label for="password">
+                            Password
+                        </label>
+
+                        <div class="password-wrapper">
+
+                            <input
+                                type="password"
+                                id="password"
+                                placeholder="Enter password"
+                                required
+                            >
+
+                            <button
+                                type="button"
+                                class="show-password"
+                                onclick="togglePassword()"
+                            >
+                                Show
+                            </button>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- Login Button -->
+
+                    <button
+                        type="submit"
+                        class="login-btn"
+                    >
+                        Login to Admin Portal
+                    </button>
+
+                </form>
+
+
+                <!-- Security Information -->
+
+                <div class="security-note">
+
+                    🛡️ <strong>Admin Access</strong><br>
+
+                    This area is restricted to authorised
+                    Gradurat administrators only.
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </main>
+
+
+    <!-- ================= FOOTER ================= -->
+
+    <footer>
+
+        © 2026 Gradurat. Admin Portal.
+
+    </footer>
+
+
+    <!-- ================= JAVASCRIPT ================= -->
+
+    <script>
+
+        const adminLoginForm =
+            document.getElementById("adminLoginForm");
+
+        const message =
+            document.getElementById("message");
+
+
+        // Demo admin credentials
+        // We will connect this to the real
+        // admin system later.
+
+        const ADMIN_EMAIL = "admin@gradurat.com";
+        const ADMIN_PASSWORD = "Admin123";
+
+
+        // ==============================
+        // SHOW / HIDE PASSWORD
+        // ==============================
+
+        function togglePassword() {
+
+            const password =
+                document.getElementById("password");
+
+            const button =
+                document.querySelector(".show-password");
+
+
+            if (password.type === "password") {
+
+                password.type = "text";
+
+                button.textContent = "Hide";
+
+            } else {
+
+                password.type = "password";
+
+                button.textContent = "Show";
+
+            }
+
+        }
+
+
+        // ==============================
+        // ADMIN LOGIN
+        // ==============================
+
+        adminLoginForm.addEventListener("submit", function(event) {
+
+            event.preventDefault();
+
+
+            const email =
+                document.getElementById("email").value.trim();
+
+            const password =
+                document.getElementById("password").value;
+
+
+            // Clear previous message
+
+            message.className = "message";
+
+            message.textContent = "";
+
+
+            // Check credentials
+
+            if (
+                email === ADMIN_EMAIL &&
+                password === ADMIN_PASSWORD
+            ) {
+
+                message.textContent =
+                    "Login successful! Redirecting...";
+
+                message.classList.add("success");
+
+
+                // Save admin login
+
+                localStorage.setItem(
+                    "graduratAdminLoggedIn",
+                    "true"
+                );
+
+
+                localStorage.setItem(
+                    "graduratAdmin",
+                    JSON.stringify({
+                        email: email,
+                        role: "admin"
+                    })
+                );
+
+
+                // Redirect
+
+                setTimeout(function() {
+
+                    window.location.href =
+                        "admin-dashboard.html";
+
+                }, 1000);
+
+
+            } else {
+
+                message.textContent =
+                    "Incorrect admin email or password.";
+
+                message.classList.add("error");
+
+            }
+
+        });
+
+    </script>
+
+</body>
+</html>

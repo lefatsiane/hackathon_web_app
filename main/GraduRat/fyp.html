@@ -1,0 +1,1624 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>FYP | Gradurat</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet"
+    >
+
+    <style>
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Inter", sans-serif;
+            background: #05070d;
+            color: white;
+            min-height: 100vh;
+        }
+
+        /* ================= NAVBAR ================= */
+
+        nav {
+            height: 75px;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            padding: 0 6%;
+
+            background: rgba(5, 7, 13, 0.96);
+
+            border-bottom: 1px solid rgba(22, 140, 255, 0.15);
+
+            position: sticky;
+            top: 0;
+
+            z-index: 100;
+        }
+
+        .logo img {
+            width: 145px;
+            height: auto;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+        }
+
+        .nav-links a {
+            color: #9ca6b5;
+            text-decoration: none;
+
+            font-size: 14px;
+
+            transition: 0.3s;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: #168cff;
+        }
+
+        .profile-btn {
+            border: 1px solid #168cff;
+
+            padding: 10px 18px;
+
+            border-radius: 8px;
+
+            color: white !important;
+        }
+
+        .profile-btn:hover {
+            background: #168cff;
+        }
+
+
+        /* ================= PAGE ================= */
+
+        .page {
+            width: 90%;
+            max-width: 1000px;
+
+            margin: auto;
+
+            padding: 55px 0 80px;
+
+            text-align: center;
+        }
+
+
+        .badge {
+            display: inline-block;
+
+            padding: 8px 15px;
+
+            border-radius: 30px;
+
+            background: rgba(22, 140, 255, 0.1);
+
+            border: 1px solid rgba(22, 140, 255, 0.3);
+
+            color: #168cff;
+
+            font-size: 12px;
+            font-weight: 700;
+
+            margin-bottom: 18px;
+        }
+
+
+        h1 {
+            font-size: clamp(35px, 6vw, 55px);
+
+            margin-bottom: 14px;
+        }
+
+        h1 span {
+            color: #168cff;
+        }
+
+
+        .intro {
+            color: #8994a4;
+
+            max-width: 650px;
+
+            margin: auto;
+
+            font-size: 15px;
+
+            line-height: 1.7;
+        }
+
+
+        /* ================= FYP AREA ================= */
+
+        .fyp-area {
+            width: 100%;
+
+            max-width: 500px;
+
+            margin: 40px auto 0;
+        }
+
+
+        /* ================= PROFILE CARD ================= */
+
+        .profile-card {
+            width: 100%;
+
+            background: #0b1019;
+
+            border: 1px solid #1d2938;
+
+            border-radius: 20px;
+
+            overflow: hidden;
+
+            text-align: left;
+
+            box-shadow:
+                0 20px 60px rgba(0, 0, 0, 0.35);
+
+            transition: 0.25s;
+        }
+
+
+        .profile-card.swiping-left {
+            transform: translateX(-120%) rotate(-15deg);
+
+            opacity: 0;
+        }
+
+
+        .profile-card.swiping-right {
+            transform: translateX(120%) rotate(15deg);
+
+            opacity: 0;
+        }
+
+
+        /* ================= PHOTO ================= */
+
+        .profile-photo {
+            height: 340px;
+
+            position: relative;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #0d1724,
+                    #07101c
+                );
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            overflow: hidden;
+        }
+
+
+        .profile-photo img {
+            width: 100%;
+            height: 100%;
+
+            object-fit: cover;
+        }
+
+
+        .photo-placeholder {
+            width: 110px;
+            height: 110px;
+
+            border-radius: 50%;
+
+            background: rgba(22, 140, 255, 0.1);
+
+            border: 2px solid rgba(22, 140, 255, 0.3);
+
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+
+            font-size: 45px;
+
+            color: #168cff;
+        }
+
+
+        /* ================= MATCH ================= */
+
+        .match-badge {
+            position: absolute;
+
+            top: 18px;
+            right: 18px;
+
+            background: rgba(5, 7, 13, 0.88);
+
+            border: 1px solid rgba(22, 140, 255, 0.4);
+
+            color: #168cff;
+
+            padding: 9px 13px;
+
+            border-radius: 10px;
+
+            font-size: 13px;
+
+            font-weight: 700;
+
+            backdrop-filter: blur(8px);
+        }
+
+
+        .match-badge.pending {
+            color: #8994a4;
+
+            border-color: #334155;
+        }
+
+
+        /* ================= CARD CONTENT ================= */
+
+        .profile-content {
+            padding: 25px;
+        }
+
+
+        .profile-content h2 {
+            font-size: 25px;
+
+            margin-bottom: 7px;
+        }
+
+
+        .profile-type {
+            color: #168cff;
+
+            font-size: 13px;
+
+            font-weight: 600;
+
+            margin-bottom: 20px;
+        }
+
+
+        .description {
+            color: #919baa;
+
+            font-size: 14px;
+
+            line-height: 1.7;
+
+            margin-bottom: 22px;
+        }
+
+
+        /* ================= INFO ================= */
+
+        .info-section {
+            margin-bottom: 20px;
+        }
+
+
+        .info-section h4 {
+            font-size: 11px;
+
+            color: #697587;
+
+            text-transform: uppercase;
+
+            letter-spacing: 0.8px;
+
+            margin-bottom: 9px;
+        }
+
+
+        .info-section p {
+            color: #c2c9d3;
+
+            font-size: 13px;
+
+            line-height: 1.6;
+        }
+
+
+        /* ================= TAGS ================= */
+
+        .tags {
+            display: flex;
+
+            flex-wrap: wrap;
+
+            gap: 7px;
+        }
+
+
+        .tag {
+            padding: 7px 10px;
+
+            background: rgba(22, 140, 255, 0.08);
+
+            border: 1px solid rgba(22, 140, 255, 0.16);
+
+            border-radius: 7px;
+
+            color: #9fcfff;
+
+            font-size: 11px;
+        }
+
+
+        /* ================= CV ================= */
+
+        .cv-locked {
+            display: flex;
+
+            align-items: center;
+
+            gap: 10px;
+
+            padding: 13px;
+
+            background: #080d15;
+
+            border: 1px solid #1d2938;
+
+            border-radius: 9px;
+
+            color: #6f7b8b;
+
+            font-size: 12px;
+        }
+
+
+        /* ================= ACTIONS ================= */
+
+        .actions {
+            display: flex;
+
+            justify-content: center;
+
+            align-items: center;
+
+            gap: 22px;
+
+            margin-top: 25px;
+        }
+
+
+        .action-btn {
+            border-radius: 50%;
+
+            width: 62px;
+            height: 62px;
+
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+
+            cursor: pointer;
+
+            font-size: 23px;
+
+            transition: 0.25s;
+
+            background: #0b1019;
+
+            font-family: inherit;
+        }
+
+
+        .pass-btn {
+            border: 1px solid #354052;
+
+            color: #a0a9b6;
+        }
+
+
+        .pass-btn:hover {
+            border-color: #ef4444;
+
+            color: #ef4444;
+
+            transform: scale(1.08);
+        }
+
+
+        .interest-btn {
+            border: 1px solid #168cff;
+
+            color: #168cff;
+
+            width: 70px;
+            height: 70px;
+        }
+
+
+        .interest-btn:hover {
+            background: #168cff;
+
+            color: white;
+
+            transform: scale(1.08);
+
+            box-shadow:
+                0 0 30px rgba(22, 140, 255, 0.25);
+        }
+
+
+        /* ================= EMPTY ================= */
+
+        .empty-state {
+            display: none;
+
+            background: #0b1019;
+
+            border: 1px dashed #263446;
+
+            border-radius: 18px;
+
+            padding: 60px 25px;
+        }
+
+
+        .empty-icon {
+            font-size: 45px;
+
+            margin-bottom: 15px;
+        }
+
+
+        .empty-state h2 {
+            margin-bottom: 10px;
+        }
+
+
+        .empty-state p {
+            color: #778292;
+
+            font-size: 14px;
+
+            line-height: 1.7;
+        }
+
+
+        /* ================= STATUS ================= */
+
+        .status-message {
+            min-height: 24px;
+
+            margin-top: 20px;
+
+            color: #168cff;
+
+            font-size: 13px;
+
+            font-weight: 600;
+        }
+
+
+        /* ================= FOOTER ================= */
+
+        footer {
+            border-top: 1px solid #121d29;
+
+            padding: 30px;
+
+            text-align: center;
+
+            color: #596575;
+
+            font-size: 12px;
+        }
+
+
+        /* ================= RESPONSIVE ================= */
+
+        @media (max-width: 650px) {
+
+            nav {
+                padding: 0 4%;
+            }
+
+            .nav-links {
+                gap: 12px;
+            }
+
+            .nav-links a:not(.profile-btn) {
+                display: none;
+            }
+
+            .page {
+                padding-top: 40px;
+            }
+
+            .profile-photo {
+                height: 290px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<!-- ================= NAVBAR ================= -->
+
+<nav>
+
+    <div class="logo">
+
+        <img
+            src="logo1.jpg"
+            alt="Gradurat Logo"
+        >
+
+    </div>
+
+
+    <div class="nav-links">
+
+        <a href="dashboard.html">
+            Dashboard
+        </a>
+
+        <a href="careers.html">
+            Career Explorer
+        </a>
+
+        <a href="fyp.html" class="active">
+            FYP
+        </a>
+
+        <a href="profile.html" class="profile-btn">
+            Profile
+        </a>
+
+    </div>
+
+</nav>
+
+
+
+<!-- ================= PAGE ================= -->
+
+<main class="page">
+
+    <div class="badge">
+        FIND YOUR PEOPLE
+    </div>
+
+
+    <h1>
+        Your Future Starts <span>Here.</span>
+    </h1>
+
+
+    <p class="intro">
+
+        Discover people and opportunities that align
+        with your skills, goals and career interests.
+
+        Show interest when you find the right fit.
+
+        A connection is created when the interest is mutual.
+
+    </p>
+
+
+
+    <!-- ================= FYP ================= -->
+
+    <section class="fyp-area">
+
+
+        <!-- PROFILE CARD -->
+
+        <div
+            class="profile-card"
+            id="profileCard"
+            style="display: none;"
+        >
+
+
+            <!-- PHOTO -->
+
+            <div class="profile-photo">
+
+                <div
+                    class="photo-placeholder"
+                    id="photoPlaceholder"
+                >
+                    👤
+                </div>
+
+
+                <img
+                    id="profileImage"
+                    src=""
+                    alt="Profile"
+                    style="display: none;"
+                >
+
+
+                <div
+                    class="match-badge pending"
+                    id="matchBadge"
+                >
+                    Match pending
+                </div>
+
+            </div>
+
+
+
+            <!-- CONTENT -->
+
+            <div class="profile-content">
+
+
+                <h2 id="personName">
+                    Profile
+                </h2>
+
+
+                <div
+                    class="profile-type"
+                    id="personType"
+                >
+                    Profile type
+                </div>
+
+
+                <p
+                    class="description"
+                    id="personDescription"
+                >
+                    Profile information will appear here.
+                </p>
+
+
+
+                <!-- QUALIFICATION -->
+
+                <div
+                    class="info-section"
+                    id="qualificationSection"
+                >
+
+                    <h4>
+                        Qualification
+                    </h4>
+
+                    <p id="personQualification">
+                        Awaiting data
+                    </p>
+
+                </div>
+
+
+
+                <!-- FIELD -->
+
+                <div
+                    class="info-section"
+                    id="fieldSection"
+                >
+
+                    <h4>
+                        Field
+                    </h4>
+
+                    <p id="personField">
+                        Awaiting data
+                    </p>
+
+                </div>
+
+
+
+                <!-- EXPERIENCE -->
+
+                <div class="info-section">
+
+                    <h4>
+                        Experience
+                    </h4>
+
+                    <p id="personExperience">
+                        Awaiting data
+                    </p>
+
+                </div>
+
+
+
+                <!-- SKILLS -->
+
+                <div class="info-section">
+
+                    <h4>
+                        Skills
+                    </h4>
+
+                    <div
+                        class="tags"
+                        id="personSkills"
+                    ></div>
+
+                </div>
+
+
+
+                <!-- INTERESTS -->
+
+                <div class="info-section">
+
+                    <h4>
+                        Interests
+                    </h4>
+
+                    <div
+                        class="tags"
+                        id="personInterests"
+                    ></div>
+
+                </div>
+
+
+
+                <!-- CAREER GOALS -->
+
+                <div class="info-section">
+
+                    <h4>
+                        Career Goals
+                    </h4>
+
+                    <p id="personGoals">
+                        Awaiting data
+                    </p>
+
+                </div>
+
+
+
+                <!-- CV -->
+
+                <div
+                    class="info-section"
+                    id="cvSection"
+                >
+
+                    <h4>
+                        CV
+                    </h4>
+
+
+                    <div class="cv-locked">
+
+                        🔒
+
+                        <span>
+                            CV available after a mutual match
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+            </div>
+
+        </div>
+
+
+
+        <!-- ================= EMPTY STATE ================= -->
+
+        <div
+            class="empty-state"
+            id="emptyState"
+        >
+
+            <div class="empty-icon">
+                🔎
+            </div>
+
+
+            <h2>
+                No profiles available yet
+            </h2>
+
+
+            <p>
+                There are currently no matching profiles
+                available in your FYP.
+
+                New opportunities and people will appear
+                here when the Gradurat backend provides them.
+            </p>
+
+        </div>
+
+
+
+        <!-- ================= ACTIONS ================= -->
+
+        <div
+            class="actions"
+            id="actions"
+            style="display: none;"
+        >
+
+            <button
+                class="action-btn pass-btn"
+                id="passBtn"
+                title="Pass"
+            >
+                ✕
+            </button>
+
+
+            <button
+                class="action-btn interest-btn"
+                id="interestBtn"
+                title="Interested"
+            >
+                ♥
+            </button>
+
+        </div>
+
+
+
+        <div
+            class="status-message"
+            id="statusMessage"
+        ></div>
+
+
+    </section>
+
+</main>
+
+
+
+<footer>
+
+    © 2026 Gradurat.
+    Discover yourself. Discover your future.
+
+</footer>
+
+
+
+<script>
+
+/*
+============================================================
+GRADURAT FYP
+============================================================
+
+This page is BACKEND READY.
+
+There are intentionally NO fake profiles.
+
+The backend should eventually return profiles like:
+
+{
+    id: 15,
+
+    type: "employer",
+
+    name: "Company Name",
+
+    photo: "/uploads/company.jpg",
+
+    description: "...",
+
+    qualification: "...",
+
+    field: "...",
+
+    experience: "...",
+
+    skills: [
+        "JavaScript",
+        "Python",
+        "SQL"
+    ],
+
+    interests: [
+        "Technology",
+        "Innovation"
+    ],
+
+    careerGoals: "...",
+
+    matchScore: null,
+
+    cvAvailable: false
+}
+
+
+For a student/graduate:
+
+{
+    id: 20,
+
+    type: "graduate",
+
+    name: "Student Name",
+
+    photo: "/uploads/photo.jpg",
+
+    qualification: "...",
+
+    field: "...",
+
+    experience: "...",
+
+    skills: [],
+
+    interests: [],
+
+    careerGoals: "...",
+
+    matchScore: null,
+
+    cvAvailable: false
+}
+
+
+============================================================
+BACKEND ENDPOINTS WE WILL CONNECT LATER
+============================================================
+
+GET
+
+/api/fyp
+
+Gets profiles recommended for the current user.
+
+
+POST
+
+/api/fyp/interest
+
+Records that the current user is interested in a profile.
+
+
+POST
+
+/api/fyp/pass
+
+Records that the current user passed on a profile.
+
+
+GET
+
+/api/matches
+
+Gets the user's mutual matches.
+
+
+GET
+
+/api/matches/:id
+
+Gets information about a specific match.
+
+
+============================================================
+*/
+
+
+let profiles = [];
+
+let currentIndex = 0;
+
+
+/* ================= ELEMENTS ================= */
+
+const profileCard =
+    document.getElementById("profileCard");
+
+const emptyState =
+    document.getElementById("emptyState");
+
+const actions =
+    document.getElementById("actions");
+
+const statusMessage =
+    document.getElementById("statusMessage");
+
+const passBtn =
+    document.getElementById("passBtn");
+
+const interestBtn =
+    document.getElementById("interestBtn");
+
+
+
+/* ================= LOAD FYP ================= */
+
+async function loadFYP() {
+
+    try {
+
+        /*
+        ==================================================
+        BACKEND CONNECTION — ADD WHEN API IS READY
+
+        const response =
+            await fetch("/api/fyp");
+
+        if (!response.ok) {
+            throw new Error(
+                "Could not load FYP"
+            );
+        }
+
+        profiles =
+            await response.json();
+
+        currentIndex = 0;
+
+        showCurrentProfile();
+
+        ==================================================
+        */
+
+
+        /*
+        ----------------------------------------------
+        TEMPORARY EMPTY ARRAY
+
+        We DO NOT create fake profiles.
+
+        ----------------------------------------------
+        */
+
+        profiles = [];
+
+        currentIndex = 0;
+
+        showCurrentProfile();
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "FYP loading error:",
+            error
+        );
+
+        profiles = [];
+
+        showCurrentProfile();
+
+    }
+
+}
+
+
+
+/* ================= SHOW PROFILE ================= */
+
+function showCurrentProfile() {
+
+    statusMessage.textContent = "";
+
+
+    if (
+        profiles.length === 0 ||
+        currentIndex >= profiles.length
+    ) {
+
+        profileCard.style.display = "none";
+
+        actions.style.display = "none";
+
+        emptyState.style.display = "block";
+
+        return;
+
+    }
+
+
+    emptyState.style.display = "none";
+
+    profileCard.style.display = "block";
+
+    actions.style.display = "flex";
+
+
+    const profile =
+        profiles[currentIndex];
+
+
+    renderProfile(profile);
+
+}
+
+
+
+/* ================= RENDER PROFILE ================= */
+
+function renderProfile(profile) {
+
+    /*
+    ==============================================
+    BASIC INFORMATION
+    ==============================================
+    */
+
+    document.getElementById(
+        "personName"
+    ).textContent =
+        profile.name ||
+        "Profile";
+
+
+    document.getElementById(
+        "personType"
+    ).textContent =
+        formatProfileType(
+            profile.type
+        );
+
+
+    document.getElementById(
+        "personDescription"
+    ).textContent =
+        profile.description ||
+        "Profile information will appear here.";
+
+
+    /*
+    ==============================================
+    QUALIFICATION
+    ==============================================
+    */
+
+    document.getElementById(
+        "personQualification"
+    ).textContent =
+        profile.qualification ||
+        "Awaiting data";
+
+
+    /*
+    ==============================================
+    FIELD
+    ==============================================
+    */
+
+    document.getElementById(
+        "personField"
+    ).textContent =
+        profile.field ||
+        "Awaiting data";
+
+
+    /*
+    ==============================================
+    EXPERIENCE
+    ==============================================
+    */
+
+    document.getElementById(
+        "personExperience"
+    ).textContent =
+        profile.experience ||
+        "Awaiting data";
+
+
+    /*
+    ==============================================
+    GOALS
+    ==============================================
+    */
+
+    document.getElementById(
+        "personGoals"
+    ).textContent =
+        profile.careerGoals ||
+        "Awaiting data";
+
+
+    /*
+    ==============================================
+    SKILLS
+    ==============================================
+    */
+
+    renderTags(
+        "personSkills",
+        profile.skills
+    );
+
+
+    /*
+    ==============================================
+    INTERESTS
+    ==============================================
+    */
+
+    renderTags(
+        "personInterests",
+        profile.interests
+    );
+
+
+    /*
+    ==============================================
+    PHOTO
+    ==============================================
+    */
+
+    const image =
+        document.getElementById(
+            "profileImage"
+        );
+
+    const placeholder =
+        document.getElementById(
+            "photoPlaceholder"
+        );
+
+
+    if (profile.photo) {
+
+        image.src =
+            profile.photo;
+
+        image.style.display =
+            "block";
+
+        placeholder.style.display =
+            "none";
+
+    }
+
+    else {
+
+        image.style.display =
+            "none";
+
+        placeholder.style.display =
+            "flex";
+
+    }
+
+
+    /*
+    ==============================================
+    MATCH SCORE
+
+    NO FAKE SCORE.
+
+    The backend/AI supplies this later.
+    ==============================================
+    */
+
+    const matchBadge =
+        document.getElementById(
+            "matchBadge"
+        );
+
+
+    if (
+        profile.matchScore !== null &&
+        profile.matchScore !== undefined
+    ) {
+
+        matchBadge.textContent =
+            `${profile.matchScore}% Match`;
+
+        matchBadge.classList.remove(
+            "pending"
+        );
+
+    }
+
+    else {
+
+        matchBadge.textContent =
+            "Match pending";
+
+        matchBadge.classList.add(
+            "pending"
+        );
+
+    }
+
+}
+
+
+
+/* ================= PROFILE TYPE ================= */
+
+function formatProfileType(type) {
+
+    if (!type) {
+        return "Profile";
+    }
+
+
+    if (type === "employer") {
+        return "EMPLOYER";
+    }
+
+
+    if (type === "student") {
+        return "STUDENT";
+    }
+
+
+    if (type === "graduate") {
+        return "GRADUATE";
+    }
+
+
+    return type.toUpperCase();
+
+}
+
+
+
+/* ================= TAGS ================= */
+
+function renderTags(
+    elementId,
+    items
+) {
+
+    const container =
+        document.getElementById(
+            elementId
+        );
+
+
+    container.innerHTML = "";
+
+
+    if (
+        !items ||
+        items.length === 0
+    ) {
+
+        const tag =
+            document.createElement(
+                "span"
+            );
+
+        tag.className =
+            "tag";
+
+        tag.textContent =
+            "Awaiting data";
+
+        container.appendChild(tag);
+
+        return;
+
+    }
+
+
+    items.forEach(item => {
+
+        const tag =
+            document.createElement(
+                "span"
+            );
+
+        tag.className =
+            "tag";
+
+        tag.textContent =
+            item;
+
+        container.appendChild(tag);
+
+    });
+
+}
+
+
+
+/* ================= PASS ================= */
+
+passBtn.addEventListener(
+    "click",
+    async function() {
+
+        await handleDecision(
+            "pass"
+        );
+
+    }
+);
+
+
+
+/* ================= INTEREST ================= */
+
+interestBtn.addEventListener(
+    "click",
+    async function() {
+
+        await handleDecision(
+            "interest"
+        );
+
+    }
+);
+
+
+
+/* ================= DECISION ================= */
+
+async function handleDecision(
+    decision
+) {
+
+    if (
+        !profiles[currentIndex]
+    ) {
+        return;
+    }
+
+
+    const profile =
+        profiles[currentIndex];
+
+
+    /*
+    ==================================================
+    BACKEND CONNECTION
+
+    Eventually:
+
+    await fetch(
+        "/api/fyp/interest",
+        {
+            method: "POST",
+
+            headers: {
+                "Content-Type":
+                    "application/json"
+            },
+
+            body: JSON.stringify({
+                profileId:
+                    profile.id
+            })
+        }
+    );
+
+    ==================================================
+    */
+
+
+    if (decision === "pass") {
+
+        animateCard("left");
+
+        statusMessage.textContent =
+            "Passed";
+
+    }
+
+
+    if (decision === "interest") {
+
+        animateCard("right");
+
+        statusMessage.textContent =
+            "Interest sent";
+
+    }
+
+
+    /*
+    Move to next profile
+    */
+
+    setTimeout(
+        function() {
+
+            currentIndex++;
+
+            showCurrentProfile();
+
+        },
+        300
+    );
+
+}
+
+
+
+/* ================= ANIMATION ================= */
+
+function animateCard(direction) {
+
+    if (direction === "left") {
+
+        profileCard.classList.add(
+            "swiping-left"
+        );
+
+    }
+
+    else {
+
+        profileCard.classList.add(
+            "swiping-right"
+        );
+
+    }
+
+
+    setTimeout(
+        function() {
+
+            profileCard.classList.remove(
+                "swiping-left"
+            );
+
+            profileCard.classList.remove(
+                "swiping-right"
+            );
+
+        },
+        300
+    );
+
+}
+
+
+
+/* ================= START ================= */
+
+loadFYP();
+
+</script>
+
+</body>
+
+</html>
