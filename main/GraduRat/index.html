@@ -164,7 +164,55 @@ a {
     cursor: pointer;
 }
 
+/* =========================================================
+   INTRO VIDEO
+========================================================= */
 
+.intro-video {
+    padding: 110px 8% 90px;
+    background: #030508;
+    border-top: 1px solid #101722;
+    border-bottom: 1px solid #101722;
+}
+
+.video-heading {
+    max-width: 750px;
+    margin: 0 auto 45px;
+    text-align: center;
+}
+
+.video-heading h2 {
+    font-size: 48px;
+    line-height: 1.15;
+    margin: 20px 0;
+    letter-spacing: -2px;
+}
+
+.video-heading h2 span {
+    color: #1683ff;
+}
+
+.video-heading p {
+    color: #788397;
+    font-size: 15px;
+    line-height: 1.8;
+}
+
+.video-wrapper {
+    max-width: 1050px;
+    margin: auto;
+    background: #070a10;
+    border: 1px solid #1e2c44;
+    border-radius: 18px;
+    overflow: hidden;
+    box-shadow: 0 30px 100px rgba(0, 0, 0, 0.6);
+}
+
+.video-wrapper video {
+    width: 100%;
+    display: block;
+    max-height: 590px;
+}
 /* =========================================================
    HERO
 ========================================================= */
@@ -1071,7 +1119,17 @@ footer p,
 
 
 @media(max-width: 600px) {
+    .intro-video {
+    padding: 80px 6%;
+}
 
+.video-heading h2 {
+    font-size: 36px;
+}
+
+.video-wrapper {
+    border-radius: 12px;
+}
     .navbar {
         padding: 0 5%;
     }
@@ -1183,7 +1241,50 @@ footer p,
 
 </header>
 
+<!-- =====================================================
+     GRADURAT INTRO VIDEO
+===================================================== -->
 
+<section class="intro-video">
+
+    <div class="video-heading">
+        <div class="section-label">
+            WELCOME TO GRADURAT
+        </div>
+
+        <h2>
+            See <span>Gradurat</span> in action.
+        </h2>
+
+        <p>
+            Discover how Gradurat connects students, graduates,
+            universities and employers to help shape the future.
+        </p>
+    </div>
+
+    <div class="video-wrapper">
+
+        <!--
+            ADD YOUR VIDEO HERE LATER
+
+            Put your video inside:
+            static/videos/gradurat-demo.mp4
+        -->
+
+        <video controls poster="logo1.jpg">
+
+            <source
+                src="static/videos/gradurat-demo.mp4"
+                type="video/mp4"
+            >
+
+            Your browser does not support video playback.
+
+        </video>
+
+    </div>
+
+</section>
 
 <!-- =====================================================
      HERO
