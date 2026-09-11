@@ -42,7 +42,7 @@ The project uses Node.js with ES modules, Express for HTTP/static serving, Supab
    database/003_backend_hardening.sql
    ```
 5. Set the required values in `.env`:
-   - `SUPABASE_URL`
+   - `SUPABASE_URL` (the project URL, for example `https://your-project.supabase.co`; do not append `/rest/v1`)
    - `SUPABASE_SERVICE_ROLE_KEY`
    - `GROQ_API_KEY`
    - `GROQ_MODEL` (optional, default `llama-3.1-8b-instant`)

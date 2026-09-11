@@ -1153,11 +1153,25 @@
 
             const role = getSelectedRole();
 
-            studentFields.classList.remove("active");
+            const sections = [
+                studentFields,
+                employerFields,
+                lecturerFields
+            ];
 
-            employerFields.classList.remove("active");
+            sections.forEach((section) => {
+                const isActive = section === studentFields &&
+                    (role === "student" || role === "graduate") ||
+                    section === employerFields && role === "employer" ||
+                    section === lecturerFields && role === "lecturer";
 
-            lecturerFields.classList.remove("active");
+                section.classList.toggle("active", isActive);
+
+                section.querySelectorAll("input, select, textarea").forEach((control) => {
+                    control.disabled = !isActive;
+                    control.required = false;
+                });
+            });
 
 
             /*
@@ -1223,6 +1237,14 @@
 
             }
 
+            const activeSection = sections.find((section) =>
+                section.classList.contains("active")
+            );
+
+            activeSection?.querySelectorAll("input, select, textarea").forEach((control) => {
+                control.disabled = false;
+            });
+
         }
 
 
@@ -1238,6 +1260,8 @@
             );
 
         });
+
+        updateRoleFields();
 
 
         /*

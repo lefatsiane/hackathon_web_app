@@ -854,7 +854,16 @@ app.post("/api/students", async (request, response) => {
 
 app.post("/api/employers", async (request, response) => {
   const body = request.body;
-  if (!body.email || !body.companyName || !body.firstName || !body.lastName) {
+  const contactName = coerceText(
+    body.contactPersonName ?? body.contact_person_name,
+  );
+  const contactParts = contactName?.split(/\s+/) || [];
+  const firstName =
+    coerceText(body.firstName || body.first_name) || contactParts[0];
+  const lastName =
+    coerceText(body.lastName || body.last_name) ||
+    contactParts.slice(1).join(" ");
+  if (!body.email || !body.companyName || !firstName || !lastName) {
     return response
       .status(422)
       .json({ error: "Company name, contact name and email are required." });
@@ -876,10 +885,10 @@ app.post("/api/employers", async (request, response) => {
   const bio = [
     // Employer-specific form fields use the same compatibility approach as
     // student metadata because the initial schema is intentionally compact.
-    body.description,
+    body.description ?? body.companyDescription ?? body.company_description,
     body.industry && `Industry: ${body.industry}`,
     body.companySize && `Company size: ${body.companySize}`,
-    `Contact: ${body.firstName.trim()} ${body.lastName.trim()}`,
+    `Contact: ${firstName} ${lastName}`,
     body.position && `Position: ${body.position}`,
     body.phone && `Phone: ${body.phone}`,
     body.location && `Location: ${body.location}`,
@@ -899,12 +908,14 @@ app.post("/api/employers", async (request, response) => {
       bio: bio || null,
       industry: coerceText(body.industry, null),
       location: coerceText(body.location, null),
-      contact_person_name:
-        `${String(body.firstName).trim()} ${String(body.lastName).trim()}`.trim(),
+      contact_person_name: `${firstName} ${lastName}`.trim(),
       contact_email: contactEmail,
       contact_phone: coerceText(body.phone, null),
       company_size: coerceText(body.companySize, null),
-      company_description: coerceText(body.description, null),
+      company_description: coerceText(
+        body.description ?? body.companyDescription ?? body.company_description,
+        null,
+      ),
       benefits: normalizeSkills(body.benefits),
       verification_status: "unverified",
     })
@@ -1289,7 +1300,8 @@ app.post("/api/opportunities", async (request, response) => {
       .status(422)
       .json({ error: "Opportunity description is required." });
   }
-  if (!body.employer_id) {
+  const employerId = body.employer_id ?? body.employerId;
+  if (!employerId) {
     return response.status(422).json({
       error: "An employer profile is required to publish an opportunity.",
     });
@@ -1415,7 +1427,7 @@ app.post("/api/opportunities", async (request, response) => {
 
   const payload = {
     title: String(body.jobTitle ?? body.title).trim(),
-    employer_id: body.employer_id,
+    employer_id: employerId,
     description,
     required_skills: normalizeSkills(
       body.required_skills ?? body.skills ?? body.requiredSkills,
@@ -1467,7 +1479,7 @@ app.post("/api/opportunities", async (request, response) => {
 app.use((_request, response) =>
   // Unknown browser paths return the landing page; API paths are declared above
   // and therefore never get mistaken for frontend navigation.
-  response.sendFile(path.join(__dirname, "../GraduRat/home.html")),
+  response.sendFile(path.join(__dirname, "../GraduRat/index.html")),
 );
 
 export { app };
