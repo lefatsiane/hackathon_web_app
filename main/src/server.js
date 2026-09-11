@@ -6,6 +6,7 @@ import "dotenv/config";
 import express from "express";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { createHash, randomInt, timingSafeEqual } from "node:crypto";
 import { supabaseServer } from "./lib/supabase-server.js";
 import { scoreSkillsWithGroq } from "./lib/groq.js";
 
