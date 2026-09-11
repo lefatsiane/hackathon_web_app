@@ -60,6 +60,119 @@ const normalizeSkills = (skills = []) => {
 const isValidEmail = (value) => {
   if (!value || !String(value).trim()) return false;
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(value).trim());
+  // ---------------------------------------------------------
+// STUDENT UNIVERSITY EMAIL VERIFICATION
+// ---------------------------------------------------------
+
+const VERIFICATION_CODE_EXPIRY_MINUTES = 10;
+const VERIFICATION_MAX_ATTEMPTS = 5;
+const VERIFICATION_RESEND_COOLDOWN_SECONDS = 60;
+
+const hashVerificationCode = (code) => {
+  return createHash("sha256")
+    .update(String(code))
+    .digest("hex");
+};
+
+const generateVerificationCode = () => {
+  return String(randomInt(100000, 1000000));
+};
+
+const codesMatch = (code, storedHash) => {
+  const incomingHash = Buffer.from(hashVerificationCode(code), "utf8");
+  const databaseHash = Buffer.from(storedHash, "utf8");
+
+  if (incomingHash.length !== databaseHash.length) {
+    return false;
+  }
+
+  return timingSafeEqual(incomingHash, databaseHash);
+};
+
+const isUniversityEmail = (email) => {
+  const domains = String(process.env.UNIVERSITY_EMAIL_DOMAINS || "")
+    .split(",")
+    .map((domain) => domain.trim().toLowerCase())
+    .filter(Boolean);
+
+  // If no domain list has been configured,
+  // allow the email and rely on mailbox verification.
+  if (domains.length === 0) {
+    return true;
+  }
+
+  const emailDomain = email.split("@")[1]?.toLowerCase();
+
+  return domains.some((domain) => {
+    return emailDomain === domain || emailDomain.endsWith(`.${domain}`);
+  });
+};
+};
+const sendVerificationEmail = async (email, code, studentName) => {
+  const apiKey = process.env.RESEND_API_KEY;
+  const fromEmail =
+    process.env.RESEND_FROM_EMAIL || "Gradurat <onboarding@resend.dev>";
+
+  if (!apiKey) {
+    throw new Error("RESEND_API_KEY is not configured.");
+  }
+
+  const response = await fetch("https://api.resend.com/emails", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      from: fromEmail,
+      to: [email],
+      subject: "Gradurat University Email Verification",
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto;">
+          <h2>Verify your university email</h2>
+
+          <p>Hi ${studentName || "Student"},</p>
+
+          <p>
+            You requested to verify your university email address
+            for your Gradurat account.
+          </p>
+
+          <p>Your verification code is:</p>
+
+          <div style="
+            font-size: 32px;
+            font-weight: bold;
+            letter-spacing: 8px;
+            padding: 20px;
+            text-align: center;
+            background: #f3f4f6;
+            border-radius: 10px;
+          ">
+            ${code}
+          </div>
+
+          <p>
+            This code expires in
+            <strong>${VERIFICATION_CODE_EXPIRY_MINUTES} minutes</strong>.
+          </p>
+
+          <p>
+            If you did not request this verification, you can ignore this email.
+          </p>
+
+          <p>— The Gradurat Team</p>
+        </div>
+      `,
+    }),
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(`Email provider error: ${errorText}`);
+  }
+
+  return response.json();
 };
 
 const isValidUrl = (value) => {
