@@ -1,0 +1,1322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Candidate Profile | Gradurat</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Inter", sans-serif;
+            background: #050505;
+            color: #ffffff;
+            min-height: 100vh;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        button {
+            font-family: inherit;
+        }
+
+        /* ================= NAVBAR ================= */
+
+        nav {
+            height: 75px;
+            border-bottom: 1px solid #1b1b1b;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 6%;
+            background: #050505;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo img {
+            width: 42px;
+            height: 42px;
+            border-radius: 10px;
+            object-fit: cover;
+        }
+
+        .logo span {
+            font-size: 22px;
+            font-weight: 800;
+        }
+
+        .logo span::first-letter {
+            color: #168cff;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 28px;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: #a5a5a5;
+            font-size: 14px;
+            transition: 0.2s;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: #168cff;
+        }
+
+        /* ================= PAGE ================= */
+
+        .container {
+            width: min(1100px, 92%);
+            margin: 0 auto;
+            padding: 45px 0 80px;
+        }
+
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #a5a5a5;
+            margin-bottom: 28px;
+            font-size: 14px;
+            transition: 0.2s;
+        }
+
+        .back-btn:hover {
+            color: #168cff;
+        }
+
+        /* ================= LOADING ================= */
+
+        .state {
+            text-align: center;
+            padding: 100px 20px;
+            color: #8c8c8c;
+        }
+
+        .state h2 {
+            color: white;
+            margin-bottom: 10px;
+        }
+
+        .spinner {
+            width: 42px;
+            height: 42px;
+            border: 3px solid #222;
+            border-top-color: #168cff;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* ================= PROFILE HEADER ================= */
+
+        .profile-header {
+            background: linear-gradient(135deg, #0d0d0d, #09121d);
+            border: 1px solid #202020;
+            border-radius: 22px;
+            padding: 35px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 30px;
+        }
+
+        .candidate-main {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+        }
+
+        .candidate-photo {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #168cff;
+            background: #111;
+        }
+
+        .candidate-info h1 {
+            font-size: 30px;
+            margin-bottom: 8px;
+        }
+
+        .candidate-role {
+            color: #168cff;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .candidate-meta {
+            color: #929292;
+            font-size: 14px;
+            line-height: 1.7;
+        }
+
+        /* ================= MATCH ================= */
+
+        .match-box {
+            min-width: 180px;
+            text-align: center;
+            background: #081421;
+            border: 1px solid #123a5c;
+            border-radius: 18px;
+            padding: 22px;
+        }
+
+        .match-label {
+            color: #8ea7bd;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .match-score {
+            font-size: 42px;
+            font-weight: 800;
+            color: #168cff;
+            margin: 5px 0;
+        }
+
+        .match-status {
+            color: #9cb6cb;
+            font-size: 12px;
+        }
+
+        /* ================= GRID ================= */
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 22px;
+            margin-top: 22px;
+        }
+
+        .card {
+            background: #0c0c0c;
+            border: 1px solid #202020;
+            border-radius: 18px;
+            padding: 26px;
+        }
+
+        .card h2 {
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
+
+        .card p {
+            color: #a8a8a8;
+            line-height: 1.7;
+            font-size: 14px;
+        }
+
+        /* ================= INFO ================= */
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 18px;
+        }
+
+        .info-item {
+            background: #101010;
+            border: 1px solid #1d1d1d;
+            border-radius: 12px;
+            padding: 16px;
+        }
+
+        .info-item span {
+            display: block;
+            color: #777;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            margin-bottom: 7px;
+        }
+
+        .info-item strong {
+            font-size: 14px;
+            color: #ddd;
+            font-weight: 500;
+        }
+
+        /* ================= TAGS ================= */
+
+        .tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .tag {
+            background: #0b1b2a;
+            border: 1px solid #16476e;
+            color: #64b5ff;
+            padding: 7px 11px;
+            border-radius: 20px;
+            font-size: 12px;
+        }
+
+        /* ================= MATCH REASONS ================= */
+
+        .match-reason {
+            display: flex;
+            gap: 12px;
+            padding: 13px 0;
+            border-bottom: 1px solid #1c1c1c;
+            color: #aaa;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .match-reason:last-child {
+            border-bottom: none;
+        }
+
+        .reason-icon {
+            color: #168cff;
+            font-size: 16px;
+        }
+
+        /* ================= CV ================= */
+
+        .cv-box {
+            background: #101010;
+            border: 1px solid #242424;
+            border-radius: 14px;
+            padding: 20px;
+        }
+
+        .cv-status {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+
+        .lock-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: #181818;
+            display: grid;
+            place-items: center;
+            font-size: 18px;
+        }
+
+        .cv-status strong {
+            display: block;
+            font-size: 14px;
+            margin-bottom: 4px;
+        }
+
+        .cv-status span {
+            color: #777;
+            font-size: 12px;
+        }
+
+        /* ================= BUTTONS ================= */
+
+        .actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 22px;
+        }
+
+        .btn {
+            border: none;
+            border-radius: 10px;
+            padding: 13px 20px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 13px;
+            transition: 0.2s;
+        }
+
+        .primary-btn {
+            background: #168cff;
+            color: white;
+        }
+
+        .primary-btn:hover {
+            background: #0875df;
+        }
+
+        .secondary-btn {
+            background: #151515;
+            color: #ddd;
+            border: 1px solid #292929;
+        }
+
+        .secondary-btn:hover {
+            border-color: #168cff;
+            color: #168cff;
+        }
+
+        .disabled-btn {
+            background: #151515;
+            color: #555;
+            cursor: not-allowed;
+            border: 1px solid #222;
+        }
+
+        /* ================= CONNECTION ================= */
+
+        .connection-status {
+            margin-top: 15px;
+            padding: 12px;
+            border-radius: 10px;
+            background: #0b1722;
+            color: #7ebcff;
+            font-size: 13px;
+            display: none;
+        }
+
+        /* ================= RESPONSIVE ================= */
+
+        @media (max-width: 850px) {
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .profile-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .match-box {
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 600px) {
+            nav {
+                padding: 0 4%;
+            }
+
+            .nav-links {
+                gap: 12px;
+            }
+
+            .nav-links a {
+                font-size: 12px;
+            }
+
+            .candidate-main {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .actions {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ================= NAVBAR ================= -->
+
+    <nav>
+
+        <a href="index.html" class="logo">
+            <img src="logo1.jpg" alt="Gradurat Logo">
+            <span>Gradurat</span>
+        </a>
+
+        <div class="nav-links">
+            <a href="employer-dashboard.html">Dashboard</a>
+            <a href="fyp.html">Find Your People</a>
+            <a href="matches.html">Matches</a>
+            <a href="settings.html">Settings</a>
+        </div>
+
+    </nav>
+
+
+    <main class="container">
+
+        <a href="javascript:history.back()" class="back-btn">
+            ← Back
+        </a>
+
+
+        <!-- ================= LOADING ================= -->
+
+        <div id="loadingState" class="state">
+            <div class="spinner"></div>
+            <h2>Loading candidate...</h2>
+            <p>Gradurat is retrieving the candidate profile.</p>
+        </div>
+
+
+        <!-- ================= ERROR ================= -->
+
+        <div id="errorState" class="state hidden">
+            <h2>Unable to load candidate</h2>
+            <p id="errorMessage">
+                Something went wrong while retrieving this profile.
+            </p>
+
+            <button class="btn secondary-btn" onclick="loadCandidate()" style="margin-top:20px;">
+                Try Again
+            </button>
+        </div>
+
+
+        <!-- ================= EMPTY ================= -->
+
+        <div id="emptyState" class="state hidden">
+            <h2>Candidate not found</h2>
+            <p>
+                The candidate profile could not be found.
+            </p>
+        </div>
+
+
+        <!-- ================= CANDIDATE ================= -->
+
+        <section id="candidateContent" class="hidden">
+
+            <!-- PROFILE HEADER -->
+
+            <div class="profile-header">
+
+                <div class="candidate-main">
+
+                    <img
+                        id="candidatePhoto"
+                        class="candidate-photo"
+                        src=""
+                        alt="Candidate photo"
+                    >
+
+                    <div class="candidate-info">
+
+                        <h1 id="candidateName">
+                            Candidate
+                        </h1>
+
+                        <div
+                            id="candidateRole"
+                            class="candidate-role">
+                        </div>
+
+                        <div
+                            id="candidateMeta"
+                            class="candidate-meta">
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="match-box">
+
+                    <div class="match-label">
+                        AI Match
+                    </div>
+
+                    <div
+                        id="matchScore"
+                        class="match-score">
+                        --
+                    </div>
+
+                    <div
+                        id="matchStatus"
+                        class="match-status">
+                        Awaiting analysis
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- MAIN CONTENT -->
+
+            <div class="content-grid">
+
+                <div>
+
+                    <!-- PROFESSIONAL INFORMATION -->
+
+                    <div class="card">
+
+                        <h2>Professional Information</h2>
+
+                        <div class="info-grid">
+
+                            <div class="info-item">
+                                <span>Qualification</span>
+                                <strong id="qualification">
+                                    --
+                                </strong>
+                            </div>
+
+                            <div class="info-item">
+                                <span>Institution</span>
+                                <strong id="institution">
+                                    --
+                                </strong>
+                            </div>
+
+                            <div class="info-item">
+                                <span>Field of Study</span>
+                                <strong id="field">
+                                    --
+                                </strong>
+                            </div>
+
+                            <div class="info-item">
+                                <span>Experience</span>
+                                <strong id="experience">
+                                    --
+                                </strong>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- SKILLS -->
+
+                    <div class="card">
+
+                        <h2>Skills</h2>
+
+                        <div
+                            id="skills"
+                            class="tags">
+                        </div>
+
+                    </div>
+
+
+                    <!-- INTERESTS -->
+
+                    <div class="card">
+
+                        <h2>Interests</h2>
+
+                        <div
+                            id="interests"
+                            class="tags">
+                        </div>
+
+                    </div>
+
+
+                    <!-- CAREER GOALS -->
+
+                    <div class="card">
+
+                        <h2>Career Goals</h2>
+
+                        <p id="careerGoals">
+                            --
+                        </p>
+
+                    </div>
+
+
+                    <!-- AI MATCH -->
+
+                    <div class="card">
+
+                        <h2>Why This Candidate Matches</h2>
+
+                        <div id="matchReasons">
+
+                            <div class="match-reason">
+
+                                <span class="reason-icon">
+                                    ✦
+                                </span>
+
+                                <span>
+                                    Match analysis will appear here once the backend AI analysis is complete.
+                                </span>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- SIDEBAR -->
+
+                <div>
+
+                    <!-- EXPERIENCE -->
+
+                    <div class="card">
+
+                        <h2>Experience</h2>
+
+                        <p id="experienceDetails">
+                            --
+                        </p>
+
+                    </div>
+
+
+                    <!-- CV -->
+
+                    <div class="card">
+
+                        <h2>CV</h2>
+
+                        <div class="cv-box">
+
+                            <div class="cv-status">
+
+                                <div class="lock-icon" id="cvIcon">
+                                    🔒
+                                </div>
+
+                                <div>
+
+                                    <strong id="cvTitle">
+                                        CV Locked
+                                    </strong>
+
+                                    <span id="cvDescription">
+                                        CV access becomes available when permitted by Gradurat.
+                                    </span>
+
+                                </div>
+
+                            </div>
+
+                            <button
+                                id="cvButton"
+                                class="btn disabled-btn"
+                                disabled>
+                                CV Locked
+                            </button>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- ACTIONS -->
+
+                    <div class="card">
+
+                        <h2>Professional Connection</h2>
+
+                        <p>
+                            Show interest in this candidate to start the connection process.
+                        </p>
+
+                        <div class="actions">
+
+                            <button
+                                class="btn primary-btn"
+                                id="interestBtn"
+                                onclick="showInterest()">
+                                💙 Interested
+                            </button>
+
+                            <button
+                                class="btn secondary-btn"
+                                onclick="goBack()">
+                                ← Go Back
+                            </button>
+
+                        </div>
+
+                        <div
+                            id="connectionStatus"
+                            class="connection-status">
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <script>
+
+        /* =========================================
+           GET CANDIDATE ID
+        ========================================= */
+
+        const params = new URLSearchParams(window.location.search);
+
+        const candidateId = params.get("id");
+
+
+        /* =========================================
+           LOAD CANDIDATE
+        ========================================= */
+
+        async function loadCandidate() {
+
+            const loadingState =
+                document.getElementById("loadingState");
+
+            const errorState =
+                document.getElementById("errorState");
+
+            const emptyState =
+                document.getElementById("emptyState");
+
+            const candidateContent =
+                document.getElementById("candidateContent");
+
+
+            loadingState.classList.remove("hidden");
+            errorState.classList.add("hidden");
+            emptyState.classList.add("hidden");
+            candidateContent.classList.add("hidden");
+
+
+            if (!candidateId) {
+
+                loadingState.classList.add("hidden");
+                emptyState.classList.remove("hidden");
+
+                return;
+            }
+
+
+            try {
+
+                /*
+                    Backend endpoint:
+
+                    GET /api/candidates/:id
+                */
+
+                const response = await fetch(
+                    `/api/candidates/${candidateId}`
+                );
+
+
+                if (!response.ok) {
+
+                    if (response.status === 404) {
+
+                        loadingState.classList.add("hidden");
+                        emptyState.classList.remove("hidden");
+
+                        return;
+                    }
+
+                    throw new Error(
+                        "Failed to load candidate"
+                    );
+                }
+
+
+                const candidate =
+                    await response.json();
+
+
+                renderCandidate(candidate);
+
+
+                loadingState.classList.add("hidden");
+                candidateContent.classList.remove("hidden");
+
+
+            } catch (error) {
+
+                console.error(error);
+
+                loadingState.classList.add("hidden");
+                errorState.classList.remove("hidden");
+
+                document.getElementById("errorMessage").textContent =
+                    "The candidate could not be loaded. Please check your connection and try again.";
+            }
+        }
+
+
+        /* =========================================
+           RENDER CANDIDATE
+        ========================================= */
+
+        function renderCandidate(candidate) {
+
+            document.getElementById("candidateName").textContent =
+                candidate.name || "Candidate";
+
+
+            document.getElementById("candidateRole").textContent =
+                candidate.role || "";
+
+
+            document.getElementById("candidateMeta").textContent =
+                [
+                    candidate.email,
+                    candidate.location
+                ]
+                .filter(Boolean)
+                .join(" • ");
+
+
+            document.getElementById("qualification").textContent =
+                candidate.qualification || "Not provided";
+
+
+            document.getElementById("institution").textContent =
+                candidate.institution || "Not provided";
+
+
+            document.getElementById("field").textContent =
+                candidate.field || "Not provided";
+
+
+            document.getElementById("experience").textContent =
+                candidate.experience || "Not provided";
+
+
+            document.getElementById("experienceDetails").textContent =
+                candidate.experienceDetails ||
+                candidate.experience ||
+                "No experience information available.";
+
+
+            document.getElementById("careerGoals").textContent =
+                candidate.careerGoals ||
+                "No career goals provided.";
+
+
+            /* PHOTO */
+
+            const photo =
+                document.getElementById("candidatePhoto");
+
+
+            if (candidate.photo) {
+
+                photo.src = candidate.photo;
+
+            } else {
+
+                photo.src =
+                    "https://via.placeholder.com/120?text=Profile";
+
+            }
+
+
+            /* MATCH SCORE */
+
+            const score =
+                document.getElementById("matchScore");
+
+
+            if (
+                candidate.matchScore !== null &&
+                candidate.matchScore !== undefined
+            ) {
+
+                score.textContent =
+                    `${candidate.matchScore}%`;
+
+                document.getElementById("matchStatus").textContent =
+                    "AI compatibility score";
+
+            } else {
+
+                score.textContent = "--";
+
+                document.getElementById("matchStatus").textContent =
+                    "Awaiting analysis";
+            }
+
+
+            /* SKILLS */
+
+            renderTags(
+                "skills",
+                candidate.skills
+            );
+
+
+            /* INTERESTS */
+
+            renderTags(
+                "interests",
+                candidate.interests
+            );
+
+
+            /* MATCH REASONS */
+
+            renderMatchReasons(
+                candidate.matchReasons
+            );
+
+
+            /* CV */
+
+            setupCV(
+                candidate.cvUnlocked,
+                candidate.cvUrl
+            );
+
+
+            /* CONNECTION STATUS */
+
+            if (candidate.connectionStatus) {
+
+                updateConnectionStatus(
+                    candidate.connectionStatus
+                );
+            }
+        }
+
+
+        /* =========================================
+           TAGS
+        ========================================= */
+
+        function renderTags(elementId, tags) {
+
+            const container =
+                document.getElementById(elementId);
+
+            container.innerHTML = "";
+
+
+            if (!Array.isArray(tags) || tags.length === 0) {
+
+                container.innerHTML =
+                    `<span style="color:#666;font-size:13px;">
+                        Not provided
+                    </span>`;
+
+                return;
+            }
+
+
+            tags.forEach(tag => {
+
+                const span =
+                    document.createElement("span");
+
+                span.className = "tag";
+
+                span.textContent = tag;
+
+                container.appendChild(span);
+
+            });
+        }
+
+
+        /* =========================================
+           MATCH REASONS
+        ========================================= */
+
+        function renderMatchReasons(reasons) {
+
+            const container =
+                document.getElementById("matchReasons");
+
+            container.innerHTML = "";
+
+
+            if (!Array.isArray(reasons) || reasons.length === 0) {
+
+                container.innerHTML = `
+                    <div class="match-reason">
+
+                        <span class="reason-icon">
+                            ✦
+                        </span>
+
+                        <span>
+                            Match analysis will appear here once the backend AI analysis is complete.
+                        </span>
+
+                    </div>
+                `;
+
+                return;
+            }
+
+
+            reasons.forEach(reason => {
+
+                const div =
+                    document.createElement("div");
+
+                div.className = "match-reason";
+
+                div.innerHTML = `
+                    <span class="reason-icon">
+                        ✓
+                    </span>
+
+                    <span>
+                        ${escapeHTML(reason)}
+                    </span>
+                `;
+
+                container.appendChild(div);
+
+            });
+        }
+
+
+        /* =========================================
+           CV ACCESS
+        ========================================= */
+
+        function setupCV(cvUnlocked, cvUrl) {
+
+            const button =
+                document.getElementById("cvButton");
+
+            const title =
+                document.getElementById("cvTitle");
+
+            const description =
+                document.getElementById("cvDescription");
+
+            const icon =
+                document.getElementById("cvIcon");
+
+
+            if (cvUnlocked && cvUrl) {
+
+                title.textContent =
+                    "CV Available";
+
+                description.textContent =
+                    "You have permission to view this candidate's CV.";
+
+                icon.textContent = "📄";
+
+                button.textContent =
+                    "View CV";
+
+                button.className =
+                    "btn primary-btn";
+
+                button.disabled = false;
+
+                button.onclick = function () {
+
+                    window.open(
+                        cvUrl,
+                        "_blank"
+                    );
+
+                };
+
+            } else {
+
+                title.textContent =
+                    "CV Locked";
+
+                description.textContent =
+                    "CV access becomes available when permitted by Gradurat.";
+
+                icon.textContent = "🔒";
+
+                button.textContent =
+                    "CV Locked";
+
+                button.className =
+                    "btn disabled-btn";
+
+                button.disabled = true;
+
+            }
+        }
+
+
+        /* =========================================
+           SHOW INTEREST
+        ========================================= */
+
+        async function showInterest() {
+
+            const button =
+                document.getElementById("interestBtn");
+
+            const status =
+                document.getElementById("connectionStatus");
+
+
+            button.disabled = true;
+            button.textContent =
+                "Sending...";
+
+
+            try {
+
+                /*
+                    Backend endpoint:
+
+                    POST /api/candidates/:id/interest
+                */
+
+                const response = await fetch(
+                    `/api/candidates/${candidateId}/interest`,
+                    {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json"
+                        }
+                    }
+                );
+
+
+                const result =
+                    await response.json();
+
+
+                if (!response.ok) {
+
+                    throw new Error(
+                        result.message ||
+                        "Unable to send interest"
+                    );
+                }
+
+
+                updateConnectionStatus(
+                    result.status ||
+                    "Interest sent successfully."
+                );
+
+
+                button.textContent =
+                    "Interest Sent ✓";
+
+
+            } catch (error) {
+
+                console.error(error);
+
+                status.style.display = "block";
+
+                status.textContent =
+                    error.message ||
+                    "Something went wrong.";
+
+                button.disabled = false;
+
+                button.textContent =
+                    "💙 Interested";
+            }
+        }
+
+
+        /* =========================================
+           CONNECTION STATUS
+        ========================================= */
+
+        function updateConnectionStatus(message) {
+
+            const status =
+                document.getElementById("connectionStatus");
+
+            status.textContent =
+                message;
+
+            status.style.display =
+                "block";
+        }
+
+
+        /* =========================================
+           BACK
+        ========================================= */
+
+        function goBack() {
+
+            window.history.back();
+
+        }
+
+
+        /* =========================================
+           SECURITY
+        ========================================= */
+
+        function escapeHTML(value) {
+
+            const div =
+                document.createElement("div");
+
+            div.textContent =
+                value;
+
+            return div.innerHTML;
+        }
+
+
+        /* =========================================
+           START
+        ========================================= */
+
+        loadCandidate();
+
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,389 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Login | Gradurat</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #05070d;
+            color: white;
+            min-height: 100vh;
+        }
+
+        /* NAVBAR */
+
+        nav {
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 7%;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            background: #05070d;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo img {
+            width: 52px;
+            height: 52px;
+            object-fit: contain;
+        }
+
+        .back-home {
+            color: #8dbbff;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .back-home:hover {
+            color: white;
+        }
+
+        /* LOGIN AREA */
+
+        .login-container {
+            min-height: calc(100vh - 80px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 40px 20px;
+        }
+
+        .login-box {
+            width: 100%;
+            max-width: 440px;
+            background: #0b0f1a;
+            border: 1px solid rgba(45, 126, 255, 0.25);
+            border-radius: 20px;
+            padding: 45px;
+            box-shadow: 0 0 50px rgba(0, 102, 255, 0.08);
+        }
+
+        .login-box h1 {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        .login-box .subtitle {
+            color: #8b93a7;
+            font-size: 14px;
+            margin-bottom: 35px;
+            line-height: 1.6;
+        }
+
+        /* FORM */
+
+        .form-group {
+            margin-bottom: 22px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 9px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 14px 16px;
+            background: #070a12;
+            border: 1px solid #20283a;
+            border-radius: 10px;
+            color: white;
+            font-size: 14px;
+            outline: none;
+            transition: 0.3s;
+        }
+
+        .form-group input:focus {
+            border-color: #1677ff;
+            box-shadow: 0 0 0 3px rgba(22, 119, 255, 0.1);
+        }
+
+        .form-group input::placeholder {
+            color: #555e70;
+        }
+
+        /* LOGIN BUTTON */
+
+        .login-btn {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            background: #1677ff;
+            color: white;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.3s;
+            margin-top: 5px;
+        }
+
+        .login-btn:hover {
+            background: #075fd6;
+            transform: translateY(-1px);
+        }
+
+        /* MESSAGE */
+
+        .message {
+            margin-top: 18px;
+            text-align: center;
+            font-size: 13px;
+            display: none;
+        }
+
+        .error {
+            color: #ff6b6b;
+        }
+
+        .success {
+            color: #55d88a;
+        }
+
+        /* REGISTER */
+
+        .register-text {
+            text-align: center;
+            margin-top: 28px;
+            color: #8b93a7;
+            font-size: 14px;
+        }
+
+        .register-text a {
+            color: #4d9aff;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .register-text a:hover {
+            color: white;
+        }
+
+        /* MOBILE */
+
+        @media (max-width: 500px) {
+
+            .login-box {
+                padding: 30px 22px;
+            }
+
+            .login-box h1 {
+                font-size: 27px;
+            }
+
+            nav {
+                padding: 0 5%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- NAVBAR -->
+
+    <nav>
+
+        <a href="index.html" class="logo">
+            <img src="logo1.jpg" alt="Gradurat Logo">
+        </a>
+
+        <a href="index.html" class="back-home">
+            Back to Home
+        </a>
+
+    </nav>
+
+
+    <!-- LOGIN -->
+
+    <main class="login-container">
+
+        <div class="login-box">
+
+            <h1>Welcome Back</h1>
+
+            <p class="subtitle">
+                Sign in to your Gradurat account and continue building your future.
+            </p>
+
+
+            <form id="loginForm">
+
+                <div class="form-group">
+
+                    <label for="email">
+                        Email Address
+                    </label>
+
+                    <input
+                        type="email"
+                        id="email"
+                        placeholder="Enter your email address"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="password">
+                        Password
+                    </label>
+
+                    <input
+                        type="password"
+                        id="password"
+                        placeholder="Enter your password"
+                        required
+                    >
+
+                </div>
+
+
+                <button type="submit" class="login-btn">
+                    Sign In
+                </button>
+
+            </form>
+
+
+            <p id="message" class="message"></p>
+
+
+            <div class="register-text">
+
+                Don't have an account?
+
+                <a href="register.html">
+                    Create Account
+                </a>
+
+            </div>
+
+        </div>
+
+    </main>
+
+
+    <!-- LOGIN SCRIPT -->
+
+    <script>
+
+        document
+            .getElementById("loginForm")
+            .addEventListener("submit", function(event) {
+
+                event.preventDefault();
+
+                const email =
+                    document.getElementById("email").value.trim();
+
+                const password =
+                    document.getElementById("password").value;
+
+                const message =
+                    document.getElementById("message");
+
+
+                /* Get registered account */
+
+                const savedUser =
+                    localStorage.getItem("graduratUser");
+
+
+                /* No account */
+
+                if (!savedUser) {
+
+                    message.textContent =
+                        "No Gradurat account found. Please create an account first.";
+
+                    message.className =
+                        "message error";
+
+                    message.style.display = "block";
+
+                    return;
+                }
+
+
+                /* Convert saved data back into an object */
+
+                const user =
+                    JSON.parse(savedUser);
+
+
+                /* Check login details */
+
+                if (
+                    email === user.email &&
+                    password === user.password
+                ) {
+
+                    message.textContent =
+                        "Login successful!";
+
+                    message.className =
+                        "message success";
+
+                    message.style.display = "block";
+
+
+                    /* Save current logged-in user */
+
+                    localStorage.setItem(
+                        "graduratLoggedIn",
+                        "true"
+                    );
+
+
+                    /* Go to dashboard */
+
+                    setTimeout(function() {
+
+                        window.location.href =
+                            "dashboard.html";
+
+                    }, 800);
+
+                } else {
+
+                    message.textContent =
+                        "Incorrect email or password.";
+
+                    message.className =
+                        "message error";
+
+                    message.style.display = "block";
+                }
+
+            });
+
+    </script>
+
+</body>
+</html>
+

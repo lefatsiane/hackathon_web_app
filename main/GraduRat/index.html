@@ -1,0 +1,1982 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Gradurat | Find Your Future</title>
+
+    <!-- Google Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet"
+    >
+
+
+<style>
+
+/* =========================================================
+   RESET
+========================================================= */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    background: #030508;
+    color: #ffffff;
+    font-family: "Inter", sans-serif;
+    overflow-x: hidden;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+
+/* =========================================================
+   NAVIGATION
+========================================================= */
+
+.navbar {
+    width: 100%;
+    height: 80px;
+
+    position: fixed;
+    top: 0;
+    left: 0;
+
+    z-index: 1000;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 0 6%;
+
+    background: rgba(3, 5, 8, 0.88);
+
+    backdrop-filter: blur(18px);
+
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+
+
+/* LOGO */
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    font-size: 21px;
+    font-weight: 800;
+
+    flex-shrink: 0;
+}
+
+.brand img {
+    width: 45px;
+    height: 45px;
+
+    object-fit: contain;
+
+    border-radius: 8px;
+}
+
+
+/* NAVIGATION LINKS */
+
+.nav-links {
+    display: flex;
+    align-items: center;
+    gap: 32px;
+}
+
+.nav-links a {
+    color: #8993a6;
+
+    font-size: 13px;
+    font-weight: 500;
+
+    transition: 0.3s;
+}
+
+.nav-links a:hover {
+    color: #1683ff;
+}
+
+
+/* GET STARTED */
+
+.nav-btn {
+    padding: 11px 20px;
+
+    border: none;
+    border-radius: 7px;
+
+    background: #1677ff;
+
+    color: white;
+
+    font-size: 13px;
+    font-weight: 700;
+
+    transition: 0.3s;
+}
+
+.nav-btn:hover {
+    background: #3690ff;
+
+    transform: translateY(-2px);
+
+    box-shadow: 0 10px 30px rgba(22,119,255,0.3);
+}
+
+
+/* MOBILE MENU BUTTON */
+
+.menu-btn {
+    display: none;
+
+    border: none;
+
+    background: transparent;
+
+    color: white;
+
+    font-size: 25px;
+
+    cursor: pointer;
+}
+
+
+/* =========================================================
+   HERO
+========================================================= */
+
+.hero {
+    min-height: 100vh;
+
+    padding: 160px 8% 100px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 60px;
+
+    position: relative;
+
+    background:
+        radial-gradient(
+            circle at 80% 50%,
+            rgba(0,100,255,0.16),
+            transparent 32%
+        );
+}
+
+
+/* HERO LEFT */
+
+.hero-left {
+    width: 55%;
+
+    position: relative;
+
+    z-index: 2;
+}
+
+.eyebrow {
+    color: #1683ff;
+
+    font-size: 11px;
+
+    font-weight: 700;
+
+    letter-spacing: 2px;
+}
+
+.hero h1 {
+    font-size: clamp(50px, 6vw, 82px);
+
+    line-height: 1.04;
+
+    letter-spacing: -4px;
+
+    margin: 25px 0;
+}
+
+.hero h1 span {
+    color: #1683ff;
+}
+
+.hero-description {
+    max-width: 620px;
+
+    color: #8993a6;
+
+    font-size: 16px;
+
+    line-height: 1.8;
+
+    margin-bottom: 35px;
+}
+
+
+/* HERO BUTTONS */
+
+.hero-buttons {
+    display: flex;
+
+    gap: 15px;
+}
+
+.primary-btn,
+.outline-btn {
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    padding: 15px 24px;
+
+    border-radius: 7px;
+
+    font-size: 14px;
+
+    font-weight: 700;
+
+    cursor: pointer;
+
+    transition: 0.3s;
+}
+
+.primary-btn {
+    background: #1677ff;
+
+    color: white;
+
+    border: 1px solid #1677ff;
+}
+
+.primary-btn:hover {
+    background: #3690ff;
+
+    transform: translateY(-3px);
+
+    box-shadow: 0 15px 40px rgba(22,119,255,0.3);
+}
+
+.outline-btn {
+    background: transparent;
+
+    color: white;
+
+    border: 1px solid #263044;
+}
+
+.outline-btn:hover {
+    border-color: #1677ff;
+
+    color: #1683ff;
+
+    transform: translateY(-3px);
+}
+
+
+/* =========================================================
+   HERO RIGHT
+========================================================= */
+
+.hero-right {
+    width: 40%;
+
+    min-height: 500px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    position: relative;
+}
+
+
+/* BLUE GLOW */
+
+.orb {
+    position: absolute;
+
+    width: 300px;
+    height: 300px;
+
+    background: #0066ff;
+
+    filter: blur(150px);
+
+    opacity: 0.18;
+}
+
+
+/* FUTURE CARD */
+
+.future-card {
+    width: 370px;
+
+    padding: 30px;
+
+    position: relative;
+
+    z-index: 2;
+
+    background: rgba(10,15,25,0.94);
+
+    border: 1px solid #1e2c44;
+
+    border-radius: 18px;
+
+    box-shadow: 0 30px 100px rgba(0,0,0,0.6);
+}
+
+
+/* CARD TOP */
+
+.card-top {
+    display: flex;
+
+    justify-content: space-between;
+
+    color: #657187;
+
+    font-size: 10px;
+
+    letter-spacing: 1.5px;
+}
+
+.blue {
+    color: #1683ff;
+}
+
+
+/* LINE */
+
+.future-line {
+    height: 1px;
+
+    background: #1b2638;
+
+    margin: 25px 0;
+}
+
+
+/* FUTURE ITEMS */
+
+.future-item {
+    display: flex;
+
+    align-items: center;
+
+    gap: 15px;
+
+    margin-bottom: 22px;
+}
+
+.future-item-icon {
+    width: 45px;
+    height: 45px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 9px;
+
+    background: #0c1d38;
+
+    color: #1683ff;
+
+    font-size: 18px;
+
+    font-weight: 800;
+}
+
+.future-item strong {
+    display: block;
+
+    font-size: 13px;
+
+    margin-bottom: 5px;
+}
+
+.future-item small {
+    color: #667287;
+
+    font-size: 10px;
+
+    line-height: 1.5;
+}
+
+
+/* RESULT */
+
+.future-result {
+    margin-top: 30px;
+
+    padding: 18px;
+
+    background: #08172c;
+
+    border-radius: 9px;
+
+    border-left: 3px solid #1677ff;
+}
+
+.future-result span {
+    display: block;
+
+    color: #778398;
+
+    font-size: 10px;
+
+    margin-bottom: 5px;
+}
+
+.future-result strong {
+    color: #1683ff;
+
+    font-size: 17px;
+}
+
+
+/* =========================================================
+   SECTION LABEL
+========================================================= */
+
+.section-label {
+    color: #1683ff;
+
+    font-size: 11px;
+
+    font-weight: 700;
+
+    letter-spacing: 2px;
+}
+
+
+/* =========================================================
+   WHAT IS GRADURAT
+========================================================= */
+
+.what {
+    padding: 130px 8%;
+
+    border-top: 1px solid #101722;
+}
+
+.what-content {
+    display: grid;
+
+    grid-template-columns: 1.2fr 0.8fr;
+
+    gap: 100px;
+
+    margin-top: 50px;
+}
+
+.what h2 {
+    font-size: 48px;
+
+    line-height: 1.2;
+
+    letter-spacing: -2px;
+}
+
+.what h2 span {
+    color: #1683ff;
+}
+
+.what-text p {
+    color: #7f899b;
+
+    font-size: 15px;
+
+    line-height: 1.9;
+
+    margin-bottom: 22px;
+}
+
+.what-text strong {
+    color: white;
+}
+
+
+/* =========================================================
+   WHY DIFFERENT
+========================================================= */
+
+.different {
+    padding: 130px 8%;
+
+    background: #070a10;
+}
+
+.different-heading {
+    max-width: 700px;
+
+    margin: 35px 0 60px;
+}
+
+.different-heading h2 {
+    font-size: 48px;
+
+    line-height: 1.15;
+}
+
+.different-heading h2 span {
+    color: #1683ff;
+}
+
+.different-heading p {
+    color: #788397;
+
+    margin-top: 20px;
+
+    line-height: 1.7;
+}
+
+.difference-grid {
+    display: grid;
+
+    grid-template-columns: repeat(3,1fr);
+
+    gap: 20px;
+}
+
+.difference-card {
+    padding: 35px;
+
+    min-height: 350px;
+
+    border: 1px solid #182131;
+
+    background: #0a0e16;
+
+    border-radius: 15px;
+
+    transition: 0.3s;
+}
+
+.difference-card:hover {
+    transform: translateY(-6px);
+
+    border-color: #1677ff;
+}
+
+.difference-card.featured {
+    background:
+        linear-gradient(
+            145deg,
+            #0c1b32,
+            #090d15
+        );
+
+    border-color: #155bb7;
+}
+
+.number {
+    color: #4e5a70;
+
+    font-size: 11px;
+
+    margin-bottom: 45px;
+}
+
+.difference-icon {
+    width: 50px;
+    height: 50px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 10px;
+
+    background: #0c1d38;
+
+    color: #1683ff;
+
+    font-size: 18px;
+
+    font-weight: 800;
+
+    margin-bottom: 20px;
+}
+
+.difference-card h3 {
+    font-size: 19px;
+
+    margin-bottom: 15px;
+}
+
+.difference-card p {
+    color: #707c90;
+
+    font-size: 13px;
+
+    line-height: 1.8;
+}
+
+
+/* =========================================================
+   SHAPING YOUR FUTURE
+========================================================= */
+
+.future {
+    padding: 130px 8%;
+}
+
+.future-heading {
+    display: flex;
+
+    align-items: end;
+
+    justify-content: space-between;
+
+    gap: 50px;
+
+    margin: 35px 0 80px;
+}
+
+.future-heading h2 {
+    font-size: 52px;
+
+    line-height: 1.1;
+}
+
+.future-heading h2 span {
+    color: #1683ff;
+}
+
+.future-heading p {
+    max-width: 400px;
+
+    color: #788397;
+
+    line-height: 1.8;
+}
+
+
+/* JOURNEY */
+
+.journey {
+    display: flex;
+
+    align-items: flex-start;
+
+    justify-content: space-between;
+
+    gap: 20px;
+}
+
+.journey-step {
+    width: 22%;
+}
+
+.circle {
+    width: 55px;
+    height: 55px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    border: 1px solid #1677ff;
+
+    color: #1683ff;
+
+    font-size: 12px;
+
+    margin-bottom: 25px;
+}
+
+.journey-step h3 {
+    font-size: 15px;
+
+    margin-bottom: 12px;
+}
+
+.journey-step p {
+    color: #6e7a8e;
+
+    font-size: 12px;
+
+    line-height: 1.7;
+}
+
+.journey-line {
+    height: 1px;
+
+    width: 5%;
+
+    margin-top: 27px;
+
+    background: #1d2a3d;
+}
+
+
+/* =========================================================
+   USERS
+========================================================= */
+
+.people {
+    padding: 130px 8%;
+
+    background: #070a10;
+}
+
+.people > h2 {
+    font-size: 48px;
+
+    margin: 30px 0 60px;
+}
+
+.people > h2 span {
+    color: #1683ff;
+}
+
+.people-grid {
+    display: grid;
+
+    grid-template-columns: repeat(3,1fr);
+
+    gap: 20px;
+}
+
+.person-card {
+    padding: 35px;
+
+    border: 1px solid #192231;
+
+    border-radius: 15px;
+
+    background: #0a0e15;
+
+    position: relative;
+
+    transition: 0.3s;
+}
+
+.person-card:hover {
+    border-color: #1677ff;
+
+    transform: translateY(-5px);
+}
+
+.person-number {
+    position: absolute;
+
+    right: 25px;
+    top: 25px;
+
+    color: #3e4a5e;
+
+    font-size: 11px;
+}
+
+.person-icon {
+    width: 50px;
+    height: 50px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 10px;
+
+    background: #0c1d38;
+
+    color: #1683ff;
+
+    font-size: 18px;
+
+    font-weight: 800;
+
+    margin-bottom: 25px;
+}
+
+.person-card h3 {
+    font-size: 20px;
+
+    margin-bottom: 12px;
+}
+
+.person-card p {
+    color: #717d91;
+
+    font-size: 13px;
+
+    line-height: 1.8;
+}
+
+
+/* =========================================================
+   FINAL CTA
+========================================================= */
+
+.final {
+    min-height: 600px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    text-align: center;
+
+    position: relative;
+
+    overflow: hidden;
+
+    background:
+        radial-gradient(
+            circle,
+            rgba(0,100,255,0.17),
+            transparent 45%
+        );
+}
+
+.final-glow {
+    position: absolute;
+
+    width: 300px;
+    height: 300px;
+
+    background: #0066ff;
+
+    filter: blur(180px);
+
+    opacity: 0.12;
+}
+
+.final-content {
+    position: relative;
+
+    z-index: 2;
+}
+
+.final h2 {
+    font-size: 65px;
+
+    line-height: 1.05;
+
+    letter-spacing: -3px;
+
+    margin: 25px 0;
+}
+
+.final h2 span {
+    color: #1683ff;
+}
+
+.final p {
+    color: #7c879a;
+
+    margin-bottom: 30px;
+}
+
+
+/* =========================================================
+   FOOTER
+========================================================= */
+
+footer {
+    padding: 45px 8%;
+
+    border-top: 1px solid #121a26;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    flex-wrap: wrap;
+
+    gap: 20px;
+}
+
+footer p,
+.footer-copy {
+    color: #586477;
+
+    font-size: 11px;
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media(max-width: 900px) {
+
+    .nav-links {
+        display: none;
+
+        position: absolute;
+
+        top: 80px;
+
+        left: 0;
+
+        width: 100%;
+
+        padding: 25px;
+
+        flex-direction: column;
+
+        align-items: center;
+
+        gap: 25px;
+
+        background: #070a10;
+
+        border-bottom: 1px solid #172131;
+    }
+
+    .nav-links.active {
+        display: flex;
+    }
+
+    .nav-btn {
+        display: none;
+    }
+
+    .menu-btn {
+        display: block;
+    }
+
+
+    /* HERO */
+
+    .hero {
+        flex-direction: column;
+
+        text-align: center;
+
+        padding-top: 140px;
+    }
+
+    .hero-left,
+    .hero-right {
+        width: 100%;
+    }
+
+    .hero-description {
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .hero-buttons {
+        justify-content: center;
+    }
+
+    .hero-right {
+        margin-top: 50px;
+    }
+
+
+    /* WHAT */
+
+    .what-content {
+        grid-template-columns: 1fr;
+
+        gap: 40px;
+    }
+
+
+    /* DIFFERENT */
+
+    .difference-grid {
+        grid-template-columns: 1fr;
+    }
+
+
+    /* FUTURE */
+
+    .future-heading {
+        display: block;
+    }
+
+    .future-heading p {
+        margin-top: 30px;
+    }
+
+    .journey {
+        flex-direction: column;
+
+        gap: 30px;
+    }
+
+    .journey-step {
+        width: 100%;
+    }
+
+    .journey-line {
+        width: 1px;
+
+        height: 30px;
+
+        margin-left: 27px;
+
+        margin-top: 0;
+    }
+
+
+    /* PEOPLE */
+
+    .people-grid {
+        grid-template-columns: 1fr;
+    }
+
+
+    /* CTA */
+
+    .final h2 {
+        font-size: 45px;
+    }
+}
+
+
+@media(max-width: 600px) {
+
+    .navbar {
+        padding: 0 5%;
+    }
+
+    .hero {
+        padding-left: 6%;
+        padding-right: 6%;
+    }
+
+    .hero h1 {
+        font-size: 45px;
+
+        letter-spacing: -2px;
+    }
+
+    .hero-buttons {
+        flex-direction: column;
+    }
+
+    .future-card {
+        width: 95%;
+    }
+
+    .what h2,
+    .different-heading h2,
+    .future-heading h2,
+    .people > h2 {
+        font-size: 36px;
+    }
+
+    .final h2 {
+        font-size: 40px;
+    }
+
+    footer {
+        flex-direction: column;
+
+        text-align: center;
+    }
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<!-- =====================================================
+     NAVIGATION
+===================================================== -->
+
+<header class="navbar">
+
+    <!-- LOGO - TOP LEFT -->
+
+    <a href="#home" class="brand">
+
+        <img
+            src="logo1.jpg"
+            alt="Gradurat Logo"
+        >
+
+        <span>Gradurat</span>
+
+    </a>
+
+
+    <!-- NAVIGATION LINKS -->
+
+    <nav class="nav-links" id="navLinks">
+
+        <a href="#home">
+            Home
+        </a>
+
+        <a href="#what">
+            What is Gradurat?
+        </a>
+
+        <a href="#different">
+            Why Us?
+        </a>
+
+        <a href="#future">
+            Your Future
+        </a>
+
+    </nav>
+
+
+    <!-- GET STARTED -->
+
+    <a href="register.html" class="nav-btn">
+        Get Started
+    </a>
+
+
+    <!-- MOBILE MENU -->
+
+    <button
+        class="menu-btn"
+        id="menuBtn"
+        aria-label="Open navigation menu"
+    >
+        ☰
+    </button>
+
+</header>
+
+
+
+<!-- =====================================================
+     HERO
+===================================================== -->
+
+<section class="hero" id="home">
+
+
+    <!-- LEFT -->
+
+    <div class="hero-left">
+
+        <div class="eyebrow">
+            THE FUTURE STARTS WITH YOU
+        </div>
+
+
+        <h1>
+
+            Don't just find
+            <span>a career.</span>
+
+            <br>
+
+            Find your direction.
+
+        </h1>
+
+
+        <p class="hero-description">
+
+            Gradurat is an AI-powered platform designed to help
+            students and graduates understand their potential,
+            discover opportunities, and make smarter decisions
+            about their future.
+
+        </p>
+
+
+        <div class="hero-buttons">
+
+            <!-- GOES TO WHAT IS GRADURAT -->
+
+            <a href="#what" class="primary-btn">
+                Discover Gradurat →
+            </a>
+
+
+            <!-- GOES TO HOW GRADURAT SHAPES THE FUTURE -->
+
+            <a href="#future" class="outline-btn">
+                See How It Works
+            </a>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- RIGHT -->
+
+    <div class="hero-right">
+
+        <div class="orb"></div>
+
+
+        <div class="future-card">
+
+
+            <div class="card-top">
+
+                <span>
+                    YOUR POTENTIAL
+                </span>
+
+                <span class="blue">
+                    01
+                </span>
+
+            </div>
+
+
+            <div class="future-line"></div>
+
+
+
+            <!-- SKILLS -->
+
+            <div class="future-item">
+
+                <div class="future-item-icon">
+                    01
+                </div>
+
+                <div>
+
+                    <strong>
+                        Skills
+                    </strong>
+
+                    <small>
+                        Discover your strengths and
+                        areas for growth.
+                    </small>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- INTERESTS -->
+
+            <div class="future-item">
+
+                <div class="future-item-icon">
+                    02
+                </div>
+
+                <div>
+
+                    <strong>
+                        Interests
+                    </strong>
+
+                    <small>
+                        Understand what drives you
+                        and what you enjoy.
+                    </small>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- OPPORTUNITIES -->
+
+            <div class="future-item">
+
+                <div class="future-item-icon">
+                    03
+                </div>
+
+                <div>
+
+                    <strong>
+                        Opportunities
+                    </strong>
+
+                    <small>
+                        Turn your potential into
+                        real possibilities.
+                    </small>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- RESULT -->
+
+            <div class="future-result">
+
+                <span>
+                    YOUR FUTURE
+                </span>
+
+                <strong>
+                    starts here.
+                </strong>
+
+            </div>
+
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- =====================================================
+     WHAT IS GRADURAT
+===================================================== -->
+
+<section class="what" id="what">
+
+
+    <div class="section-label">
+        01 — WHAT IS GRADURAT?
+    </div>
+
+
+    <div class="what-content">
+
+
+        <div class="what-title">
+
+            <h2>
+
+                Education gives you
+                <span>knowledge.</span>
+
+                <br>
+
+                Gradurat helps you
+                <span>find direction.</span>
+
+            </h2>
+
+        </div>
+
+
+
+        <div class="what-text">
+
+            <p>
+
+                Choosing a career can be overwhelming.
+                Students are often expected to know what
+                they want to become before they have even
+                discovered what they are capable of.
+
+            </p>
+
+
+            <p>
+
+                Gradurat bridges that gap.
+
+            </p>
+
+
+            <p>
+
+                By combining your skills, interests,
+                strengths and career goals, Gradurat helps
+                you discover pathways that actually fit
+                <strong>you.</strong>
+
+            </p>
+
+        </div>
+
+
+    </div>
+
+</section>
+
+
+
+<!-- =====================================================
+     WHY DIFFERENT
+===================================================== -->
+
+<section class="different" id="different">
+
+
+    <div class="section-label">
+        02 — WHY GRADURAT?
+    </div>
+
+
+    <div class="different-heading">
+
+        <h2>
+
+            We don't believe
+            <span>one path</span>
+            fits everyone.
+
+        </h2>
+
+
+        <p>
+
+            Traditional career platforms focus on jobs.
+            Gradurat focuses on the person behind the profile.
+
+        </p>
+
+    </div>
+
+
+
+    <div class="difference-grid">
+
+
+        <!-- CARD 1 -->
+
+        <div class="difference-card">
+
+            <div class="number">
+                01
+            </div>
+
+
+            <div class="difference-icon">
+                CV
+            </div>
+
+
+            <h3>
+                Beyond a CV
+            </h3>
+
+
+            <p>
+
+                Your potential is more than a list of
+                qualifications. Gradurat looks at your
+                skills, interests and goals to understand
+                the bigger picture.
+
+            </p>
+
+        </div>
+
+
+
+        <!-- CARD 2 -->
+
+        <div class="difference-card featured">
+
+            <div class="number">
+                02
+            </div>
+
+
+            <div class="difference-icon">
+                AI
+            </div>
+
+
+            <h3>
+                Intelligent Matching
+            </h3>
+
+
+            <p>
+
+                Our AI analyses your profile and identifies
+                opportunities and career pathways that
+                align with who you are.
+
+            </p>
+
+        </div>
+
+
+
+        <!-- CARD 3 -->
+
+        <div class="difference-card">
+
+            <div class="number">
+                03
+            </div>
+
+
+            <div class="difference-icon">
+                YOU
+            </div>
+
+
+            <h3>
+                Built Around You
+            </h3>
+
+
+            <p>
+
+                Instead of forcing you into predefined
+                paths, Gradurat helps you explore
+                possibilities based on your unique strengths.
+
+            </p>
+
+        </div>
+
+
+    </div>
+
+</section>
+
+
+
+<!-- =====================================================
+     SHAPING YOUR FUTURE
+===================================================== -->
+
+<section class="future" id="future">
+
+
+    <div class="section-label">
+        03 — SHAPING YOUR FUTURE
+    </div>
+
+
+    <div class="future-heading">
+
+
+        <h2>
+
+            Your future isn't
+            <span>found.</span>
+
+            <br>
+
+            It's shaped.
+
+        </h2>
+
+
+        <p>
+
+            Gradurat is designed to guide you through
+            every stage of discovering where you could
+            go next.
+
+        </p>
+
+
+    </div>
+
+
+
+    <div class="journey">
+
+
+        <!-- 01 -->
+
+        <div class="journey-step">
+
+            <div class="circle">
+                01
+            </div>
+
+
+            <h3>
+                Understand Yourself
+            </h3>
+
+
+            <p>
+
+                Discover your skills, interests,
+                strengths and what makes you different.
+
+            </p>
+
+        </div>
+
+
+
+        <div class="journey-line"></div>
+
+
+
+        <!-- 02 -->
+
+        <div class="journey-step">
+
+            <div class="circle">
+                02
+            </div>
+
+
+            <h3>
+                Explore Possibilities
+            </h3>
+
+
+            <p>
+
+                Discover careers and opportunities
+                that align with your potential.
+
+            </p>
+
+        </div>
+
+
+
+        <div class="journey-line"></div>
+
+
+
+        <!-- 03 -->
+
+        <div class="journey-step">
+
+            <div class="circle">
+                03
+            </div>
+
+
+            <h3>
+                Make Better Decisions
+            </h3>
+
+
+            <p>
+
+                Gain the information and direction
+                needed to make confident choices.
+
+            </p>
+
+        </div>
+
+
+
+        <div class="journey-line"></div>
+
+
+
+        <!-- 04 -->
+
+        <div class="journey-step">
+
+            <div class="circle">
+                04
+            </div>
+
+
+            <h3>
+                Build Your Future
+            </h3>
+
+
+            <p>
+
+                Turn your potential into real
+                opportunities and meaningful
+                career growth.
+
+            </p>
+
+        </div>
+
+
+    </div>
+
+</section>
+
+
+
+<!-- =====================================================
+     WHO GRADURAT IS FOR
+===================================================== -->
+
+<section class="people">
+
+
+    <div class="section-label">
+        04 — BUILT FOR EVERY JOURNEY
+    </div>
+
+
+    <h2>
+
+        Different starting points.
+        <span>One future.</span>
+
+    </h2>
+
+
+
+    <div class="people-grid">
+
+
+        <!-- STUDENTS -->
+
+        <div class="person-card">
+
+            <span class="person-number">
+                01
+            </span>
+
+
+            <div class="person-icon">
+                ST
+            </div>
+
+
+            <h3>
+                Students
+            </h3>
+
+
+            <p>
+
+                Unsure about what comes next?
+                Gradurat helps you discover where
+                your skills and interests could take you.
+
+            </p>
+
+        </div>
+
+
+
+        <!-- GRADUATES -->
+
+        <div class="person-card">
+
+            <span class="person-number">
+                02
+            </span>
+
+
+            <div class="person-icon">
+                GR
+            </div>
+
+
+            <h3>
+                Graduates
+            </h3>
+
+
+            <p>
+
+                Ready to enter the world of work?
+                Find opportunities that align with
+                what you bring to the table.
+
+            </p>
+
+        </div>
+
+
+
+        <!-- EMPLOYERS -->
+
+        <div class="person-card">
+
+            <span class="person-number">
+                03
+            </span>
+
+
+            <div class="person-icon">
+                EM
+            </div>
+
+
+            <h3>
+                Employers
+            </h3>
+
+
+            <p>
+
+                Looking for emerging talent?
+                Discover candidates based on skills,
+                potential and fit.
+
+            </p>
+
+        </div>
+
+
+    </div>
+
+</section>
+
+
+
+<!-- =====================================================
+     FINAL CTA
+===================================================== -->
+
+<section class="final">
+
+
+    <div class="final-glow"></div>
+
+
+    <div class="final-content">
+
+
+        <div class="section-label">
+            YOUR JOURNEY STARTS HERE
+        </div>
+
+
+        <h2>
+
+            The future is
+            <span>yours</span>
+            to shape.
+
+        </h2>
+
+
+        <p>
+
+            You don't need to have everything figured out.
+            You just need to know where to start.
+
+        </p>
+
+
+        <!-- BUTTON GOES TO THE FUTURE SECTION -->
+
+        <a href="register.html" class="primary-btn">
+            Start Your Journey →
+        </a>
+
+
+    </div>
+
+</section>
+
+
+
+<!-- =====================================================
+     FOOTER
+===================================================== -->
+
+<footer>
+
+
+    <a href="#home" class="brand">
+
+        <img
+            src="logo1.jpg"
+            alt="Gradurat Logo"
+        >
+
+        <span>
+            Gradurat
+        </span>
+
+    </a>
+
+
+    <p>
+        Discover your potential. Shape your future.
+    </p>
+
+
+    <div class="footer-copy">
+        © 2026 Gradurat
+    </div>
+
+
+</footer>
+
+
+
+<!-- =====================================================
+     JAVASCRIPT
+===================================================== -->
+
+<script>
+
+const menuBtn = document.getElementById("menuBtn");
+const navLinks = document.getElementById("navLinks");
+
+
+/* MOBILE MENU */
+
+menuBtn.addEventListener("click", function () {
+
+    navLinks.classList.toggle("active");
+
+});
+
+
+/* CLOSE MOBILE MENU AFTER CLICKING A LINK */
+
+const navigationLinks = document.querySelectorAll(".nav-links a");
+
+navigationLinks.forEach(function (link) {
+
+    link.addEventListener("click", function () {
+
+        navLinks.classList.remove("active");
+
+    });
+
+});
+
+</script>
+
+
+</body>
+</html>
+```

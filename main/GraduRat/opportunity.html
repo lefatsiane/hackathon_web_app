@@ -1,0 +1,1491 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Opportunity | Gradurat</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Inter", sans-serif;
+            background: #050505;
+            color: white;
+            min-height: 100vh;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        button {
+            font-family: inherit;
+        }
+
+        /* ================= NAVBAR ================= */
+
+        nav {
+            height: 75px;
+            border-bottom: 1px solid #1b1b1b;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 6%;
+            background: #050505;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo img {
+            width: 42px;
+            height: 42px;
+            border-radius: 10px;
+            object-fit: cover;
+        }
+
+        .logo span {
+            font-size: 22px;
+            font-weight: 800;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 28px;
+        }
+
+        .nav-links a {
+            color: #999;
+            font-size: 14px;
+            transition: 0.2s;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: #168cff;
+        }
+
+        /* ================= CONTAINER ================= */
+
+        .container {
+            width: min(1150px, 92%);
+            margin: auto;
+            padding: 40px 0 80px;
+        }
+
+        .back-btn {
+            display: inline-block;
+            color: #999;
+            margin-bottom: 25px;
+            font-size: 14px;
+        }
+
+        .back-btn:hover {
+            color: #168cff;
+        }
+
+        /* ================= STATES ================= */
+
+        .state {
+            text-align: center;
+            padding: 100px 20px;
+            color: #888;
+        }
+
+        .state h2 {
+            color: white;
+            margin-bottom: 10px;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .spinner {
+            width: 42px;
+            height: 42px;
+            border: 3px solid #222;
+            border-top-color: #168cff;
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* ================= OPPORTUNITY HEADER ================= */
+
+        .opportunity-header {
+            background: linear-gradient(135deg, #0d0d0d, #081522);
+            border: 1px solid #202020;
+            border-radius: 22px;
+            padding: 35px;
+            margin-bottom: 25px;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 7px 12px;
+            border-radius: 20px;
+            background: #0a1d2d;
+            border: 1px solid #164d79;
+            color: #65b7ff;
+            font-size: 11px;
+            margin-bottom: 18px;
+        }
+
+        .opportunity-header h1 {
+            font-size: 32px;
+            margin-bottom: 12px;
+        }
+
+        .company {
+            color: #168cff;
+            font-weight: 600;
+            margin-bottom: 18px;
+        }
+
+        .description {
+            max-width: 850px;
+            color: #aaa;
+            line-height: 1.7;
+            font-size: 14px;
+        }
+
+        .meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 22px;
+        }
+
+        .meta-item {
+            background: #111;
+            border: 1px solid #252525;
+            padding: 9px 13px;
+            border-radius: 8px;
+            color: #bbb;
+            font-size: 12px;
+        }
+
+        /* ================= GRID ================= */
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 22px;
+        }
+
+        .card {
+            background: #0c0c0c;
+            border: 1px solid #202020;
+            border-radius: 18px;
+            padding: 26px;
+            margin-bottom: 22px;
+        }
+
+        .card h2 {
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
+
+        .card p {
+            color: #999;
+            font-size: 14px;
+            line-height: 1.7;
+        }
+
+        /* ================= REQUIREMENTS ================= */
+
+        .requirement {
+            margin-bottom: 20px;
+        }
+
+        .requirement:last-child {
+            margin-bottom: 0;
+        }
+
+        .requirement-title {
+            color: #777;
+            text-transform: uppercase;
+            letter-spacing: 0.7px;
+            font-size: 11px;
+            margin-bottom: 8px;
+        }
+
+        .requirement-value {
+            color: #ddd;
+            font-size: 14px;
+        }
+
+        /* ================= TAGS ================= */
+
+        .tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .tag {
+            background: #0b1b2a;
+            border: 1px solid #16476e;
+            color: #64b5ff;
+            padding: 7px 11px;
+            border-radius: 20px;
+            font-size: 12px;
+        }
+
+        /* ================= CANDIDATES ================= */
+
+        .candidate-list {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .candidate-card {
+            border: 1px solid #222;
+            background: #101010;
+            border-radius: 14px;
+            padding: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            transition: 0.2s;
+        }
+
+        .candidate-card:hover {
+            border-color: #168cff;
+            transform: translateY(-2px);
+        }
+
+        .candidate-main {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            min-width: 0;
+        }
+
+        .candidate-photo {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            object-fit: cover;
+            background: #181818;
+            border: 2px solid #168cff;
+            flex-shrink: 0;
+        }
+
+        .candidate-info {
+            min-width: 0;
+        }
+
+        .candidate-info h3 {
+            font-size: 15px;
+            margin-bottom: 5px;
+        }
+
+        .candidate-role {
+            color: #168cff;
+            font-size: 12px;
+            margin-bottom: 5px;
+        }
+
+        .candidate-details {
+            color: #777;
+            font-size: 12px;
+            line-height: 1.5;
+        }
+
+        .candidate-actions {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-shrink: 0;
+        }
+
+        .match {
+            text-align: center;
+        }
+
+        .match-score {
+            font-size: 22px;
+            font-weight: 800;
+            color: #168cff;
+        }
+
+        .match-label {
+            color: #666;
+            font-size: 9px;
+            text-transform: uppercase;
+        }
+
+        /* ================= BUTTON ================= */
+
+        .btn {
+            border: none;
+            border-radius: 9px;
+            padding: 11px 16px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            transition: 0.2s;
+        }
+
+        .primary-btn {
+            background: #168cff;
+            color: white;
+        }
+
+        .primary-btn:hover {
+            background: #0875df;
+        }
+
+        .secondary-btn {
+            background: #151515;
+            border: 1px solid #292929;
+            color: #ddd;
+        }
+
+        .secondary-btn:hover {
+            border-color: #168cff;
+            color: #168cff;
+        }
+
+        /* ================= MATCHING STATUS ================= */
+
+        .ai-box {
+            background: #081522;
+            border: 1px solid #123a5c;
+            border-radius: 13px;
+            padding: 18px;
+        }
+
+        .ai-box h3 {
+            font-size: 14px;
+            margin-bottom: 8px;
+            color: #65b7ff;
+        }
+
+        .ai-box p {
+            font-size: 12px;
+            color: #8fa7ba;
+        }
+
+        /* ================= EMPTY ================= */
+
+        .empty {
+            text-align: center;
+            padding: 60px 20px;
+            border: 1px dashed #292929;
+            border-radius: 14px;
+            color: #777;
+        }
+
+        .empty h3 {
+            color: #ccc;
+            margin-bottom: 8px;
+        }
+
+        /* ================= RESPONSIVE ================= */
+
+        @media (max-width: 850px) {
+
+            .grid {
+                grid-template-columns: 1fr;
+            }
+
+            .candidate-card {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            .candidate-actions {
+                width: 100%;
+                justify-content: space-between;
+            }
+
+        }
+
+        @media (max-width: 600px) {
+
+            nav {
+                padding: 0 4%;
+            }
+
+            .nav-links {
+                gap: 12px;
+            }
+
+            .nav-links a {
+                font-size: 11px;
+            }
+
+            .opportunity-header h1 {
+                font-size: 25px;
+            }
+
+            .candidate-actions {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .candidate-actions .btn {
+                width: 100%;
+            }
+
+        }
+
+    </style>
+</head>
+
+
+<body>
+
+
+<!-- ================= NAVBAR ================= -->
+
+<nav>
+
+    <a href="index.html" class="logo">
+
+        <img
+            src="logo1.jpg"
+            alt="Gradurat Logo"
+        >
+
+        <span>Gradurat</span>
+
+    </a>
+
+
+    <div class="nav-links">
+
+        <a href="employer-dashboard.html">
+            Dashboard
+        </a>
+
+        <a href="fyp.html">
+            Find Your People
+        </a>
+
+        <a href="matches.html">
+            Matches
+        </a>
+
+        <a href="settings.html">
+            Settings
+        </a>
+
+    </div>
+
+</nav>
+
+
+
+<main class="container">
+
+
+    <a
+        href="javascript:history.back()"
+        class="back-btn">
+
+        ← Back
+
+    </a>
+
+
+    <!-- ================= LOADING ================= -->
+
+    <div
+        id="loadingState"
+        class="state">
+
+        <div class="spinner"></div>
+
+        <h2>
+            Loading opportunity...
+        </h2>
+
+        <p>
+            Retrieving opportunity information.
+        </p>
+
+    </div>
+
+
+
+    <!-- ================= ERROR ================= -->
+
+    <div
+        id="errorState"
+        class="state hidden">
+
+        <h2>
+            Unable to load opportunity
+        </h2>
+
+        <p id="errorMessage">
+            Something went wrong.
+        </p>
+
+        <button
+            class="btn secondary-btn"
+            onclick="loadOpportunity()"
+            style="margin-top:20px;">
+
+            Try Again
+
+        </button>
+
+    </div>
+
+
+
+    <!-- ================= NOT FOUND ================= -->
+
+    <div
+        id="emptyState"
+        class="state hidden">
+
+        <h2>
+            Opportunity not found
+        </h2>
+
+        <p>
+            This opportunity may have been removed or does not exist.
+        </p>
+
+    </div>
+
+
+
+    <!-- ================= CONTENT ================= -->
+
+    <section
+        id="content"
+        class="hidden">
+
+
+        <!-- ================= HEADER ================= -->
+
+        <div class="opportunity-header">
+
+            <span
+                id="status"
+                class="status">
+
+                Active Opportunity
+
+            </span>
+
+
+            <h1 id="jobTitle">
+                Opportunity
+            </h1>
+
+
+            <div
+                id="company"
+                class="company">
+
+                --
+
+            </div>
+
+
+            <p
+                id="description"
+                class="description">
+
+                --
+
+            </p>
+
+
+            <div
+                id="meta"
+                class="meta">
+
+            </div>
+
+        </div>
+
+
+
+        <!-- ================= MAIN GRID ================= -->
+
+        <div class="grid">
+
+
+            <!-- ================= LEFT ================= -->
+
+            <div>
+
+
+                <!-- REQUIREMENTS -->
+
+                <div class="card">
+
+                    <h2>
+                        Requirements
+                    </h2>
+
+
+                    <div class="requirement">
+
+                        <div class="requirement-title">
+                            Qualification
+                        </div>
+
+                        <div
+                            id="qualification"
+                            class="requirement-value">
+
+                            --
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="requirement">
+
+                        <div class="requirement-title">
+                            Experience
+                        </div>
+
+                        <div
+                            id="experience"
+                            class="requirement-value">
+
+                            --
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="requirement">
+
+                        <div class="requirement-title">
+                            Work Environment
+                        </div>
+
+                        <div
+                            id="workEnvironment"
+                            class="requirement-value">
+
+                            --
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="requirement">
+
+                        <div class="requirement-title">
+                            Employment Type
+                        </div>
+
+                        <div
+                            id="employmentType"
+                            class="requirement-value">
+
+                            --
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- SKILLS -->
+
+                <div class="card">
+
+                    <h2>
+                        Skills Required
+                    </h2>
+
+                    <div
+                        id="skills"
+                        class="tags">
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- AI -->
+
+                <div class="card">
+
+                    <div class="ai-box">
+
+                        <h3>
+                            ✦ Gradurat AI Matching
+                        </h3>
+
+                        <p>
+                            Gradurat compares this opportunity with student and graduate profiles using their qualifications, skills, interests, experience and career goals.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- ================= RIGHT ================= -->
+
+            <div class="card">
+
+                <h2>
+                    Potential Candidates
+                </h2>
+
+
+                <p style="margin-bottom:20px;">
+
+                    Candidates below are ranked according to their compatibility with this opportunity.
+
+                </p>
+
+
+                <!-- CANDIDATE LOADING -->
+
+                <div
+                    id="candidateLoading"
+                    class="state hidden"
+                    style="padding:50px 10px;">
+
+                    <div class="spinner"></div>
+
+                    <p>
+                        Finding potential candidates...
+                    </p>
+
+                </div>
+
+
+
+                <!-- CANDIDATES -->
+
+                <div
+                    id="candidateList"
+                    class="candidate-list">
+
+                </div>
+
+
+
+                <!-- EMPTY -->
+
+                <div
+                    id="candidateEmpty"
+                    class="empty hidden">
+
+                    <h3>
+                        No potential candidates yet
+                    </h3>
+
+                    <p>
+                        Gradurat hasn't found suitable candidates for this opportunity yet.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+</main>
+
+
+
+<script>
+
+
+/* =========================================
+   GET OPPORTUNITY ID
+========================================= */
+
+const params =
+    new URLSearchParams(
+        window.location.search
+    );
+
+const opportunityId =
+    params.get("id");
+
+
+
+/* =========================================
+   LOAD OPPORTUNITY
+========================================= */
+
+async function loadOpportunity() {
+
+    const loading =
+        document.getElementById(
+            "loadingState"
+        );
+
+    const error =
+        document.getElementById(
+            "errorState"
+        );
+
+    const empty =
+        document.getElementById(
+            "emptyState"
+        );
+
+    const content =
+        document.getElementById(
+            "content"
+        );
+
+
+    loading.classList.remove("hidden");
+
+    error.classList.add("hidden");
+
+    empty.classList.add("hidden");
+
+    content.classList.add("hidden");
+
+
+    if (!opportunityId) {
+
+        loading.classList.add("hidden");
+
+        empty.classList.remove("hidden");
+
+        return;
+    }
+
+
+    try {
+
+        /*
+            Backend:
+
+            GET /api/jobs/:id
+        */
+
+        const response =
+            await fetch(
+                `/api/jobs/${opportunityId}`
+            );
+
+
+        if (!response.ok) {
+
+            if (response.status === 404) {
+
+                loading.classList.add("hidden");
+
+                empty.classList.remove("hidden");
+
+                return;
+            }
+
+            throw new Error(
+                "Unable to load opportunity"
+            );
+        }
+
+
+        const opportunity =
+            await response.json();
+
+
+        renderOpportunity(
+            opportunity
+        );
+
+
+        loading.classList.add("hidden");
+
+        content.classList.remove("hidden");
+
+
+        /*
+            Once opportunity is loaded,
+            get AI-ranked candidates.
+        */
+
+        loadCandidates();
+
+
+    } catch (err) {
+
+        console.error(err);
+
+        loading.classList.add("hidden");
+
+        error.classList.remove("hidden");
+
+        document.getElementById(
+            "errorMessage"
+        ).textContent =
+            "The opportunity could not be loaded. Please try again.";
+
+    }
+
+}
+
+
+
+/* =========================================
+   RENDER OPPORTUNITY
+========================================= */
+
+function renderOpportunity(job) {
+
+    document.getElementById(
+        "jobTitle"
+    ).textContent =
+        job.title || "Opportunity";
+
+
+    document.getElementById(
+        "company"
+    ).textContent =
+        job.companyName ||
+        job.company ||
+        "Company";
+
+
+    document.getElementById(
+        "description"
+    ).textContent =
+        job.description ||
+        "No description provided.";
+
+
+    document.getElementById(
+        "qualification"
+    ).textContent =
+        job.qualification ||
+        "Not specified";
+
+
+    document.getElementById(
+        "experience"
+    ).textContent =
+        job.experience ||
+        "Not specified";
+
+
+    document.getElementById(
+        "workEnvironment"
+    ).textContent =
+        job.workEnvironment ||
+        "Not specified";
+
+
+    document.getElementById(
+        "employmentType"
+    ).textContent =
+        job.employmentType ||
+        "Not specified";
+
+
+    renderTags(
+        "skills",
+        job.skills
+    );
+
+
+    renderMeta(
+        job
+    );
+
+
+    const status =
+        document.getElementById(
+            "status"
+        );
+
+
+    if (job.status) {
+
+        status.textContent =
+            job.status;
+
+    }
+
+}
+
+
+
+/* =========================================
+   META
+========================================= */
+
+function renderMeta(job) {
+
+    const container =
+        document.getElementById(
+            "meta"
+        );
+
+    container.innerHTML = "";
+
+
+    const values = [
+
+        job.location,
+
+        job.industry,
+
+        job.salary,
+
+        job.applicationDeadline
+
+    ];
+
+
+    values
+        .filter(Boolean)
+        .forEach(value => {
+
+            const div =
+                document.createElement(
+                    "div"
+                );
+
+            div.className =
+                "meta-item";
+
+            div.textContent =
+                value;
+
+            container.appendChild(div);
+
+        });
+
+}
+
+
+
+/* =========================================
+   TAGS
+========================================= */
+
+function renderTags(
+    elementId,
+    tags
+) {
+
+    const container =
+        document.getElementById(
+            elementId
+        );
+
+    container.innerHTML = "";
+
+
+    if (
+        !Array.isArray(tags) ||
+        tags.length === 0
+    ) {
+
+        container.innerHTML =
+            `<span style="color:#666;font-size:13px;">
+                No skills specified
+            </span>`;
+
+        return;
+    }
+
+
+    tags.forEach(skill => {
+
+        const tag =
+            document.createElement(
+                "span"
+            );
+
+        tag.className =
+            "tag";
+
+        tag.textContent =
+            skill;
+
+        container.appendChild(tag);
+
+    });
+
+}
+
+
+
+/* =========================================
+   LOAD CANDIDATES
+========================================= */
+
+async function loadCandidates() {
+
+    const loading =
+        document.getElementById(
+            "candidateLoading"
+        );
+
+    const list =
+        document.getElementById(
+            "candidateList"
+        );
+
+    const empty =
+        document.getElementById(
+            "candidateEmpty"
+        );
+
+
+    loading.classList.remove(
+        "hidden"
+    );
+
+    list.innerHTML = "";
+
+    empty.classList.add(
+        "hidden"
+    );
+
+
+    try {
+
+        /*
+            Backend:
+
+            GET /api/jobs/:id/candidates
+
+            This endpoint should return
+            AI-ranked candidates.
+        */
+
+        const response =
+            await fetch(
+                `/api/jobs/${opportunityId}/candidates`
+            );
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                "Unable to load candidates"
+            );
+        }
+
+
+        const data =
+            await response.json();
+
+
+        /*
+            Supports either:
+
+            [...]
+            
+            OR
+
+            {
+                candidates: [...]
+            }
+        */
+
+        const candidates =
+            Array.isArray(data)
+                ? data
+                : data.candidates || [];
+
+
+        loading.classList.add(
+            "hidden"
+        );
+
+
+        if (
+            candidates.length === 0
+        ) {
+
+            empty.classList.remove(
+                "hidden"
+            );
+
+            return;
+        }
+
+
+        candidates.forEach(
+            candidate => {
+
+                renderCandidate(
+                    candidate
+                );
+
+            }
+        );
+
+
+    } catch (error) {
+
+        console.error(error);
+
+        loading.classList.add(
+            "hidden"
+        );
+
+        list.innerHTML = `
+            <div class="empty">
+
+                <h3>
+                    Candidates unavailable
+                </h3>
+
+                <p>
+                    Gradurat could not retrieve potential candidates right now.
+                </p>
+
+                <button
+                    class="btn secondary-btn"
+                    onclick="loadCandidates()"
+                    style="margin-top:15px;">
+
+                    Try Again
+
+                </button>
+
+            </div>
+        `;
+
+    }
+
+}
+
+
+
+/* =========================================
+   RENDER CANDIDATE
+========================================= */
+
+function renderCandidate(
+    candidate
+) {
+
+    const list =
+        document.getElementById(
+            "candidateList"
+        );
+
+
+    const card =
+        document.createElement(
+            "div"
+        );
+
+    card.className =
+        "candidate-card";
+
+
+    const photo =
+        candidate.photo ||
+        "https://via.placeholder.com/60?text=Profile";
+
+
+    const score =
+        candidate.matchScore !== null &&
+        candidate.matchScore !== undefined
+            ? `${candidate.matchScore}%`
+            : "--";
+
+
+    card.innerHTML = `
+
+        <div class="candidate-main">
+
+            <img
+                class="candidate-photo"
+                src="${escapeHTML(photo)}"
+                alt="Candidate"
+            >
+
+
+            <div class="candidate-info">
+
+                <h3>
+                    ${escapeHTML(
+                        candidate.name ||
+                        "Candidate"
+                    )}
+                </h3>
+
+
+                <div class="candidate-role">
+
+                    ${escapeHTML(
+                        candidate.role ||
+                        "Student / Graduate"
+                    )}
+
+                </div>
+
+
+                <div class="candidate-details">
+
+                    ${escapeHTML(
+                        candidate.qualification ||
+                        "Qualification not provided"
+                    )}
+
+                    ${candidate.field
+                        ? " • " +
+                          escapeHTML(
+                              candidate.field
+                          )
+                        : ""
+                    }
+
+                    ${candidate.experience
+                        ? " • " +
+                          escapeHTML(
+                              candidate.experience
+                          )
+                        : ""
+                    }
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+        <div class="candidate-actions">
+
+            <div class="match">
+
+                <div class="match-score">
+
+                    ${score}
+
+                </div>
+
+                <div class="match-label">
+
+                    AI Match
+
+                </div>
+
+            </div>
+
+
+            <button
+                class="btn primary-btn"
+                onclick="viewCandidate('${candidate.id}')">
+
+                View Profile
+
+            </button>
+
+        </div>
+
+    `;
+
+
+    list.appendChild(
+        card
+    );
+
+}
+
+
+
+/* =========================================
+   VIEW CANDIDATE
+========================================= */
+
+function viewCandidate(
+    id
+) {
+
+    if (!id) {
+
+        return;
+    }
+
+
+    window.location.href =
+        `candidate.html?id=${encodeURIComponent(id)}`;
+
+}
+
+
+
+/* =========================================
+   SECURITY
+========================================= */
+
+function escapeHTML(
+    value
+) {
+
+    const div =
+        document.createElement(
+            "div"
+        );
+
+    div.textContent =
+        value;
+
+    return div.innerHTML;
+}
+
+
+
+/* =========================================
+   START
+========================================= */
+
+loadOpportunity();
+
+</script>
+
+</body>
+</html>

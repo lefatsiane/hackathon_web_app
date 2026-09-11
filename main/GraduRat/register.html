@@ -1,108 +1,515 @@
-<!doctype html>
-<!-- Role router: a lightweight HTML page lets visitors choose a graduate or
-  employer flow before either form begins collecting API-bound data. -->
+<!DOCTYPE html>
+
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>GraduRat | Get Started</title>
 
-    <link rel="stylesheet" href="register.css" />
-  </head>
+<title>Gradurat | Create Account</title>
 
-  <body>
-    <!-- Background -->
-    <div class="background">
-      <div class="glow glow-one"></div>
-      <div class="glow glow-two"></div>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: 'Inter', sans-serif;
+        background: #05070d;
+        color: white;
+        min-height: 100vh;
+    }
+
+    /* NAVBAR */
+
+    .navbar {
+        height: 80px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 7%;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .brand {
+        display: flex;
+        align-items: center;
+        text-decoration: none;
+    }
+
+    .brand img {
+        width: 48px;
+        height: 48px;
+        object-fit: contain;
+    }
+
+    .home-link {
+        color: #aab3c5;
+        text-decoration: none;
+        font-size: 14px;
+        transition: 0.3s;
+    }
+
+    .home-link:hover {
+        color: #258cff;
+    }
+
+    /* MAIN */
+
+    .register-container {
+        min-height: calc(100vh - 80px);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 60px 20px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .register-container::before {
+        content: "";
+        position: absolute;
+        width: 500px;
+        height: 500px;
+        background: #0066ff;
+        opacity: 0.08;
+        filter: blur(140px);
+        border-radius: 50%;
+        top: 10%;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+
+    .register-box {
+        width: 100%;
+        max-width: 560px;
+        background: rgba(12, 16, 27, 0.95);
+        border: 1px solid rgba(37, 140, 255, 0.25);
+        border-radius: 20px;
+        padding: 45px;
+        position: relative;
+        z-index: 1;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
+    }
+
+    .heading {
+        text-align: center;
+        margin-bottom: 35px;
+    }
+
+    .heading h1 {
+        font-size: 32px;
+        margin-bottom: 12px;
+    }
+
+    .heading p {
+        color: #8d98ad;
+        font-size: 14px;
+        line-height: 1.6;
+    }
+
+    /* FORM */
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        font-size: 14px;
+        font-weight: 600;
+    }
+
+    .form-group input {
+        width: 100%;
+        padding: 14px 16px;
+        background: #080c15;
+        border: 1px solid #263044;
+        border-radius: 10px;
+        color: white;
+        font-size: 14px;
+        outline: none;
+        transition: 0.3s;
+    }
+
+    .form-group input:focus {
+        border-color: #258cff;
+        box-shadow: 0 0 0 3px rgba(37, 140, 255, 0.08);
+    }
+
+    .form-group input::placeholder {
+        color: #596377;
+    }
+
+    /* ROLE SELECTION */
+
+    .role-title {
+        font-size: 14px;
+        font-weight: 600;
+        margin-bottom: 12px;
+    }
+
+    .roles {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+        margin-bottom: 25px;
+    }
+
+    .role {
+        position: relative;
+    }
+
+    .role input {
+        position: absolute;
+        opacity: 0;
+    }
+
+    .role label {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        min-height: 75px;
+        padding: 10px;
+        border: 1px solid #263044;
+        border-radius: 10px;
+        background: #080c15;
+        color: #aab3c5;
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+
+    .role label:hover {
+        border-color: #258cff;
+        color: white;
+    }
+
+    .role input:checked + label {
+        border-color: #258cff;
+        background: rgba(37, 140, 255, 0.12);
+        color: white;
+        box-shadow: 0 0 20px rgba(37, 140, 255, 0.08);
+    }
+
+    /* BUTTON */
+
+    .register-btn {
+        width: 100%;
+        padding: 15px;
+        border: none;
+        border-radius: 10px;
+        background: #258cff;
+        color: white;
+        font-size: 14px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+
+    .register-btn:hover {
+        background: #1478e8;
+        transform: translateY(-1px);
+        box-shadow: 0 10px 25px rgba(37, 140, 255, 0.2);
+    }
+
+    .login-text {
+        text-align: center;
+        margin-top: 25px;
+        color: #7f899d;
+        font-size: 13px;
+    }
+
+    .login-text a {
+        color: #258cff;
+        text-decoration: none;
+        font-weight: 600;
+    }
+
+    .login-text a:hover {
+        text-decoration: underline;
+    }
+
+    /* RESPONSIVE */
+
+    @media (max-width: 600px) {
+
+        .navbar {
+            padding: 0 5%;
+        }
+
+        .register-box {
+            padding: 30px 22px;
+        }
+
+        .heading h1 {
+            font-size: 26px;
+        }
+
+        .roles {
+            grid-template-columns: 1fr;
+        }
+
+        .role label {
+            min-height: 55px;
+        }
+    }
+</style>
+
+
+</head>
+
+<body>
+
+
+<!-- NAVBAR -->
+
+<nav class="navbar">
+
+    <a href="index.html" class="brand">
+        <img src="logo1.jpg" alt="Gradurat Logo">
+    </a>
+
+    <a href="index.html" class="home-link">
+        Back to Home
+    </a>
+
+</nav>
+
+
+<!-- REGISTRATION -->
+
+<main class="register-container">
+
+    <div class="register-box">
+
+        <div class="heading">
+
+            <h1>Create Your Account</h1>
+
+            <p>
+                Start your Gradurat journey and discover where
+                your skills can take you.
+            </p>
+
+        </div>
+
+
+        <form id="registrationForm">
+
+            <div class="form-group">
+
+                <label for="fullName">
+                    Full Name
+                </label>
+
+                <input
+                    type="text"
+                    id="fullName"
+                    name="fullName"
+                    placeholder="Enter your full name"
+                    required
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="email">
+                    Email Address
+                </label>
+
+                <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    placeholder="Enter your email address"
+                    required
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="password">
+                    Password
+                </label>
+
+                <input
+                    type="password"
+                    id="password"
+                    name="password"
+                    placeholder="Create a password"
+                    required
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="confirmPassword">
+                    Confirm Password
+                </label>
+
+                <input
+                    type="password"
+                    id="confirmPassword"
+                    name="confirmPassword"
+                    placeholder="Confirm your password"
+                    required
+                >
+
+            </div>
+
+
+            <div class="role-title">
+                I am registering as a:
+            </div>
+
+
+            <div class="roles">
+
+                <div class="role">
+
+                    <input
+                        type="radio"
+                        id="student"
+                        name="role"
+                        value="student"
+                        required
+                    >
+
+                    <label for="student">
+                        Student
+                    </label>
+
+                </div>
+
+
+                <div class="role">
+
+                    <input
+                        type="radio"
+                        id="graduate"
+                        name="role"
+                        value="graduate"
+                    >
+
+                    <label for="graduate">
+                        Graduate
+                    </label>
+
+                </div>
+
+
+                <div class="role">
+
+                    <input
+                        type="radio"
+                        id="employer"
+                        name="role"
+                        value="employer"
+                    >
+
+                    <label for="employer">
+                        Employer
+                    </label>
+
+                </div>
+
+            </div>
+
+
+            <button
+                type="submit"
+                class="register-btn"
+            >
+                Create Account
+            </button><br><br>
+            <button
+                type="button"
+                class="register-btn"
+                onclick="window.location.href='login.html'"
+            >
+                Sign in
+            </button>
+
+        </form>
+
+
+        <div class="login-text">
+
+            Already have an account?
+
+            <a href="login.html">
+                Sign in
+            </a>
+
+        </div>
+
     </div>
 
-    <!-- Navigation -->
-    <header>
-      <a href="home.html" class="logo"> <span>G</span>radu<span>R</span>at </a>
+</main>
 
-      <a href="home.html" class="back"> ← Back to Home </a>
-    </header>
 
-    <!-- Main -->
-    <main>
-      <div class="container">
-        <div class="badge">
-          <span></span>
-          GET STARTED
-        </div>
 
-        <h1>
-          Welcome to
-          <span>GraduRat.</span>
-        </h1>
 
-        <p class="intro">
-          Let's get you connected with the right opportunities. Tell us what
-          brings you to GraduRat.
-        </p>
+<script>
+document.getElementById("registrationForm").addEventListener("submit", function(event) {
 
-        <!-- Role Cards -->
-        <div class="roles">
-          <!-- Graduate -->
-          <div class="role-card">
-            <div class="icon">🎓</div>
+    event.preventDefault();
 
-            <div class="role-content">
-              <h2>I'm a Graduate</h2>
+    // Get information from the registration form
+    const fullName = document.getElementById("fullName").value.trim();
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value;
+    const confirmPassword = document.getElementById("confirmPassword").value;
 
-              <p>
-                Looking for internships, graduate programmes, jobs or your next
-                career opportunity?
-              </p>
+    // Get selected role
+    const selectedRole = document.querySelector('input[name="role"]:checked');
 
-              <ul>
-                <li>✓ Create your professional profile</li>
-                <li>✓ Add your qualifications & skills</li>
-                <li>✓ Upload your CV & projects</li>
-                <li>✓ Discover matching jobs</li>
-              </ul>
-            </div>
+    // Check role
+    if (!selectedRole) {
+        alert("Please select your role.");
+        return;
+    }
 
-            <a href="graduate-register.html" class="role-button">
-              Continue as Graduate
-              <span>→</span>
-            </a>
-          </div>
+    // Check passwords
+    if (password !== confirmPassword) {
+        alert("Passwords do not match.");
+        return;
+    }
 
-          <!-- Employer -->
-          <div class="role-card employer">
-            <div class="icon">🏢</div>
+    // Create the user object
+    const user = {
+        fullName: fullName,
+        email: email,
+        password: password,
+        role: selectedRole.value
+    };
 
-            <div class="role-content">
-              <h2>I'm an Employer</h2>
+    // Save registration information
+    localStorage.setItem("graduratUser", JSON.stringify(user));
 
-              <p>
-                Looking for talented graduates with the skills your organisation
-                needs?
-              </p>
+    // Send user directly to profile page
+    window.location.href = "profile.html";
 
-              <ul>
-                <li>✓ Create your company profile</li>
-                <li>✓ Post available positions</li>
-                <li>✓ Discover qualified graduates</li>
-                <li>✓ Find your next team member</li>
-              </ul>
-            </div>
+});
+</script>
 
-            <a href="employer-register.html" class="role-button">
-              Continue as Employer
-              <span>→</span>
-            </a>
-          </div>
-        </div>
 
-        <p class="login">
-          Already have an account?
-          <a href="home.html">Return to home</a>
-        </p>
-      </div>
-    </main>
-  </body>
+
+</body>
 </html>
