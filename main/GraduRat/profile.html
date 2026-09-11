@@ -782,6 +782,7 @@
 
 
 <script>
+
 document.addEventListener("DOMContentLoaded", function () {
 
     /* =========================
@@ -798,22 +799,28 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const user = JSON.parse(savedUser);
 
-    // Display the information from registration
-    const profileName = document.getElementById("profileName");
-    const profileEmail = document.getElementById("profileEmail");
-    const profileRole = document.getElementById("profileRole");
 
-    if (profileName) {
-        profileName.textContent = user.fullName;
+    /* =========================
+       DISPLAY USER INFORMATION
+    ========================= */
+
+    const displayName = document.getElementById("displayName");
+    const displayEmail = document.getElementById("displayEmail");
+    const displayRole = document.getElementById("displayRole");
+
+    if (displayName) {
+        displayName.textContent = user.fullName || "Your Name";
     }
 
-    if (profileEmail) {
-        profileEmail.textContent = user.email;
+    if (displayEmail) {
+        displayEmail.textContent = user.email || "your@email.com";
     }
 
-    if (profileRole) {
-        profileRole.textContent =
-            user.role.charAt(0).toUpperCase() + user.role.slice(1);
+    if (displayRole) {
+        displayRole.textContent =
+            user.role
+                ? user.role.charAt(0).toUpperCase() + user.role.slice(1)
+                : "Role";
     }
 
 
@@ -824,7 +831,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const photoInput = document.getElementById("photoInput");
     const profilePhoto = document.getElementById("profilePhoto");
 
-    let savedPhoto = localStorage.getItem("graduratPhoto");
+    const savedPhoto = localStorage.getItem("graduratPhoto");
 
     if (savedPhoto && profilePhoto) {
         profilePhoto.src = savedPhoto;
@@ -842,9 +849,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
             reader.onload = function (event) {
 
-                if (profilePhoto) {
-                    profilePhoto.src = event.target.result;
-                }
+                profilePhoto.src = event.target.result;
 
                 localStorage.setItem(
                     "graduratPhoto",
@@ -863,51 +868,125 @@ document.addEventListener("DOMContentLoaded", function () {
        TAG SYSTEM
     ========================= */
 
-    function setupTags(inputId, containerId) {
+    function addTag(inputId, containerId) {
 
         const input = document.getElementById(inputId);
         const container = document.getElementById(containerId);
 
         if (!input || !container) return;
 
-        input.addEventListener("keydown", function (event) {
+        const value = input.value.trim();
+
+        if (value === "") return;
+
+        const tag = document.createElement("span");
+
+        tag.className = "tag";
+        tag.textContent = value;
+
+        // Click tag to remove it
+        tag.addEventListener("click", function () {
+            tag.remove();
+            updateProgress();
+        });
+
+        container.appendChild(tag);
+
+        input.value = "";
+
+        updateProgress();
+    }
+
+
+    /* =========================
+       SKILLS
+    ========================= */
+
+    window.addSkill = function () {
+
+        addTag(
+            "skillInput",
+            "skillTags"
+        );
+
+    };
+
+
+    /* =========================
+       INTERESTS
+    ========================= */
+
+    window.addInterest = function () {
+
+        addTag(
+            "interestInput",
+            "interestTags"
+        );
+
+    };
+
+
+    /* =========================
+       CERTIFICATIONS
+    ========================= */
+
+    window.addCertification = function () {
+
+        addTag(
+            "certificationInput",
+            "certificationTags"
+        );
+
+    };
+
+
+    /* =========================
+       ENTER KEY FOR TAGS
+    ========================= */
+
+    document
+        .getElementById("skillInput")
+        ?.addEventListener("keydown", function (event) {
 
             if (event.key === "Enter") {
 
                 event.preventDefault();
 
-                const value = input.value.trim();
+                addSkill();
 
-                if (value === "") return;
-
-                const tag = document.createElement("span");
-
-                tag.className = "tag";
-                tag.textContent = value;
-
-                // Click a tag to remove it
-                tag.addEventListener("click", function () {
-
-                    tag.remove();
-
-                    updateProgress();
-
-                });
-
-                container.appendChild(tag);
-
-                input.value = "";
-
-                updateProgress();
             }
+
         });
-    }
 
-    setupTags("skillInput", "skillsContainer");
 
-    setupTags("interestInput", "interestsContainer");
+    document
+        .getElementById("interestInput")
+        ?.addEventListener("keydown", function (event) {
 
-    setupTags("certificationInput", "certificationsContainer");
+            if (event.key === "Enter") {
+
+                event.preventDefault();
+
+                addInterest();
+
+            }
+
+        });
+
+
+    document
+        .getElementById("certificationInput")
+        ?.addEventListener("keydown", function (event) {
+
+            if (event.key === "Enter") {
+
+                event.preventDefault();
+
+                addCertification();
+
+            }
+
+        });
 
 
     /* =========================
@@ -925,12 +1004,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
             if (!file) return;
 
-            if (cvName) {
-                cvName.textContent = file.name;
-            }
+            cvName.textContent = file.name;
 
             updateProgress();
+
         });
+
     }
 
 
@@ -941,7 +1020,9 @@ document.addEventListener("DOMContentLoaded", function () {
     function updateProgress() {
 
         let completed = 0;
-        let total = 7;
+
+        const total = 7;
+
 
         const qualification =
             document.getElementById("qualification");
@@ -957,6 +1038,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
         const careerGoals =
             document.getElementById("careerGoals");
+
+        const skillTags =
+            document.getElementById("skillTags");
+
+        const interestTags =
+            document.getElementById("interestTags");
 
 
         if (
@@ -992,16 +1079,16 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
         if (
-            document.getElementById("skillsContainer") &&
-            document.getElementById("skillsContainer").children.length > 0
+            skillTags &&
+            skillTags.children.length > 0
         ) {
             completed++;
         }
 
 
         if (
-            document.getElementById("interestsContainer") &&
-            document.getElementById("interestsContainer").children.length > 0
+            interestTags &&
+            interestTags.children.length > 0
         ) {
             completed++;
         }
@@ -1022,19 +1109,25 @@ document.addEventListener("DOMContentLoaded", function () {
         const progressBar =
             document.getElementById("progressBar");
 
-        const progressText =
-            document.getElementById("progressText");
+        const completionText =
+            document.getElementById("completionText");
 
 
         if (progressBar) {
-            progressBar.style.width = percentage + "%";
+
+            progressBar.style.width =
+                percentage + "%";
+
         }
 
 
-        if (progressText) {
-            progressText.textContent =
-                percentage + "% Complete";
+        if (completionText) {
+
+            completionText.textContent =
+                percentage + "%";
+
         }
+
     }
 
 
@@ -1043,11 +1136,16 @@ document.addEventListener("DOMContentLoaded", function () {
     ========================= */
 
     document
-        .querySelectorAll("input, textarea")
+        .querySelectorAll("input, textarea, select")
         .forEach(function (element) {
 
             element.addEventListener(
                 "input",
+                updateProgress
+            );
+
+            element.addEventListener(
+                "change",
                 updateProgress
             );
 
@@ -1058,104 +1156,113 @@ document.addEventListener("DOMContentLoaded", function () {
        SAVE PROFILE
     ========================= */
 
-    const profileForm =
-        document.getElementById("profileForm");
+    window.saveProfile = function () {
+
+        const profile = {
+
+            /* Registration information */
+
+            id: user.id,
+
+            fullName: user.fullName,
+
+            email: user.email,
+
+            role: user.role,
 
 
-    if (profileForm) {
+            /* Professional information */
 
-        profileForm.addEventListener(
-            "submit",
-            function (event) {
+            qualification:
+                document.getElementById("qualification")?.value || "",
 
-                event.preventDefault();
+            institution:
+                document.getElementById("institution")?.value || "",
 
+            field:
+                document.getElementById("field")?.value || "",
 
-                const profile = {
-
-                    // Registration information
-                    fullName: user.fullName,
-
-                    email: user.email,
-
-                    role: user.role,
+            experience:
+                document.getElementById("experience")?.value || "",
 
 
-                    // Professional information
-                    qualification:
-                        document.getElementById("qualification")?.value || "",
+            /* Career goals */
 
-                    institution:
-                        document.getElementById("institution")?.value || "",
-
-                    field:
-                        document.getElementById("field")?.value || "",
-
-                    experience:
-                        document.getElementById("experience")?.value || "",
+            careerGoals:
+                document.getElementById("careerGoals")?.value || "",
 
 
-                    // Career goals
-                    careerGoals:
-                        document.getElementById("careerGoals")?.value || "",
+            /* CV */
+
+            cvName:
+                document.getElementById("cvInput")?.files[0]?.name || "",
 
 
-                    // CV
-                    cvName:
-                        cvInput?.files[0]?.name || "",
+            /* Skills */
+
+            skills:
+                Array.from(
+                    document.querySelectorAll("#skillTags .tag")
+                ).map(function (tag) {
+
+                    return tag.textContent;
+
+                }),
 
 
-                    // Skills
-                    skills:
-                        Array.from(
-                            document.querySelectorAll(
-                                "#skillsContainer .tag"
-                            )
-                        ).map(function (tag) {
-                            return tag.textContent;
-                        }),
+            /* Interests */
+
+            interests:
+                Array.from(
+                    document.querySelectorAll("#interestTags .tag")
+                ).map(function (tag) {
+
+                    return tag.textContent;
+
+                }),
 
 
-                    // Interests
-                    interests:
-                        Array.from(
-                            document.querySelectorAll(
-                                "#interestsContainer .tag"
-                            )
-                        ).map(function (tag) {
-                            return tag.textContent;
-                        }),
+            /* Certifications */
+
+            certifications:
+                Array.from(
+                    document.querySelectorAll("#certificationTags .tag")
+                ).map(function (tag) {
+
+                    return tag.textContent;
+
+                })
+
+        };
 
 
-                    // Certifications
-                    certifications:
-                        Array.from(
-                            document.querySelectorAll(
-                                "#certificationsContainer .tag"
-                            )
-                        ).map(function (tag) {
-                            return tag.textContent;
-                        })
-                };
+        /* =========================
+           SAVE PROFILE LOCALLY
+        ========================= */
 
-
-                // Save complete profile
-                localStorage.setItem(
-                    "graduratProfile",
-                    JSON.stringify(profile)
-                );
-
-
-                alert("Your profile has been saved!");
-
-
-                // For now, go to dashboard
-                window.location.href =
-                    "dashboard.html";
-
-            }
+        localStorage.setItem(
+            "graduratProfile",
+            JSON.stringify(profile)
         );
-    }
+
+
+        /* =========================
+           SHOW SUCCESS MESSAGE
+        ========================= */
+
+        alert(
+            "Your profile has been saved successfully!"
+        );
+
+
+        /* =========================
+           GO TO DASHBOARD
+        ========================= */
+
+        window.location.href =
+            "dashboard.html";
+
+    };
 
 
     /* =========================
@@ -1165,8 +1272,8 @@ document.addEventListener("DOMContentLoaded", function () {
     updateProgress();
 
 });
-</script>
 
+</script>
 
 
 
