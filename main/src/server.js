@@ -689,6 +689,34 @@ app.get("/api/students/:studentId", async (request, response) => {
   }
 });
 
+app.get("/api/students/:studentId/notifications", async (request, response) => {
+  try {
+    const { data, error } = await supabaseServer
+      .from("notifications")
+      .select("*, opportunities(title)")
+      .eq("student_id", request.params.studentId)
+      .order("created_at", { ascending: false });
+    if (error) throw error;
+    response.json({ notifications: data });
+  } catch (error) {
+    errorResponse(response, error, "Could not load notifications");
+  }
+});
+
+app.post("/api/students/:studentId/notifications/mark-read", async (request, response) => {
+  try {
+    const { error } = await supabaseServer
+      .from("notifications")
+      .update({ is_read: true })
+      .eq("student_id", request.params.studentId)
+      .eq("is_read", false);
+    if (error) throw error;
+    response.json({ status: "ok" });
+  } catch (error) {
+    errorResponse(response, error, "Could not mark notifications read");
+  }
+});
+
 app.patch("/api/students/:studentId", async (request, response) => {
   try {
     const updates = buildStudentUpdate(request.body || {});
@@ -1458,6 +1486,31 @@ app.post("/api/opportunities", async (request, response) => {
     .select()
     .single();
   if (error) return errorResponse(response, error, "Could not publish job");
+    // NEW: notify graduates when a job goes live
+  if (payload.status === "published") {
+    try {
+      const { data: employer } = await supabaseServer
+        .from("employers")
+        .select("company_name")
+        .eq("id", payload.employer_id)
+        .single();
+      const { data: students } = await supabaseServer
+        .from("students")
+        .select("id");
+      if (students?.length) {
+        const notifications = students.map((student) => ({
+          student_id: student.id,
+          opportunity_id: data.id,
+          type: "job_posted",
+          message: `${employer?.company_name || "An employer"} posted a new job: ${data.title}.`,
+        }));
+        await supabaseServer.from("notifications").insert(notifications);
+      }
+    } catch (notificationError) {
+      console.error("Could not create notifications:", notificationError.message);
+    }
+  }
+
   response.status(201).json({
     opportunity: data,
     profile_completeness: computeProfileCompleteness(data, "employer"),

@@ -96,11 +96,52 @@
         </div>
 
         <div class="top-actions">
-          <button class="notification">
+          <!-- <button class="notification">
             ♢
 
             <span></span>
-          </button>
+          </button> -->
+
+          <div class="notification-wrapper">
+  <button class="notification" id="notificationBtn">
+    Notifications 
+    <span id="notificationDot"></span>
+  </button>
+
+  <div class="notification-panel" id="notificationPanel">
+    <div class="notification-panel-header">
+      <h4>Notifications</h4>
+      <a href="#" id="markAllRead">Mark all as read</a>
+    </div>
+
+    <div class="notification-list" id="notificationList">
+      <!-- app.js will replace these with real data from Supabase -->
+      <div class="notification-item unread">
+        <div class="notification-icon match">✦</div>
+        <div class="notification-text">
+          <p><strong>New match!</strong> Alex M. matched with your Software Developer role.</p>
+          <small>2 hours ago</small>
+        </div>
+      </div>
+
+      <div class="notification-item unread">
+        <div class="notification-icon message">◉</div>
+        <div class="notification-text">
+          <p><strong>New message</strong> from Kai N.</p>
+          <small>Yesterday</small>
+        </div>
+      </div>
+
+      <div class="notification-item">
+        <div class="notification-icon match">✦</div>
+        <div class="notification-text">
+          <p><strong>New match!</strong> Lebo M. matched with your role.</p>
+          <small>2 days ago</small>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
           <div class="company-user">
             <div class="company-avatar">TC</div>

@@ -75,7 +75,7 @@ const submitForm = async (form) => {
 
 document.querySelectorAll("form[data-api-form]").forEach((form) => {
   // Attach behavior only to forms that opt into the API contract; static pages
-  // can continue to use ordinary links and markup without extra JavaScript.
+  can continue to use ordinary links and markup without extra JavaScript.
   form.addEventListener("submit", async (event) => {
     event.preventDefault();
     const button = form.querySelector("button[type=submit]");
@@ -235,8 +235,76 @@ const setupSearch = () => {
   });
 };
 
+const renderNotificationItem = (notification) => {
+  const item = document.createElement("div");
+  item.className = `notification-item${notification.is_read ? "" : " unread"}`;
+  const jobTitle = notification.opportunities?.title || "";
+  item.innerHTML = `<div class="notification-icon match">✦</div>
+    <div class="notification-text">
+      <p>${escapeHtml(notification.message)}</p>
+      <small>${new Date(notification.created_at).toLocaleDateString()}</small>
+    </div>`;
+  return item;
+};
+
+const renderNotifications = async () => {
+  const list = document.querySelector("#notificationList");
+  if (!list) return;
+  const studentId = localStorage.getItem("graduRatStudentId");
+  if (!studentId) return;
+  const { notifications } = await apiJson(
+    `/api/students/${encodeURIComponent(studentId)}/notifications`,
+  );
+  list.innerHTML = "";
+  notifications.forEach((notification) =>
+    list.append(renderNotificationItem(notification)),
+  );
+  const unreadCount = notifications.filter((n) => !n.is_read).length;
+  const dot = document.querySelector("#notificationDot");
+  if (dot) dot.style.display = unreadCount > 0 ? "block" : "none";
+};
 // Both functions safely no-op on pages where their dashboard markup is absent;
 // running them together lets the shared script load on every frontend page.
-Promise.all([renderGraduateDashboard(), renderEmployerDashboard()])
+
+//i have commented the following out 
+// Promise.all([renderGraduateDashboard(), renderEmployerDashboard()])
+//   .catch((error) => console.error(error))
+//   .finally(setupSearch);
+
+
+
+Promise.all([renderGraduateDashboard(), renderEmployerDashboard(), renderNotifications()])
   .catch((error) => console.error(error))
   .finally(setupSearch);
+
+// Toggle the notification panel open/closed
+const notificationBtn = document.getElementById("notificationBtn");
+const notificationPanel = document.getElementById("notificationPanel");
+
+notificationBtn.addEventListener("click", (e) => {
+  e.stopPropagation();
+  notificationPanel.classList.toggle("show");
+});
+
+const markAllRead = document.getElementById("markAllRead");
+if (markAllRead) {
+  markAllRead.addEventListener("click", async (e) => {
+    e.preventDefault();
+    const studentId = localStorage.getItem("graduRatStudentId");
+    if (!studentId) return;
+    await fetch(`/api/students/${encodeURIComponent(studentId)}/notifications/mark-read`, {
+      method: "POST",
+    });
+    renderNotifications();
+  });
+}
+
+// Close it when clicking anywhere else on the page
+document.addEventListener("click", (e) => {
+  if (!notificationPanel.contains(e.target) && e.target !== notificationBtn) {
+    notificationPanel.classList.remove("show");
+  }
+});
+
+
+

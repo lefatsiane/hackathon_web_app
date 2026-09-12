@@ -214,7 +214,7 @@ nav a.active {
   gap: 25px;
 }
 
-.notification {
+/* .notification {
   position: relative;
 
   border: none;
@@ -226,6 +226,125 @@ nav a.active {
   font-size: 22px;
 
   cursor: pointer;
+} */
+
+/* =========================
+   NOTIFICATIONS
+========================= */
+
+.notification-wrapper {
+  position: relative;
+}
+
+#notificationBtn{
+  font-family: Arial, Helvetica, sans-serif;
+  background: #06152b;
+  border: 1px solid #12396e;
+  border-radius: 10px;
+  color: white;
+  padding: 7px;
+}
+
+.notification-panel {
+  position: absolute;
+  top: 45px;
+  right: 0;
+  width: 320px;
+  max-height: 380px;
+  overflow-y: auto;
+
+  background: #050c17;
+  border: 1px solid #10223b;
+  border-radius: 11px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+
+  z-index: 50;
+  display: none;
+}
+
+.notification-panel.show {
+  display: block;
+}
+
+.notification-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 14px 16px;
+  border-bottom: 1px solid #10223b;
+}
+
+.notification-panel-header h4 {
+  font-size: 13px;
+}
+
+.notification-panel-header a {
+  color: #3989ff;
+  text-decoration: none;
+  font-size: 10px;
+}
+
+.notification-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.notification-item {
+  display: flex;
+  gap: 12px;
+  padding: 13px 16px;
+  border-bottom: 1px solid #0d192c;
+  transition: 0.2s;
+}
+
+.notification-item:last-child {
+  border-bottom: none;
+}
+
+.notification-item:hover {
+  background: #07152b;
+}
+
+.notification-item.unread {
+  background: #061223;
+}
+
+.notification-icon {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+.notification-icon.match {
+  background: #092e68;
+  color: #4b98ff;
+}
+
+.notification-icon.message {
+  background: #24154f;
+  color: #9b73ff;
+}
+
+.notification-text p {
+  font-size: 11px;
+  color: #d6dee8;
+  line-height: 1.4;
+}
+
+.notification-text strong {
+  color: white;
+}
+
+.notification-text small {
+  display: block;
+  margin-top: 4px;
+  color: #526177;
+  font-size: 9px;
 }
 
 .notification span {
