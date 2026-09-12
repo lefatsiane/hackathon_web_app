@@ -75,7 +75,7 @@ const submitForm = async (form) => {
 
 document.querySelectorAll("form[data-api-form]").forEach((form) => {
   // Attach behavior only to forms that opt into the API contract; static pages
-  //can continue to use ordinary links and markup without extra JavaScript.
+  // can continue to use ordinary links and markup without extra JavaScript.
   form.addEventListener("submit", async (event) => {
     event.preventDefault();
     const button = form.querySelector("button[type=submit]");
