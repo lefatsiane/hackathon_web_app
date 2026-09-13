@@ -25,15 +25,48 @@
         box-sizing: border-box;
       }
 
+      :root {
+        --background: #05070d;
+        --navbar: #070a12;
+        --card: #0b0f1a;
+        --border: #1b2435;
+        --input-border: #202a3d;
+        --text: #ffffff;
+        --secondary-text: #8d98ad;
+        --muted-text: #7f899d;
+        --blue: #258cff;
+        --blue-hover: #1478e8;
+        --blue-light: rgba(37, 140, 255, 0.1);
+        --blue-border: rgba(37, 140, 255, 0.3);
+      }
+
+      body.light-theme {
+        --background: #f4f7fb;
+        --navbar: #ffffff;
+        --card: #ffffff;
+        --border: #dce3ee;
+        --input-border: #c8d2e2;
+        --text: #111827;
+        --secondary-text: #5c677a;
+        --muted-text: #697586;
+        --blue: #1266e3;
+        --blue-hover: #0958c9;
+        --blue-light: #eaf2ff;
+        --blue-border: #b9d3ff;
+      }
+
       /* =========================
            BODY
         ========================= */
 
       body {
         font-family: "Inter", sans-serif;
-        background: #05070d;
-        color: white;
+        background: var(--background);
+        color: var(--text);
         min-height: 100vh;
+        transition:
+          background 0.25s ease,
+          color 0.25s ease;
       }
 
       /* =========================
@@ -49,9 +82,9 @@
 
         padding: 0 6%;
 
-        background: #070a12;
+        background: var(--navbar);
 
-        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        border-bottom: 1px solid var(--border);
 
         position: sticky;
         top: 0;
@@ -81,7 +114,7 @@
       }
 
       .nav-links a {
-        color: #8d98ad;
+        color: var(--secondary-text);
 
         text-decoration: none;
 
@@ -93,7 +126,7 @@
 
       .nav-links a:hover,
       .nav-links a.active {
-        color: #258cff;
+        color: var(--blue);
       }
 
       .profile-nav {
@@ -111,9 +144,9 @@
 
         object-fit: cover;
 
-        border: 2px solid #258cff;
+        border: 2px solid var(--blue);
 
-        background: #101522;
+        background: var(--card);
       }
 
       /* =========================
@@ -145,11 +178,11 @@
       }
 
       .welcome h1 span {
-        color: #258cff;
+        color: var(--blue);
       }
 
       .welcome p {
-        color: #8d98ad;
+        color: var(--secondary-text);
 
         font-size: 15px;
 
@@ -165,11 +198,11 @@
 
         border-radius: 20px;
 
-        background: rgba(37, 140, 255, 0.1);
+        background: var(--blue-light);
 
-        border: 1px solid rgba(37, 140, 255, 0.3);
+        border: 1px solid var(--blue-border);
 
-        color: #5da8ff;
+        color: var(--blue);
 
         font-size: 12px;
 
@@ -197,9 +230,9 @@
         ========================= */
 
       .match-card {
-        background: linear-gradient(135deg, #0d1628, #080c15);
+        background: var(--card);
 
-        border: 1px solid rgba(37, 140, 255, 0.25);
+        border: 1px solid var(--blue-border);
 
         border-radius: 18px;
 
@@ -231,7 +264,7 @@
       }
 
       .small-title {
-        color: #7f899d;
+        color: var(--muted-text);
 
         font-size: 12px;
 
@@ -255,7 +288,7 @@
       }
 
       .match-description {
-        color: #8d98ad;
+        color: var(--secondary-text);
 
         font-size: 14px;
 
@@ -288,7 +321,7 @@
 
         border-radius: 50%;
 
-        border: 5px solid #263044;
+        border: 5px solid var(--input-border);
 
         display: flex;
 
@@ -299,7 +332,7 @@
 
         font-weight: 800;
 
-        color: #7f899d;
+        color: var(--muted-text);
       }
 
       .score-info strong {
@@ -311,7 +344,7 @@
       }
 
       .score-info span {
-        color: #7f899d;
+        color: var(--muted-text);
 
         font-size: 12px;
       }
@@ -323,7 +356,7 @@
 
         padding: 11px 18px;
 
-        background: #258cff;
+        background: var(--blue);
 
         color: white;
 
@@ -343,7 +376,7 @@
       }
 
       .view-btn:hover {
-        background: #1478e8;
+        background: var(--blue-hover);
 
         transform: translateY(-1px);
       }
@@ -353,9 +386,9 @@
         ========================= */
 
       .completion-card {
-        background: #0b0f1a;
+        background: var(--card);
 
-        border: 1px solid #1b2435;
+        border: 1px solid var(--border);
 
         border-radius: 18px;
 
@@ -369,7 +402,7 @@
       }
 
       .completion-card p {
-        color: #7f899d;
+        color: var(--muted-text);
 
         font-size: 12px;
 
@@ -383,7 +416,7 @@
 
         height: 8px;
 
-        background: #171e2d;
+        background: var(--border);
 
         border-radius: 20px;
 
@@ -397,7 +430,7 @@
 
         height: 100%;
 
-        background: #258cff;
+        background: var(--blue);
 
         border-radius: 20px;
 
@@ -405,7 +438,7 @@
       }
 
       .completion-number {
-        color: #258cff;
+        color: var(--blue);
 
         font-size: 13px;
 
@@ -421,11 +454,11 @@
 
         padding: 11px;
 
-        border: 1px solid #263044;
+        border: 1px solid var(--input-border);
 
         border-radius: 9px;
 
-        color: #aab3c5;
+        color: var(--secondary-text);
 
         text-decoration: none;
 
@@ -437,9 +470,9 @@
       }
 
       .complete-profile-btn:hover {
-        border-color: #258cff;
+        border-color: var(--blue);
 
-        color: white;
+        color: var(--text);
       }
 
       /* =========================
@@ -461,7 +494,7 @@
       }
 
       .section-header a {
-        color: #258cff;
+        color: var(--blue);
 
         text-decoration: none;
 
@@ -483,9 +516,9 @@
       }
 
       .feature-card {
-        background: #0b0f1a;
+        background: var(--card);
 
-        border: 1px solid #1b2435;
+        border: 1px solid var(--border);
 
         border-radius: 16px;
 
@@ -495,7 +528,7 @@
       }
 
       .feature-card:hover {
-        border-color: rgba(37, 140, 255, 0.5);
+        border-color: var(--blue-border);
 
         transform: translateY(-3px);
       }
@@ -511,9 +544,9 @@
 
         border-radius: 10px;
 
-        background: rgba(37, 140, 255, 0.1);
+        background: var(--blue-light);
 
-        color: #258cff;
+        color: var(--blue);
 
         font-size: 18px;
 
@@ -529,7 +562,7 @@
       }
 
       .feature-card p {
-        color: #7f899d;
+        color: var(--muted-text);
 
         font-size: 12px;
 
@@ -539,7 +572,7 @@
       }
 
       .feature-card a {
-        color: #258cff;
+        color: var(--blue);
 
         text-decoration: none;
 
@@ -561,9 +594,9 @@
       }
 
       .opportunity-list {
-        background: #0b0f1a;
+        background: var(--card);
 
-        border: 1px solid #1b2435;
+        border: 1px solid var(--border);
 
         border-radius: 16px;
 
@@ -573,7 +606,7 @@
       .opportunity {
         padding: 22px;
 
-        border-bottom: 1px solid #171e2d;
+        border-bottom: 1px solid var(--border);
       }
 
       .opportunity:last-child {
@@ -587,7 +620,7 @@
       }
 
       .opportunity-info p {
-        color: #7f899d;
+        color: var(--muted-text);
 
         font-size: 11px;
 
@@ -599,9 +632,9 @@
         ========================= */
 
       .quick-card {
-        background: #0b0f1a;
+        background: var(--card);
 
-        border: 1px solid #1b2435;
+        border: 1px solid var(--border);
 
         border-radius: 16px;
 
@@ -621,11 +654,11 @@
 
         margin-bottom: 10px;
 
-        border: 1px solid #202a3d;
+        border: 1px solid var(--input-border);
 
         border-radius: 9px;
 
-        color: #aab3c5;
+        color: var(--secondary-text);
 
         text-decoration: none;
 
@@ -635,9 +668,9 @@
       }
 
       .quick-action:hover {
-        border-color: #258cff;
+        border-color: var(--blue);
 
-        color: white;
+        color: var(--text);
       }
 
       /* =========================
@@ -645,13 +678,13 @@
         ========================= */
 
       footer {
-        border-top: 1px solid #171e2d;
+        border-top: 1px solid var(--border);
 
         padding: 25px;
 
         text-align: center;
 
-        color: #596377;
+        color: var(--muted-text);
 
         font-size: 11px;
       }
@@ -707,6 +740,7 @@
   </head>
 
   <body>
+    <script src="theme.js"></script>
     <!-- =========================
      NAVBAR
 ========================= -->

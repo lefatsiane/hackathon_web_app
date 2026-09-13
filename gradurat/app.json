@@ -39,6 +39,12 @@
         }
       ],
       "expo-image",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Allow GraduRat to select a profile photo."
+        }
+      ],
       "expo-web-browser"
     ],
     "experiments": {

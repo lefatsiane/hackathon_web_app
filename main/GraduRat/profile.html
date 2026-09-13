@@ -21,11 +21,44 @@
         box-sizing: border-box;
       }
 
+      :root {
+        --background: #05070d;
+        --card: #0c101b;
+        --card-alt: #080c15;
+        --border: #202a3d;
+        --input-border: #263044;
+        --text: #ffffff;
+        --secondary-text: #aab3c5;
+        --muted-text: #8994a8;
+        --blue: #258cff;
+        --blue-hover: #1478e8;
+        --blue-light: rgba(37, 140, 255, 0.1);
+        --blue-border: rgba(37, 140, 255, 0.25);
+      }
+
+      body.light-theme {
+        --background: #f4f7fb;
+        --card: #ffffff;
+        --card-alt: #f8fafc;
+        --border: #dce3ee;
+        --input-border: #c8d2e2;
+        --text: #111827;
+        --secondary-text: #5c677a;
+        --muted-text: #697586;
+        --blue: #1266e3;
+        --blue-hover: #0958c9;
+        --blue-light: #eaf2ff;
+        --blue-border: #b9d3ff;
+      }
+
       body {
         font-family: "Inter", sans-serif;
-        background: #05070d;
-        color: white;
+        background: var(--background);
+        color: var(--text);
         min-height: 100vh;
+        transition:
+          background 0.25s ease,
+          color 0.25s ease;
       }
 
       /* NAVBAR */
@@ -46,13 +79,13 @@
       }
 
       .home-link {
-        color: #aab3c5;
+        color: var(--secondary-text);
         text-decoration: none;
         font-size: 14px;
       }
 
       .home-link:hover {
-        color: #258cff;
+        color: var(--blue);
       }
 
       /* PAGE */
@@ -73,7 +106,7 @@
       }
 
       .page-heading p {
-        color: #8994a8;
+        color: var(--muted-text);
         line-height: 1.6;
         font-size: 14px;
       }
@@ -81,8 +114,8 @@
       /* PROFILE HEADER */
 
       .profile-header {
-        background: #0c101b;
-        border: 1px solid #202a3d;
+        background: var(--card);
+        border: 1px solid var(--border);
         border-radius: 18px;
         padding: 30px;
         display: flex;
@@ -99,18 +132,50 @@
         width: 110px;
         height: 110px;
         border-radius: 50%;
-        border: 2px solid #258cff;
-        background: #080c15;
+        border: 2px solid var(--blue);
+        background: var(--card-alt);
         object-fit: cover;
         display: block;
+      }
+
+      .profile-photo-fallback {
+        width: 110px;
+        height: 110px;
+        border-radius: 50%;
+        border: 2px solid var(--blue);
+        background: var(--card-alt);
+        display: grid;
+        place-items: center;
+        color: var(--text);
+        font-size: 30px;
+        font-weight: 700;
+      }
+
+      .profile-photo[hidden],
+      .profile-photo-fallback[hidden] {
+        display: none;
       }
 
       .photo-button {
         display: inline-block;
         margin-top: 12px;
-        color: #258cff;
+        color: var(--blue);
         font-size: 12px;
         cursor: pointer;
+      }
+
+      .photo-button.remove {
+        border: 0;
+        background: transparent;
+        padding: 0;
+        margin-left: 12px;
+      }
+
+      .photo-status {
+        min-height: 18px;
+        margin-top: 8px;
+        color: var(--muted-text);
+        font-size: 12px;
       }
 
       #photoInput {
@@ -123,7 +188,7 @@
       }
 
       .user-info p {
-        color: #8994a8;
+        color: var(--muted-text);
         font-size: 14px;
         margin-bottom: 5px;
       }
@@ -133,8 +198,8 @@
         margin-top: 8px;
         padding: 6px 12px;
         border-radius: 20px;
-        background: rgba(37, 140, 255, 0.1);
-        color: #258cff;
+        background: var(--blue-light);
+        color: var(--blue);
         font-size: 12px;
         font-weight: 600;
       }
@@ -142,8 +207,8 @@
       /* COMPLETION */
 
       .completion {
-        background: #0c101b;
-        border: 1px solid #202a3d;
+        background: var(--card);
+        border: 1px solid var(--border);
         border-radius: 18px;
         padding: 25px;
         margin-bottom: 25px;
@@ -157,13 +222,13 @@
       }
 
       .completion-top span:last-child {
-        color: #258cff;
+        color: var(--blue);
         font-weight: 700;
       }
 
       .progress-bar {
         height: 7px;
-        background: #1a2232;
+        background: var(--input-border);
         border-radius: 10px;
         overflow: hidden;
       }
@@ -171,7 +236,7 @@
       .progress {
         width: 20%;
         height: 100%;
-        background: #258cff;
+        background: var(--blue);
         border-radius: 10px;
         transition: 0.3s;
       }
@@ -179,8 +244,8 @@
       /* SECTIONS */
 
       .section {
-        background: #0c101b;
-        border: 1px solid #202a3d;
+        background: var(--card);
+        border: 1px solid var(--border);
         border-radius: 18px;
         padding: 30px;
         margin-bottom: 25px;
@@ -192,7 +257,7 @@
       }
 
       .section-description {
-        color: #7f899d;
+        color: var(--muted-text);
         font-size: 13px;
         margin-bottom: 25px;
       }
@@ -226,9 +291,9 @@
         width: 100%;
         padding: 14px;
         border-radius: 10px;
-        border: 1px solid #263044;
-        background: #080c15;
-        color: white;
+        border: 1px solid var(--input-border);
+        background: var(--card-alt);
+        color: var(--text);
         outline: none;
         font-family: inherit;
         font-size: 13px;
@@ -237,7 +302,7 @@
       input:focus,
       textarea:focus,
       select:focus {
-        border-color: #258cff;
+        border-color: var(--blue);
       }
 
       textarea {
@@ -248,15 +313,15 @@
       /* FILE UPLOAD */
 
       .file-upload {
-        border: 1px dashed #33415b;
-        background: #080c15;
+        border: 1px dashed var(--input-border);
+        background: var(--card-alt);
         padding: 25px;
         border-radius: 12px;
         text-align: center;
       }
 
       .file-upload p {
-        color: #7f899d;
+        color: var(--muted-text);
         font-size: 12px;
         margin-bottom: 12px;
       }
@@ -264,8 +329,8 @@
       .file-label {
         display: inline-block;
         padding: 10px 18px;
-        background: rgba(37, 140, 255, 0.1);
-        color: #258cff;
+        background: var(--blue-light);
+        color: var(--blue);
         border-radius: 8px;
         font-size: 12px;
         cursor: pointer;
@@ -281,7 +346,7 @@
 
       .file-name {
         margin-top: 10px;
-        color: #aab3c5;
+        color: var(--secondary-text);
         font-size: 12px;
       }
 
@@ -298,15 +363,15 @@
 
       .add-btn {
         padding: 0 18px;
-        border: 1px solid #258cff;
+        border: 1px solid var(--blue);
         background: transparent;
-        color: #258cff;
+        color: var(--blue);
         border-radius: 10px;
         cursor: pointer;
       }
 
       .add-btn:hover {
-        background: rgba(37, 140, 255, 0.1);
+        background: var(--blue-light);
       }
 
       .tags {
@@ -317,9 +382,9 @@
       }
 
       .tag {
-        background: rgba(37, 140, 255, 0.1);
+        background: var(--blue-light);
         color: #7dbbff;
-        border: 1px solid rgba(37, 140, 255, 0.25);
+        border: 1px solid var(--blue-border);
         padding: 7px 10px;
         border-radius: 20px;
         font-size: 11px;
@@ -344,19 +409,19 @@
       }
 
       .btn-secondary {
-        border: 1px solid #263044;
-        color: #aab3c5;
+        border: 1px solid var(--input-border);
+        color: var(--secondary-text);
         background: transparent;
       }
 
       .btn-primary {
         border: none;
         color: white;
-        background: #258cff;
+        background: var(--blue);
       }
 
       .btn-primary:hover {
-        background: #1478e8;
+        background: var(--blue-hover);
       }
 
       /* RESPONSIVE */
@@ -393,11 +458,10 @@
         }
       }
     </style>
-    ```
   </head>
 
   <body>
-    ```
+    <script src="theme.js"></script>
     <!-- NAVIGATION -->
 
     <nav class="navbar">
@@ -429,11 +493,25 @@
             class="profile-photo"
             src=""
             alt="Profile Photo"
+            hidden
           />
+
+          <div id="profilePhotoFallback" class="profile-photo-fallback">GR</div>
 
           <label for="photoInput" class="photo-button"> Upload Photo </label>
 
           <input type="file" id="photoInput" accept="image/*" />
+
+          <button
+            id="removePhoto"
+            class="photo-button remove"
+            type="button"
+            hidden
+          >
+            Remove
+          </button>
+
+          <p id="photoStatus" class="photo-status" aria-live="polite"></p>
         </div>
 
         <div class="user-info">
@@ -587,9 +665,20 @@
 
           <label for="cvInput" class="file-label"> Choose CV </label>
 
-          <input type="file" id="cvInput" accept=".pdf,.doc,.docx" />
+          <input type="file" id="cvInput" accept="application/pdf" />
+
+          <button
+            id="removeCv"
+            class="photo-button remove"
+            type="button"
+            hidden
+          >
+            Remove
+          </button>
 
           <div class="file-name" id="cvName"></div>
+
+          <p id="cvStatus" class="photo-status" aria-live="polite"></p>
         </div>
       </section>
 
@@ -629,8 +718,9 @@
     ========================= */
 
         const savedUser = localStorage.getItem("graduratUser");
+        const storedStudentId = localStorage.getItem("graduRatStudentId");
 
-        if (!savedUser) {
+        if (!savedUser && !storedStudentId) {
           alert(
             "No registration information found. Please create an account first.",
           );
@@ -638,7 +728,9 @@
           return;
         }
 
-        const user = JSON.parse(savedUser);
+        const user = savedUser
+          ? JSON.parse(savedUser)
+          : { fullName: "Graduate", email: "", role: "student" };
 
         // Display the information from registration
         const profileName = document.getElementById("profileName");
@@ -665,33 +757,140 @@
         const photoInput = document.getElementById("photoInput");
         const profilePhoto = document.getElementById("profilePhoto");
 
-        let savedPhoto = localStorage.getItem("graduratPhoto");
+        const photoFallback = document.getElementById("profilePhotoFallback");
+        const removePhoto = document.getElementById("removePhoto");
+        const photoStatus = document.getElementById("photoStatus");
+        const studentId = storedStudentId;
+        const supportedImageTypes = new Set([
+          "image/jpeg",
+          "image/png",
+          "image/webp",
+        ]);
+        const initials = (name) =>
+          String(name || "Graduate")
+            .trim()
+            .split(/\s+/)
+            .slice(0, 2)
+            .map((part) => part[0])
+            .join("")
+            .toUpperCase();
+        const setPhoto = (url) => {
+          const hasPhoto = Boolean(url);
+          if (profilePhoto) {
+            profilePhoto.src = hasPhoto ? url : "";
+            profilePhoto.hidden = !hasPhoto;
+          }
+          if (photoFallback) {
+            photoFallback.textContent = initials(user.fullName);
+            photoFallback.hidden = hasPhoto;
+          }
+          if (removePhoto) removePhoto.hidden = !hasPhoto;
+        };
+        const setPhotoStatus = (message, isError = false) => {
+          if (!photoStatus) return;
+          photoStatus.textContent = message;
+          photoStatus.style.color = isError ? "#ff8d8d" : "#8994a8";
+        };
+        const requestJson = async (url, options) => {
+          const response = await graduratAuth.apiFetch(url, options);
+          const result = await graduratAuth.readJson(
+            response,
+            "The profile photo response was not valid JSON.",
+          );
+          if (!response.ok)
+            throw new Error(result.error || "Profile photo request failed.");
+          return result;
+        };
 
-        if (savedPhoto && profilePhoto) {
-          profilePhoto.src = savedPhoto;
+        setPhoto(null);
+        if (studentId) {
+          requestJson(`/api/students/${encodeURIComponent(studentId)}`)
+            .then((result) => {
+              user.fullName = result.student.full_name || user.fullName;
+              setPhoto(result.student.profile_picture_url);
+            })
+            .catch((error) => setPhotoStatus(error.message, true));
         }
 
         if (photoInput) {
-          photoInput.addEventListener("change", function () {
+          photoInput.addEventListener("change", async function () {
             const file = this.files[0];
-
             if (!file) return;
+            if (!studentId) {
+              setPhotoStatus(
+                "Your authenticated profile is not ready yet.",
+                true,
+              );
+              return;
+            }
+            if (!supportedImageTypes.has(file.type)) {
+              setPhotoStatus("Choose a JPEG, PNG, or WebP image.", true);
+              return;
+            }
+            if (file.size > 5 * 1024 * 1024) {
+              setPhotoStatus("Profile photos must be 5 MB or smaller.", true);
+              return;
+            }
 
-            const reader = new FileReader();
-
-            reader.onload = function (event) {
-              if (profilePhoto) {
-                profilePhoto.src = event.target.result;
-              }
-
-              localStorage.setItem("graduratPhoto", event.target.result);
-
-              updateProgress();
-            };
-
-            reader.readAsDataURL(file);
+            photoInput.disabled = true;
+            setPhotoStatus("Uploading photo...");
+            const previewUrl = URL.createObjectURL(file);
+            setPhoto(previewUrl);
+            try {
+              const upload = await requestJson(
+                `/api/students/${encodeURIComponent(studentId)}/avatar/upload-url`,
+                {
+                  method: "POST",
+                  body: JSON.stringify({ content_type: file.type }),
+                },
+              );
+              const uploadResponse = await fetch(upload.upload_url, {
+                method: "PUT",
+                headers: {
+                  "Content-Type": upload.content_type,
+                  "x-upsert": "true",
+                },
+                body: file,
+              });
+              if (!uploadResponse.ok)
+                throw new Error("The image could not be uploaded.");
+              const result = await requestJson(
+                `/api/students/${encodeURIComponent(studentId)}/avatar`,
+                {
+                  method: "POST",
+                  body: JSON.stringify({ avatar_path: upload.avatar_path }),
+                },
+              );
+              setPhoto(result.student.profile_picture_url);
+              setPhotoStatus("Profile photo saved.");
+            } catch (error) {
+              setPhoto(null);
+              setPhotoStatus(error.message, true);
+            } finally {
+              URL.revokeObjectURL(previewUrl);
+              photoInput.value = "";
+              photoInput.disabled = false;
+            }
           });
         }
+
+        removePhoto?.addEventListener("click", async () => {
+          if (!studentId) return;
+          removePhoto.disabled = true;
+          setPhotoStatus("Removing photo...");
+          try {
+            await requestJson(
+              `/api/students/${encodeURIComponent(studentId)}/avatar`,
+              { method: "DELETE" },
+            );
+            setPhoto(null);
+            setPhotoStatus("Profile photo removed.");
+          } catch (error) {
+            setPhotoStatus(error.message, true);
+          } finally {
+            removePhoto.disabled = false;
+          }
+        });
 
         /* =========================
        TAG SYSTEM
@@ -744,20 +943,101 @@
 
         const cvInput = document.getElementById("cvInput");
         const cvName = document.getElementById("cvName");
+        const removeCv = document.getElementById("removeCv");
+        const cvStatus = document.getElementById("cvStatus");
+        const setCvStatus = (message, isError = false) => {
+          if (!cvStatus) return;
+          cvStatus.textContent = message;
+          cvStatus.style.color = isError ? "#ff8d8d" : "#8994a8";
+        };
+        const setCvName = (hasCv) => {
+          if (cvName) cvName.textContent = hasCv ? "CV uploaded" : "";
+          if (removeCv) removeCv.hidden = !hasCv;
+        };
+
+        setCvName(false);
+        if (studentId) {
+          requestJson(`/api/students/${encodeURIComponent(studentId)}`)
+            .then((result) => setCvName(Boolean(result.student.cv_path)))
+            .catch((error) => setCvStatus(error.message, true));
+        }
 
         if (cvInput) {
-          cvInput.addEventListener("change", function () {
+          cvInput.addEventListener("change", async function () {
             const file = this.files[0];
-
             if (!file) return;
-
-            if (cvName) {
-              cvName.textContent = file.name;
+            if (!studentId) {
+              setCvStatus("Your authenticated profile is not ready yet.", true);
+              return;
+            }
+            if (file.type !== "application/pdf") {
+              setCvStatus("Choose a PDF file.", true);
+              cvInput.value = "";
+              return;
+            }
+            if (file.size > 10 * 1024 * 1024) {
+              setCvStatus("CVs must be 10 MB or smaller.", true);
+              cvInput.value = "";
+              return;
             }
 
-            updateProgress();
+            cvInput.disabled = true;
+            setCvStatus("Uploading CV...");
+            try {
+              const upload = await requestJson(
+                `/api/students/${encodeURIComponent(studentId)}/cv/upload-url`,
+                {
+                  method: "POST",
+                  body: JSON.stringify({ content_type: file.type }),
+                },
+              );
+              const uploadResponse = await fetch(upload.upload_url, {
+                method: "PUT",
+                headers: {
+                  "Content-Type": upload.content_type,
+                  "x-upsert": "true",
+                },
+                body: file,
+              });
+              if (!uploadResponse.ok)
+                throw new Error("The CV could not be uploaded.");
+              await requestJson(
+                `/api/students/${encodeURIComponent(studentId)}/cv`,
+                {
+                  method: "POST",
+                  body: JSON.stringify({ cv_path: upload.cv_path }),
+                },
+              );
+              setCvName(true);
+              setCvStatus("CV saved.");
+            } catch (error) {
+              setCvStatus(error.message, true);
+            } finally {
+              cvInput.value = "";
+              cvInput.disabled = false;
+              updateProgress();
+            }
           });
         }
+
+        removeCv?.addEventListener("click", async () => {
+          if (!studentId) return;
+          removeCv.disabled = true;
+          setCvStatus("Removing CV...");
+          try {
+            await requestJson(
+              `/api/students/${encodeURIComponent(studentId)}/cv`,
+              { method: "DELETE" },
+            );
+            setCvName(false);
+            setCvStatus("CV removed.");
+          } catch (error) {
+            setCvStatus(error.message, true);
+          } finally {
+            removeCv.disabled = false;
+            updateProgress();
+          }
+        });
 
         /* =========================
        PROFILE PROGRESS
@@ -866,9 +1146,6 @@
 
               // Career goals
               careerGoals: document.getElementById("careerGoals")?.value || "",
-
-              // CV
-              cvName: cvInput?.files[0]?.name || "",
 
               // Skills
               skills: Array.from(

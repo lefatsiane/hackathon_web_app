@@ -18,11 +18,46 @@
         box-sizing: border-box;
       }
 
+      :root {
+        --background: #05070d;
+        --card: #0b0f1a;
+        --input: #070a12;
+        --border: rgba(255, 255, 255, 0.08);
+        --input-border: #20283a;
+        --text: #ffffff;
+        --secondary-text: #8b93a7;
+        --muted-text: #555e70;
+        --blue: #1677ff;
+        --blue-hover: #075fd6;
+        --blue-tint: #8dbbff;
+        --blue-link: #4d9aff;
+        --blue-border: rgba(45, 126, 255, 0.25);
+      }
+
+      body.light-theme {
+        --background: #f4f7fb;
+        --card: #ffffff;
+        --input: #f8fafc;
+        --border: #dce3ee;
+        --input-border: #c8d2e2;
+        --text: #111827;
+        --secondary-text: #5c677a;
+        --muted-text: #8a94a6;
+        --blue: #1266e3;
+        --blue-hover: #0958c9;
+        --blue-tint: #1266e3;
+        --blue-link: #1266e3;
+        --blue-border: #b9d3ff;
+      }
+
       body {
         font-family: "Inter", sans-serif;
-        background: #05070d;
-        color: white;
+        background: var(--background);
+        color: var(--text);
         min-height: 100vh;
+        transition:
+          background 0.25s ease,
+          color 0.25s ease;
       }
 
       /* NAVBAR */
@@ -33,8 +68,8 @@
         align-items: center;
         justify-content: space-between;
         padding: 0 7%;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-        background: #05070d;
+        border-bottom: 1px solid var(--border);
+        background: var(--background);
       }
 
       .logo {
@@ -49,14 +84,14 @@
       }
 
       .back-home {
-        color: #8dbbff;
+        color: var(--blue-tint);
         text-decoration: none;
         font-size: 14px;
         font-weight: 500;
       }
 
       .back-home:hover {
-        color: white;
+        color: var(--text);
       }
 
       /* LOGIN AREA */
@@ -72,8 +107,8 @@
       .login-box {
         width: 100%;
         max-width: 440px;
-        background: #0b0f1a;
-        border: 1px solid rgba(45, 126, 255, 0.25);
+        background: var(--card);
+        border: 1px solid var(--blue-border);
         border-radius: 20px;
         padding: 45px;
         box-shadow: 0 0 50px rgba(0, 102, 255, 0.08);
@@ -85,7 +120,7 @@
       }
 
       .login-box .subtitle {
-        color: #8b93a7;
+        color: var(--secondary-text);
         font-size: 14px;
         margin-bottom: 35px;
         line-height: 1.6;
@@ -107,22 +142,22 @@
       .form-group input {
         width: 100%;
         padding: 14px 16px;
-        background: #070a12;
-        border: 1px solid #20283a;
+        background: var(--input);
+        border: 1px solid var(--input-border);
         border-radius: 10px;
-        color: white;
+        color: var(--text);
         font-size: 14px;
         outline: none;
         transition: 0.3s;
       }
 
       .form-group input:focus {
-        border-color: #1677ff;
+        border-color: var(--blue);
         box-shadow: 0 0 0 3px rgba(22, 119, 255, 0.1);
       }
 
       .form-group input::placeholder {
-        color: #555e70;
+        color: var(--muted-text);
       }
 
       /* LOGIN BUTTON */
@@ -132,7 +167,7 @@
         padding: 15px;
         border: none;
         border-radius: 10px;
-        background: #1677ff;
+        background: var(--blue);
         color: white;
         font-size: 15px;
         font-weight: 700;
@@ -142,7 +177,7 @@
       }
 
       .login-btn:hover {
-        background: #075fd6;
+        background: var(--blue-hover);
         transform: translateY(-1px);
       }
 
@@ -168,18 +203,18 @@
       .register-text {
         text-align: center;
         margin-top: 28px;
-        color: #8b93a7;
+        color: var(--secondary-text);
         font-size: 14px;
       }
 
       .register-text a {
-        color: #4d9aff;
+        color: var(--blue-link);
         text-decoration: none;
         font-weight: 600;
       }
 
       .register-text a:hover {
-        color: white;
+        color: var(--text);
       }
 
       /* MOBILE */
@@ -201,6 +236,7 @@
   </head>
 
   <body>
+    <script src="theme.js"></script>
     <!-- NAVBAR -->
 
     <nav>

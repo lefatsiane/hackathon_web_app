@@ -21,11 +21,44 @@
           box-sizing: border-box;
       }
 
+      :root {
+          --background: #05070d;
+          --navbar: rgba(5, 7, 13, 0.95);
+          --card: #0b1019;
+          --card-alt: #0c131d;
+          --card-alt2: #080d15;
+          --border: #1d2938;
+          --input-border: #334155;
+          --text: #ffffff;
+          --secondary-text: #9ca6b5;
+          --muted-text: #778292;
+          --blue: #168cff;
+          --blue-light: rgba(22, 140, 255, 0.1);
+          --blue-border: rgba(22, 140, 255, 0.3);
+      }
+
+      body.light-theme {
+          --background: #f4f7fb;
+          --navbar: rgba(255, 255, 255, 0.95);
+          --card: #ffffff;
+          --card-alt: #f8fafc;
+          --card-alt2: #f0f4f9;
+          --border: #dce3ee;
+          --input-border: #c8d2e2;
+          --text: #111827;
+          --secondary-text: #5c677a;
+          --muted-text: #697586;
+          --blue: #1266e3;
+          --blue-light: #eaf2ff;
+          --blue-border: #b9d3ff;
+      }
+
       body {
           font-family: "Inter", sans-serif;
-          background: #05070d;
-          color: #ffffff;
+          background: var(--background);
+          color: var(--text);
           min-height: 100vh;
+          transition: background 0.25s ease, color 0.25s ease;
       }
 
       /* ================= NAVBAR ================= */
@@ -39,8 +72,8 @@
 
           padding: 0 6%;
 
-          background: rgba(5, 7, 13, 0.95);
-          border-bottom: 1px solid rgba(0, 136, 255, 0.15);
+          background: var(--navbar);
+          border-bottom: 1px solid var(--blue-border);
 
           position: sticky;
           top: 0;
@@ -65,7 +98,7 @@
       }
 
       .nav-links a {
-          color: #b8c0cc;
+          color: var(--secondary-text);
           text-decoration: none;
           font-size: 14px;
           transition: 0.3s;
@@ -73,18 +106,18 @@
 
       .nav-links a:hover,
       .nav-links a.active {
-          color: #168cff;
+          color: var(--blue);
       }
 
       .profile-btn {
-          border: 1px solid #168cff;
+          border: 1px solid var(--blue);
           padding: 10px 18px;
           border-radius: 8px;
           color: #ffffff !important;
       }
 
       .profile-btn:hover {
-          background: #168cff;
+          background: var(--blue);
       }
 
       /* ================= HERO ================= */
@@ -100,10 +133,10 @@
           padding: 8px 16px;
           border-radius: 30px;
 
-          background: rgba(22, 140, 255, 0.1);
-          border: 1px solid rgba(22, 140, 255, 0.3);
+          background: var(--blue-light);
+          border: 1px solid var(--blue-border);
 
-          color: #168cff;
+          color: var(--blue);
           font-size: 13px;
           font-weight: 600;
 
@@ -117,14 +150,14 @@
       }
 
       .hero h1 span {
-          color: #168cff;
+          color: var(--blue);
       }
 
       .hero p {
           max-width: 700px;
           margin: auto;
 
-          color: #9ca6b5;
+          color: var(--secondary-text);
           font-size: 17px;
           line-height: 1.7;
       }
@@ -141,8 +174,8 @@
           display: flex;
           align-items: center;
 
-          background: #0b1019;
-          border: 1px solid #1d2938;
+          background: var(--card);
+          border: 1px solid var(--border);
 
           border-radius: 14px;
           padding: 7px;
@@ -151,14 +184,14 @@
       }
 
       .search-box:focus-within {
-          border-color: #168cff;
+          border-color: var(--blue);
           box-shadow: 0 0 25px rgba(22, 140, 255, 0.12);
       }
 
       .search-icon {
           font-size: 20px;
           padding: 0 14px;
-          color: #168cff;
+          color: var(--blue);
       }
 
       .search-box input {
@@ -168,14 +201,14 @@
           border: none;
           outline: none;
 
-          color: white;
+          color: var(--text);
           font-size: 15px;
 
           padding: 14px 5px;
       }
 
       .search-box input::placeholder {
-          color: #667080;
+          color: var(--muted-text);
       }
 
       /* ================= FILTERS ================= */
@@ -189,10 +222,10 @@
       }
 
       .filter-btn {
-          background: #0b1019;
-          color: #9ca6b5;
+          background: var(--card);
+          color: var(--secondary-text);
 
-          border: 1px solid #1d2938;
+          border: 1px solid var(--border);
 
           padding: 10px 17px;
           border-radius: 8px;
@@ -205,9 +238,9 @@
 
       .filter-btn:hover,
       .filter-btn.active {
-          color: white;
-          border-color: #168cff;
-          background: rgba(22, 140, 255, 0.1);
+          color: var(--text);
+          border-color: var(--blue);
+          background: var(--blue-light);
       }
 
       /* ================= CAREER AREA ================= */
@@ -230,7 +263,7 @@
       }
 
       .section-heading p {
-          color: #778292;
+          color: var(--muted-text);
           font-size: 14px;
       }
 
@@ -245,9 +278,9 @@
       }
 
       .career-card {
-          background: #0b1019;
+          background: var(--card);
 
-          border: 1px solid #1b2735;
+          border: 1px solid var(--border);
 
           border-radius: 15px;
 
@@ -261,7 +294,7 @@
       .career-card:hover {
           transform: translateY(-5px);
 
-          border-color: #168cff;
+          border-color: var(--blue);
 
           box-shadow: 0 12px 35px rgba(22, 140, 255, 0.08);
       }
@@ -274,7 +307,7 @@
           align-items: center;
           justify-content: center;
 
-          background: rgba(22, 140, 255, 0.1);
+          background: var(--blue-light);
 
           border-radius: 10px;
 
@@ -289,7 +322,7 @@
       }
 
       .career-card p {
-          color: #8994a4;
+          color: var(--muted-text);
 
           font-size: 13px;
           line-height: 1.6;
@@ -304,9 +337,9 @@
 
           border-radius: 6px;
 
-          background: rgba(22, 140, 255, 0.08);
+          background: var(--blue-light);
 
-          color: #168cff;
+          color: var(--blue);
 
           font-size: 11px;
           font-weight: 600;
@@ -321,11 +354,11 @@
       }
 
       .career-pagination button {
-          border: 1px solid #2b4768;
+          border: 1px solid var(--border);
           border-radius: 8px;
           padding: 10px 14px;
-          background: #102238;
-          color: #d9e8f8;
+          background: var(--card-alt);
+          color: var(--text);
           cursor: pointer;
       }
 
@@ -343,10 +376,10 @@
 
           padding: 70px 20px;
 
-          border: 1px dashed #263446;
+          border: 1px dashed var(--border);
           border-radius: 15px;
 
-          background: #090e16;
+          background: var(--card-alt2);
       }
 
       .empty-state .empty-icon {
@@ -359,7 +392,7 @@
       }
 
       .empty-state p {
-          color: #778292;
+          color: var(--muted-text);
       }
 
       /* ================= MODAL ================= */
@@ -391,9 +424,9 @@
           width: 100%;
           max-width: 950px;
 
-          background: #080d15;
+          background: var(--card-alt2);
 
-          border: 1px solid #1e2d40;
+          border: 1px solid var(--border);
 
           border-radius: 18px;
 
@@ -412,7 +445,7 @@
                   rgba(5, 7, 13, 0.5)
               );
 
-          border-bottom: 1px solid #1d2938;
+          border-bottom: 1px solid var(--border);
                               career.category
                                   ?.toLowerCase()
                                   .includes(selectedCategory.toLowerCase());
@@ -430,11 +463,11 @@
 
           border-radius: 50%;
 
-          border: 1px solid #334155;
+          border: 1px solid var(--input-border);
 
-          background: #0b1019;
+          background: var(--card);
 
-          color: white;
+          color: var(--text);
 
           font-size: 20px;
 
@@ -442,8 +475,8 @@
       }
 
       .close-btn:hover {
-          border-color: #168cff;
-          color: #168cff;
+          border-color: var(--blue);
+          color: var(--blue);
       }
 
       .details-header .career-icon {
@@ -456,7 +489,7 @@
       }
 
       .details-header p {
-          color: #8f9aaa;
+          color: var(--muted-text);
           line-height: 1.7;
           max-width: 700px;
       }
@@ -478,9 +511,9 @@
       }
 
       .stat-card {
-          background: #0c131d;
+          background: var(--card-alt);
 
-          border: 1px solid #1d2938;
+          border: 1px solid var(--border);
 
           padding: 20px;
 
@@ -488,7 +521,7 @@
       }
 
       .stat-label {
-          color: #748094;
+          color: var(--muted-text);
 
           font-size: 12px;
 
@@ -496,7 +529,7 @@
       }
 
       .stat-value {
-          color: white;
+          color: var(--text);
 
           font-size: 16px;
 
@@ -504,7 +537,7 @@
       }
 
       .stat-value.pending {
-          color: #667080;
+          color: var(--muted-text);
           font-weight: 500;
           font-size: 14px;
       }
@@ -531,13 +564,13 @@
           width: 4px;
           height: 20px;
 
-          background: #168cff;
+          background: var(--blue);
 
           border-radius: 5px;
       }
 
       .details-section p {
-          color: #919baa;
+          color: var(--secondary-text);
 
           font-size: 14px;
 
@@ -557,11 +590,11 @@
 
           border-radius: 9px;
 
-          background: #0c131d;
+          background: var(--card-alt);
 
-          border: 1px solid #182535;
+          border: 1px solid var(--border);
 
-          color: #aeb7c4;
+          color: var(--secondary-text);
 
           font-size: 13px;
       }
@@ -569,7 +602,7 @@
       .info-item strong {
           display: block;
 
-          color: white;
+          color: var(--text);
 
           margin-bottom: 5px;
       }
@@ -606,13 +639,13 @@
 
           font-weight: 800;
 
-          color: #168cff;
+          color: var(--blue);
 
           margin: 12px 0;
       }
 
       .match-pending {
-          color: #788494;
+          color: var(--muted-text);
 
           font-size: 14px;
 
@@ -626,9 +659,9 @@
 
           padding: 30px;
 
-          border-top: 1px solid #121d29;
+          border-top: 1px solid var(--border);
 
-          color: #596575;
+          color: var(--muted-text);
 
           font-size: 12px;
       }
@@ -685,6 +718,7 @@
   </head>
 
   <body>
+    <script src="theme.js"></script>
     <!-- ================= NAVBAR ================= -->
 
     <nav>
@@ -735,24 +769,6 @@
         <button class="filter-btn active" data-category="all">
           All Careers
         </button>
-
-        <button class="filter-btn" data-category="technology">
-          Technology
-        </button>
-
-        <button class="filter-btn" data-category="business">Business</button>
-
-        <button class="filter-btn" data-category="healthcare">
-          Healthcare
-        </button>
-
-        <button class="filter-btn" data-category="engineering">
-          Engineering
-        </button>
-
-        <button class="filter-btn" data-category="creative">Creative</button>
-
-        <button class="filter-btn" data-category="science">Science</button>
       </div>
     </section>
 
@@ -1049,6 +1065,41 @@ careers = await response.json();
 ==========================================================
 */
 
+      const INDUSTRIES = [
+        "Technology",
+        "Business",
+        "Finance",
+        "Marketing",
+        "Healthcare",
+        "Engineering",
+        "Creative",
+        "Science",
+        "Education",
+        "Retail & Sales",
+        "Manufacturing",
+        "Hospitality & Tourism",
+        "Legal",
+        "Agriculture",
+        "Construction",
+        "Government & Public Sector",
+        "Media & Communications",
+        "Transportation & Logistics",
+        "Energy & Utilities",
+        "Non-Profit",
+        "Other",
+      ];
+
+      // Industry is a fixed dropdown value at data entry, so filtering can
+      // compare it directly instead of guessing a category from keywords.
+      const filtersContainer = document.querySelector(".filters");
+      INDUSTRIES.forEach((industry) => {
+        const button = document.createElement("button");
+        button.className = "filter-btn";
+        button.dataset.category = industry;
+        button.textContent = industry;
+        filtersContainer.appendChild(button);
+      });
+
       async function loadCareers() {
         try {
           const response = await fetch("/api/opportunities?limit=100");
@@ -1056,11 +1107,7 @@ careers = await response.json();
           const payload = await response.json();
           careers = (payload.opportunities || []).map((opportunity) => ({
             ...opportunity,
-            category:
-              opportunity.industry ||
-              opportunity.opportunity_type ||
-              opportunity.type ||
-              "Opportunity",
+            industryLabel: (opportunity.industry || "").trim() || "Other",
             shortDescription:
               opportunity.description ||
               "Explore this opportunity through Gradurat.",
@@ -1092,15 +1139,20 @@ DISPLAY CAREERS
         const searchTerm = searchInput.value.trim().toLowerCase();
 
         const filteredCareers = careers.filter((career) => {
-          const matchesSearch = career.title
-            ?.toLowerCase()
-            .includes(searchTerm);
+          const searchable = [
+            career.title,
+            career.industryLabel,
+            ...(career.skills || []),
+          ]
+            .filter(Boolean)
+            .join(" ")
+            .toLowerCase();
+          const matchesSearch = !searchTerm || searchable.includes(searchTerm);
 
           const matchesCategory =
             selectedCategory === "all" ||
-            career.category
-              ?.toLowerCase()
-              .includes(selectedCategory.toLowerCase());
+            career.industryLabel.toLowerCase() ===
+              selectedCategory.toLowerCase();
 
           return matchesSearch && matchesCategory;
         });
@@ -1178,7 +1230,7 @@ DISPLAY CAREERS
             </p>
 
             <span class="career-tag">
-                ${escapeHTML(career.category || "Career")}
+                ${escapeHTML(career.industryLabel)}
             </span>
 
         `;

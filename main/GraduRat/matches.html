@@ -1,652 +1,585 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <title>Matches | Gradurat</title>
 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 
     <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
-        rel="stylesheet"
-    >
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
 
     <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+      :root {
+        --background: #05070d;
+        --navbar: #080b13;
+        --card: #0b0f19;
+        --card-alt: #080c15;
+        --card-alt2: #111725;
+        --border: rgba(255, 255, 255, 0.08);
+        --input-border: rgba(255, 255, 255, 0.1);
+        --text: #ffffff;
+        --secondary-text: #9da7ba;
+        --muted-text: #7f899c;
+        --blue: #168cff;
+        --blue-hover: #0878e8;
+        --blue-light: rgba(22, 140, 255, 0.08);
+        --blue-border: rgba(22, 140, 255, 0.35);
+        --danger-bg: rgba(255, 70, 70, 0.08);
+        --danger-border: rgba(255, 70, 70, 0.2);
+        --danger-text: #ff8585;
+      }
 
-        body {
-            font-family: "Inter", sans-serif;
-            background: #05070d;
-            color: #ffffff;
-            min-height: 100vh;
-        }
+      body.light-theme {
+        --background: #f4f7fb;
+        --navbar: #ffffff;
+        --card: #ffffff;
+        --card-alt: #f8fafc;
+        --card-alt2: #eef2f7;
+        --border: #dce3ee;
+        --input-border: #c8d2e2;
+        --text: #111827;
+        --secondary-text: #5c677a;
+        --muted-text: #697586;
+        --blue: #1266e3;
+        --blue-hover: #0958c9;
+        --blue-light: #eaf2ff;
+        --blue-border: #b9d3ff;
+        --danger-bg: #fdeceb;
+        --danger-border: #f3b8b3;
+        --danger-text: #b42318;
+      }
 
-        /* ================= NAVBAR ================= */
+      body {
+        font-family: "Inter", sans-serif;
+        background: var(--background);
+        color: var(--text);
+        min-height: 100vh;
+        transition:
+          background 0.25s ease,
+          color 0.25s ease;
+      }
 
-        nav {
-            height: 75px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
+      /* ================= NAVBAR ================= */
 
-            padding: 0 6%;
+      nav {
+        height: 75px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
 
-            background: #080b13;
+        padding: 0 6%;
 
-            border-bottom:
-                1px solid rgba(255,255,255,0.08);
+        background: var(--navbar);
 
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
+        border-bottom: 1px solid var(--border);
 
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
+        position: sticky;
+        top: 0;
+        z-index: 100;
+      }
 
-        .logo img {
-            width: 42px;
-            height: 42px;
+      .logo {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
 
-            border-radius: 50%;
+      .logo img {
+        width: 42px;
+        height: 42px;
 
-            object-fit: cover;
-        }
+        border-radius: 50%;
 
-        .logo-text {
-            font-size: 22px;
-            font-weight: 800;
-        }
+        object-fit: cover;
+      }
 
-        .logo-text span {
-            color: #168cff;
-        }
+      .logo-text {
+        font-size: 22px;
+        font-weight: 800;
+      }
 
+      .logo-text span {
+        color: var(--blue);
+      }
+
+      .nav-links {
+        display: flex;
+        align-items: center;
+        gap: 28px;
+      }
+
+      .nav-links a {
+        color: var(--secondary-text);
+        text-decoration: none;
+        font-size: 14px;
+
+        transition: 0.3s;
+      }
+
+      .nav-links a:hover,
+      .nav-links a.active {
+        color: var(--blue);
+      }
+
+      .account-btn {
+        background: var(--blue-light);
+
+        border: 1px solid var(--blue-border);
+
+        color: var(--text);
+
+        padding: 10px 16px;
+
+        border-radius: 10px;
+
+        cursor: pointer;
+      }
+
+      /* ================= MAIN ================= */
+
+      main {
+        width: 88%;
+        max-width: 1250px;
+
+        margin: auto;
+
+        padding: 55px 0 80px;
+      }
+
+      .page-header {
+        margin-bottom: 35px;
+      }
+
+      .page-header h1 {
+        font-size: clamp(32px, 5vw, 48px);
+
+        margin-bottom: 10px;
+      }
+
+      .page-header p {
+        color: var(--secondary-text);
+
+        max-width: 650px;
+
+        line-height: 1.7;
+      }
+
+      /* ================= STATS ================= */
+
+      .stats {
+        display: grid;
+
+        grid-template-columns: repeat(3, 1fr);
+
+        gap: 18px;
+
+        margin-bottom: 35px;
+      }
+
+      .stat-card {
+        background: var(--card);
+
+        border: 1px solid var(--border);
+
+        border-radius: 16px;
+
+        padding: 22px;
+      }
+
+      .stat-card span {
+        color: var(--muted-text);
+
+        font-size: 13px;
+      }
+
+      .stat-card strong {
+        display: block;
+
+        font-size: 28px;
+
+        margin-top: 8px;
+
+        color: var(--blue);
+      }
+
+      /* ================= MATCHES ================= */
+
+      .matches-section {
+        background: var(--card);
+
+        border: 1px solid var(--border);
+
+        border-radius: 18px;
+
+        padding: 28px;
+      }
+
+      .section-header {
+        margin-bottom: 25px;
+      }
+
+      .section-header h2 {
+        font-size: 21px;
+
+        margin-bottom: 6px;
+      }
+
+      .section-header p {
+        color: var(--muted-text);
+
+        font-size: 13px;
+      }
+
+      .matches-grid {
+        display: grid;
+
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+
+        gap: 20px;
+      }
+
+      /* ================= MATCH CARD ================= */
+
+      .match-card {
+        background: var(--card-alt);
+
+        border: 1px solid var(--border);
+
+        border-radius: 16px;
+
+        padding: 22px;
+
+        transition: 0.3s;
+      }
+
+      .match-card:hover {
+        transform: translateY(-3px);
+
+        border-color: var(--blue-border);
+      }
+
+      .profile-top {
+        display: flex;
+
+        align-items: center;
+
+        gap: 15px;
+      }
+
+      .profile-image {
+        width: 58px;
+        height: 58px;
+
+        border-radius: 50%;
+
+        object-fit: cover;
+
+        background: var(--card-alt2);
+
+        border: 1px solid var(--input-border);
+      }
+
+      .profile-placeholder {
+        width: 58px;
+        height: 58px;
+
+        border-radius: 50%;
+
+        background: var(--card-alt2);
+
+        border: 1px solid var(--input-border);
+      }
+
+      .profile-top h3 {
+        font-size: 17px;
+
+        margin-bottom: 5px;
+      }
+
+      .profile-type {
+        color: var(--muted-text);
+
+        font-size: 12px;
+      }
+
+      /* ================= MATCH SCORE ================= */
+
+      .match-score {
+        margin: 20px 0;
+
+        padding: 13px;
+
+        border-radius: 10px;
+
+        background: var(--blue-light);
+
+        border: 1px solid var(--blue-border);
+      }
+
+      .match-score span {
+        color: var(--muted-text);
+
+        font-size: 12px;
+      }
+
+      .match-score strong {
+        color: var(--blue);
+
+        font-size: 21px;
+
+        display: block;
+
+        margin-top: 3px;
+      }
+
+      /* ================= INFO ================= */
+
+      .profile-info {
+        color: var(--secondary-text);
+
+        font-size: 13px;
+
+        line-height: 1.7;
+
+        margin-bottom: 18px;
+      }
+
+      .profile-info strong {
+        color: var(--text);
+      }
+
+      /* ================= BUTTONS ================= */
+
+      .card-actions {
+        display: flex;
+
+        gap: 9px;
+      }
+
+      button {
+        font-family: inherit;
+      }
+
+      .primary-btn {
+        flex: 1;
+
+        background: var(--blue);
+
+        color: white;
+
+        border: none;
+
+        padding: 11px 15px;
+
+        border-radius: 9px;
+
+        font-weight: 600;
+
+        cursor: pointer;
+
+        transition: 0.3s;
+      }
+
+      .primary-btn:hover {
+        background: var(--blue-hover);
+      }
+
+      .secondary-btn {
+        flex: 1;
+
+        background: transparent;
+
+        color: var(--secondary-text);
+
+        border: 1px solid var(--input-border);
+
+        padding: 11px 15px;
+
+        border-radius: 9px;
+
+        cursor: pointer;
+      }
+
+      /* ================= EMPTY ================= */
+
+      .empty-state {
+        text-align: center;
+
+        padding: 80px 20px;
+      }
+
+      .empty-icon {
+        font-size: 45px;
+
+        margin-bottom: 20px;
+      }
+
+      .empty-state h3 {
+        color: var(--text);
+
+        margin-bottom: 8px;
+      }
+
+      .empty-state p {
+        color: var(--muted-text);
+
+        font-size: 14px;
+
+        line-height: 1.6;
+
+        max-width: 500px;
+
+        margin: auto;
+      }
+
+      /* ================= LOADING ================= */
+
+      .loading {
+        text-align: center;
+
+        padding: 70px 20px;
+
+        color: var(--muted-text);
+      }
+
+      /* ================= ERROR ================= */
+
+      .error-message {
+        display: none;
+
+        margin-bottom: 20px;
+
+        padding: 13px;
+
+        border-radius: 9px;
+
+        background: var(--danger-bg);
+
+        border: 1px solid var(--danger-border);
+
+        color: var(--danger-text);
+      }
+
+      /* ================= RESPONSIVE ================= */
+
+      @media (max-width: 800px) {
         .nav-links {
-            display: flex;
-            align-items: center;
-            gap: 28px;
+          display: none;
         }
-
-        .nav-links a {
-            color: #9da7ba;
-            text-decoration: none;
-            font-size: 14px;
-
-            transition: 0.3s;
-        }
-
-        .nav-links a:hover,
-        .nav-links a.active {
-            color: #168cff;
-        }
-
-        .account-btn {
-            background: rgba(22,140,255,0.08);
-
-            border:
-                1px solid rgba(22,140,255,0.35);
-
-            color: white;
-
-            padding: 10px 16px;
-
-            border-radius: 10px;
-
-            cursor: pointer;
-        }
-
-        /* ================= MAIN ================= */
 
         main {
-            width: 88%;
-            max-width: 1250px;
-
-            margin: auto;
-
-            padding: 55px 0 80px;
+          width: 92%;
         }
-
-        .page-header {
-            margin-bottom: 35px;
-        }
-
-        .page-header h1 {
-            font-size: clamp(32px, 5vw, 48px);
-
-            margin-bottom: 10px;
-        }
-
-        .page-header p {
-            color: #858fa3;
-
-            max-width: 650px;
-
-            line-height: 1.7;
-        }
-
-        /* ================= STATS ================= */
 
         .stats {
-            display: grid;
-
-            grid-template-columns:
-                repeat(3, 1fr);
-
-            gap: 18px;
-
-            margin-bottom: 35px;
+          grid-template-columns: 1fr;
         }
-
-        .stat-card {
-            background: #0b0f19;
-
-            border:
-                1px solid rgba(255,255,255,0.08);
-
-            border-radius: 16px;
-
-            padding: 22px;
-        }
-
-        .stat-card span {
-            color: #7f899c;
-
-            font-size: 13px;
-        }
-
-        .stat-card strong {
-            display: block;
-
-            font-size: 28px;
-
-            margin-top: 8px;
-
-            color: #168cff;
-        }
-
-        /* ================= MATCHES ================= */
 
         .matches-section {
-            background: #0b0f19;
-
-            border:
-                1px solid rgba(255,255,255,0.08);
-
-            border-radius: 18px;
-
-            padding: 28px;
+          padding: 20px;
         }
-
-        .section-header {
-            margin-bottom: 25px;
-        }
-
-        .section-header h2 {
-            font-size: 21px;
-
-            margin-bottom: 6px;
-        }
-
-        .section-header p {
-            color: #7f899c;
-
-            font-size: 13px;
-        }
-
-        .matches-grid {
-            display: grid;
-
-            grid-template-columns:
-                repeat(auto-fit, minmax(280px, 1fr));
-
-            gap: 20px;
-        }
-
-        /* ================= MATCH CARD ================= */
-
-        .match-card {
-            background: #080c15;
-
-            border:
-                1px solid rgba(255,255,255,0.08);
-
-            border-radius: 16px;
-
-            padding: 22px;
-
-            transition: 0.3s;
-        }
-
-        .match-card:hover {
-            transform: translateY(-3px);
-
-            border-color:
-                rgba(22,140,255,0.35);
-        }
-
-        .profile-top {
-            display: flex;
-
-            align-items: center;
-
-            gap: 15px;
-        }
-
-        .profile-image {
-            width: 58px;
-            height: 58px;
-
-            border-radius: 50%;
-
-            object-fit: cover;
-
-            background: #111725;
-
-            border:
-                1px solid rgba(255,255,255,0.1);
-        }
-
-        .profile-placeholder {
-            width: 58px;
-            height: 58px;
-
-            border-radius: 50%;
-
-            background: #111725;
-
-            border:
-                1px solid rgba(255,255,255,0.1);
-        }
-
-        .profile-top h3 {
-            font-size: 17px;
-
-            margin-bottom: 5px;
-        }
-
-        .profile-type {
-            color: #7f899c;
-
-            font-size: 12px;
-        }
-
-        /* ================= MATCH SCORE ================= */
-
-        .match-score {
-            margin: 20px 0;
-
-            padding: 13px;
-
-            border-radius: 10px;
-
-            background:
-                rgba(22,140,255,0.07);
-
-            border:
-                1px solid rgba(22,140,255,0.15);
-        }
-
-        .match-score span {
-            color: #7f899c;
-
-            font-size: 12px;
-        }
-
-        .match-score strong {
-            color: #168cff;
-
-            font-size: 21px;
-
-            display: block;
-
-            margin-top: 3px;
-        }
-
-        /* ================= INFO ================= */
-
-        .profile-info {
-            color: #8e98aa;
-
-            font-size: 13px;
-
-            line-height: 1.7;
-
-            margin-bottom: 18px;
-        }
-
-        .profile-info strong {
-            color: #c8d0df;
-        }
-
-        /* ================= BUTTONS ================= */
-
-        .card-actions {
-            display: flex;
-
-            gap: 9px;
-        }
-
-        button {
-            font-family: inherit;
-        }
-
-        .primary-btn {
-            flex: 1;
-
-            background: #168cff;
-
-            color: white;
-
-            border: none;
-
-            padding: 11px 15px;
-
-            border-radius: 9px;
-
-            font-weight: 600;
-
-            cursor: pointer;
-
-            transition: 0.3s;
-        }
-
-        .primary-btn:hover {
-            background: #0878e8;
-        }
-
-        .secondary-btn {
-            flex: 1;
-
-            background: transparent;
-
-            color: #b9c3d3;
-
-            border:
-                1px solid rgba(255,255,255,0.12);
-
-            padding: 11px 15px;
-
-            border-radius: 9px;
-
-            cursor: pointer;
-        }
-
-        /* ================= EMPTY ================= */
-
-        .empty-state {
-            text-align: center;
-
-            padding: 80px 20px;
-        }
-
-        .empty-icon {
-            font-size: 45px;
-
-            margin-bottom: 20px;
-        }
-
-        .empty-state h3 {
-            color: #d3d9e5;
-
-            margin-bottom: 8px;
-        }
-
-        .empty-state p {
-            color: #747e92;
-
-            font-size: 14px;
-
-            line-height: 1.6;
-
-            max-width: 500px;
-
-            margin: auto;
-        }
-
-        /* ================= LOADING ================= */
-
-        .loading {
-            text-align: center;
-
-            padding: 70px 20px;
-
-            color: #7f899c;
-        }
-
-        /* ================= ERROR ================= */
-
-        .error-message {
-            display: none;
-
-            margin-bottom: 20px;
-
-            padding: 13px;
-
-            border-radius: 9px;
-
-            background:
-                rgba(255,70,70,0.08);
-
-            border:
-                1px solid rgba(255,70,70,0.2);
-
-            color: #ff8585;
-        }
-
-        /* ================= RESPONSIVE ================= */
-
-        @media (max-width: 800px) {
-
-            .nav-links {
-                display: none;
-            }
-
-            main {
-                width: 92%;
-            }
-
-            .stats {
-                grid-template-columns: 1fr;
-            }
-
-            .matches-section {
-                padding: 20px;
-            }
-
-        }
-
+      }
     </style>
-</head>
+  </head>
 
+  <body>
+    <script src="theme.js"></script>
 
-<body>
+    <!-- ================= NAVBAR ================= -->
 
+    <nav>
+      <div class="logo">
+        <img src="logo1.jpg" alt="Gradurat Logo" />
 
-<!-- ================= NAVBAR ================= -->
+        <div class="logo-text">Gradu<span>rat</span></div>
+      </div>
 
-<nav>
+      <div class="nav-links">
+        <a href="dashboard.html"> Dashboard </a>
 
-    <div class="logo">
+        <a href="careers.html"> Career Explorer </a>
 
-        <img
-            src="logo1.jpg"
-            alt="Gradurat Logo"
-        >
+        <a href="fyp.html"> Find Your People </a>
 
-        <div class="logo-text">
-            Gradu<span>rat</span>
-        </div>
+        <a href="matches.html" class="active"> Matches </a>
 
-    </div>
+        <a href="settings.html"> Settings </a>
+      </div>
 
-
-    <div class="nav-links">
-
-        <a href="dashboard.html">
-            Dashboard
-        </a>
-
-        <a href="careers.html">
-            Career Explorer
-        </a>
-
-        <a href="fyp.html">
-            Find Your People
-        </a>
-
-        <a
-            href="matches.html"
-            class="active"
-        >
-            Matches
-        </a>
-
-        <a href="settings.html">
-            Settings
-        </a>
-
-    </div>
-
-
-    <button
+      <button
         class="account-btn"
-        onclick="window.location.href='settings.html'"
-    >
+        onclick="window.location.href = 'settings.html'"
+      >
         Account
-    </button>
+      </button>
+    </nav>
 
-</nav>
+    <!-- ================= MAIN ================= -->
 
-
-
-<!-- ================= MAIN ================= -->
-
-<main>
-
-
-    <div class="page-header">
-
-        <h1>
-            Your Matches
-        </h1>
+    <main>
+      <div class="page-header">
+        <h1>Your Matches</h1>
 
         <p>
-            These are the people and opportunities where
-            interest has been mutual. Start building
-            professional connections.
+          These are the people and opportunities where interest has been mutual.
+          Start building professional connections.
         </p>
+      </div>
 
-    </div>
+      <div id="errorMessage" class="error-message"></div>
 
+      <!-- ================= STATS ================= -->
 
-    <div
-        id="errorMessage"
-        class="error-message"
-    ></div>
-
-
-
-    <!-- ================= STATS ================= -->
-
-    <section class="stats">
-
-
+      <section class="stats">
         <div class="stat-card">
+          <span> Total Matches </span>
 
-            <span>
-                Total Matches
-            </span>
-
-            <strong id="totalMatches">
-                --
-            </strong>
-
+          <strong id="totalMatches"> -- </strong>
         </div>
 
-
         <div class="stat-card">
+          <span> Active Connections </span>
 
-            <span>
-                Active Connections
-            </span>
-
-            <strong id="activeConnections">
-                --
-            </strong>
-
+          <strong id="activeConnections"> -- </strong>
         </div>
 
-
         <div class="stat-card">
+          <span> CV Access </span>
 
-            <span>
-                CV Access
-            </span>
-
-            <strong id="cvAccess">
-                --
-            </strong>
-
+          <strong id="cvAccess"> -- </strong>
         </div>
+      </section>
 
+      <!-- ================= MATCHES ================= -->
 
-    </section>
-
-
-
-    <!-- ================= MATCHES ================= -->
-
-    <section class="matches-section">
-
-
+      <section class="matches-section">
         <div class="section-header">
+          <h2>Mutual Connections</h2>
 
-            <h2>
-                Mutual Connections
-            </h2>
-
-            <p>
-                Your mutual interests appear here.
-            </p>
-
+          <p>Your mutual interests appear here.</p>
         </div>
 
-
-        <div
-            id="matchesContainer"
-            class="matches-grid"
-        >
-
-            <div class="loading">
-                Loading your matches...
-            </div>
-
+        <div id="matchesContainer" class="matches-grid">
+          <div class="loading">Loading your matches...</div>
         </div>
+      </section>
+    </main>
 
-
-    </section>
-
-
-</main>
-
-
-
-<script>
-
-    /*
+    <script>
+      /*
     ============================================================
     GRADURAT MATCHES PAGE
     ============================================================
@@ -660,37 +593,26 @@
     ============================================================
     */
 
+      const API_BASE = "/api";
 
-    const API_BASE = "/api";
+      // =========================================================
+      // ERROR
+      // =========================================================
 
-
-    // =========================================================
-    // ERROR
-    // =========================================================
-
-    function showError(message) {
-
-        const error =
-            document.getElementById("errorMessage");
+      function showError(message) {
+        const error = document.getElementById("errorMessage");
 
         error.textContent = message;
 
         error.style.display = "block";
+      }
 
-    }
+      // =========================================================
+      // LOAD MATCHES
+      // =========================================================
 
-
-    // =========================================================
-    // LOAD MATCHES
-    // =========================================================
-
-    async function loadMatches() {
-
-        const container =
-            document.getElementById(
-                "matchesContainer"
-            );
-
+      async function loadMatches() {
+        const container = document.getElementById("matchesContainer");
 
         container.innerHTML = `
             <div class="loading">
@@ -698,29 +620,16 @@
             </div>
         `;
 
-
         try {
+          const response = await fetch(`${API_BASE}/matches`);
 
-            const response =
-                await fetch(
-                    `${API_BASE}/matches`
-                );
+          if (!response.ok) {
+            throw new Error("Unable to load matches.");
+          }
 
+          const data = await response.json();
 
-            if (!response.ok) {
-
-                throw new Error(
-                    "Unable to load matches."
-                );
-
-            }
-
-
-            const data =
-                await response.json();
-
-
-            /*
+          /*
                 Backend can return either:
 
                 [
@@ -738,58 +647,31 @@
                 }
             */
 
+          const matches = Array.isArray(data) ? data : data.matches || [];
 
-            const matches =
-                Array.isArray(data)
-                    ? data
-                    : data.matches || [];
+          updateStats(Array.isArray(data) ? matches : data);
 
+          if (matches.length === 0) {
+            showEmptyState();
 
-            updateStats(
-                Array.isArray(data)
-                    ? matches
-                    : data
-            );
+            return;
+          }
 
+          container.innerHTML = "";
 
-            if (matches.length === 0) {
+          matches.forEach((match) => {
+            const card = document.createElement("div");
 
-                showEmptyState();
+            card.className = "match-card";
 
-                return;
+            card.innerHTML = createMatchCard(match);
 
-            }
-
-
-            container.innerHTML = "";
-
-
-            matches.forEach(match => {
-
-                const card =
-                    document.createElement(
-                        "div"
-                    );
-
-                card.className =
-                    "match-card";
-
-
-                card.innerHTML =
-                    createMatchCard(match);
-
-
-                container.appendChild(card);
-
-            });
-
-
+            container.appendChild(card);
+          });
         } catch (error) {
+          console.error(error);
 
-            console.error(error);
-
-
-            container.innerHTML = `
+          container.innerHTML = `
                 <div class="empty-state">
 
                     <div class="empty-icon">
@@ -808,73 +690,42 @@
 
                 </div>
             `;
-
         }
+      }
 
-    }
+      // =========================================================
+      // CREATE MATCH CARD
+      // =========================================================
 
+      function createMatchCard(match) {
+        const person = match.user || match.candidate || match.employer || match;
 
-    // =========================================================
-    // CREATE MATCH CARD
-    // =========================================================
+        const name = person.name || "Connection";
 
-    function createMatchCard(match) {
+        const role = person.role || person.type || "Professional Connection";
 
-        const person =
-            match.user ||
-            match.candidate ||
-            match.employer ||
-            match;
+        const qualification = person.qualification || "";
 
+        const field = person.field || "";
 
-        const name =
-            person.name ||
-            "Connection";
+        const score = match.matchScore ?? person.matchScore;
 
-
-        const role =
-            person.role ||
-            person.type ||
-            "Professional Connection";
-
-
-        const qualification =
-            person.qualification ||
-            "";
-
-
-        const field =
-            person.field ||
-            "";
-
-
-        const score =
-            match.matchScore ??
-            person.matchScore;
-
-
-        const photo =
-            person.photo ||
-            person.profilePhoto ||
-            person.logo;
-
+        const photo = person.photo || person.profilePhoto || person.logo;
 
         return `
 
             <div class="profile-top">
 
                 ${
-                    photo
-                    ?
-                    `
+                  photo
+                    ? `
                         <img
                             src="${escapeHTML(photo)}"
                             alt="${escapeHTML(name)}"
                             class="profile-image"
                         >
                     `
-                    :
-                    `
+                    : `
                         <div class="profile-placeholder">
                         </div>
                     `
@@ -904,8 +755,7 @@
 
                 <strong>
                     ${
-                        score !== undefined &&
-                        score !== null
+                      score !== undefined && score !== null
                         ? escapeHTML(score) + "%"
                         : "--"
                     }
@@ -917,28 +767,23 @@
             <div class="profile-info">
 
                 ${
-                    qualification
-                    ?
-                    `
+                  qualification
+                    ? `
                         <p>
                             <strong>
                                 Qualification:
                             </strong>
 
-                            ${escapeHTML(
-                                qualification
-                            )}
+                            ${escapeHTML(qualification)}
                         </p>
                     `
-                    :
-                    ""
+                    : ""
                 }
 
 
                 ${
-                    field
-                    ?
-                    `
+                  field
+                    ? `
                         <p>
                             <strong>
                                 Field:
@@ -947,29 +792,22 @@
                             ${escapeHTML(field)}
                         </p>
                     `
-                    :
-                    ""
+                    : ""
                 }
 
 
                 ${
-                    match.connectedAt
-                    ?
-                    `
+                  match.connectedAt
+                    ? `
                         <p>
                             <strong>
                                 Connected:
                             </strong>
 
-                            ${escapeHTML(
-                                formatDate(
-                                    match.connectedAt
-                                )
-                            )}
+                            ${escapeHTML(formatDate(match.connectedAt))}
                         </p>
                     `
-                    :
-                    ""
+                    : ""
                 }
 
             </div>
@@ -986,9 +824,8 @@
 
 
                 ${
-                    match.cvUnlocked
-                    ?
-                    `
+                  match.cvUnlocked
+                    ? `
                         <button
                             class="secondary-btn"
                             onclick="viewCV(${match.id})"
@@ -996,8 +833,7 @@
                             View CV
                         </button>
                     `
-                    :
-                    `
+                    : `
                         <button
                             class="secondary-btn"
                             disabled
@@ -1011,142 +847,76 @@
             </div>
 
         `;
+      }
 
-    }
+      // =========================================================
+      // VIEW MATCH
+      // =========================================================
 
-
-    // =========================================================
-    // VIEW MATCH
-    // =========================================================
-
-    function viewMatch(matchId) {
-
+      function viewMatch(matchId) {
         if (!matchId) {
+          return;
+        }
+
+        window.location.href = `candidate.html?id=${encodeURIComponent(matchId)}`;
+      }
+
+      // =========================================================
+      // VIEW CV
+      // =========================================================
+
+      async function viewCV(matchId) {
+        try {
+          const response = await fetch(`${API_BASE}/matches/${matchId}`);
+
+          if (!response.ok) {
+            throw new Error("CV access denied.");
+          }
+
+          const match = await response.json();
+
+          if (!match.cvUnlocked) {
+            alert("The CV is not available for this connection.");
 
             return;
+          }
 
-        }
+          if (!match.cvUrl) {
+            alert("The CV is currently unavailable.");
 
+            return;
+          }
 
-        window.location.href =
-            `candidate.html?id=${encodeURIComponent(matchId)}`;
-
-    }
-
-
-    // =========================================================
-    // VIEW CV
-    // =========================================================
-
-    async function viewCV(matchId) {
-
-        try {
-
-            const response =
-                await fetch(
-                    `${API_BASE}/matches/${matchId}`
-                );
-
-
-            if (!response.ok) {
-
-                throw new Error(
-                    "CV access denied."
-                );
-
-            }
-
-
-            const match =
-                await response.json();
-
-
-            if (!match.cvUnlocked) {
-
-                alert(
-                    "The CV is not available for this connection."
-                );
-
-                return;
-
-            }
-
-
-            if (!match.cvUrl) {
-
-                alert(
-                    "The CV is currently unavailable."
-                );
-
-                return;
-
-            }
-
-
-            window.open(
-                match.cvUrl,
-                "_blank"
-            );
-
-
+          window.open(match.cvUrl, "_blank");
         } catch (error) {
+          console.error(error);
 
-            console.error(error);
-
-            alert(
-                "Unable to access this CV."
-            );
-
+          alert("Unable to access this CV.");
         }
+      }
 
-    }
+      // =========================================================
+      // UPDATE STATS
+      // =========================================================
 
+      function updateStats(data) {
+        const matches = data.matches || [];
 
-    // =========================================================
-    // UPDATE STATS
-    // =========================================================
+        document.getElementById("totalMatches").textContent =
+          data.totalMatches ?? matches.length ?? "--";
 
-    function updateStats(data) {
+        document.getElementById("activeConnections").textContent =
+          data.activeConnections ?? "--";
 
-        const matches =
-            data.matches || [];
+        document.getElementById("cvAccess").textContent = data.cvAccess ?? "--";
+      }
 
+      // =========================================================
+      // EMPTY STATE
+      // =========================================================
 
-        document.getElementById(
-            "totalMatches"
-        ).textContent =
-            data.totalMatches ??
-            matches.length ??
-            "--";
-
-
-        document.getElementById(
-            "activeConnections"
-        ).textContent =
-            data.activeConnections ??
-            "--";
-
-
-        document.getElementById(
-            "cvAccess"
-        ).textContent =
-            data.cvAccess ??
-            "--";
-
-    }
-
-
-    // =========================================================
-    // EMPTY STATE
-    // =========================================================
-
-    function showEmptyState() {
-
-        const container =
-            document.getElementById(
-                "matchesContainer"
-            );
-
+      function showEmptyState() {
+        const container = document.getElementById("matchesContainer");
 
         container.innerHTML = `
 
@@ -1173,85 +943,48 @@
             </div>
 
         `;
+      }
 
-    }
+      // =========================================================
+      // FORMAT DATE
+      // =========================================================
 
-
-    // =========================================================
-    // FORMAT DATE
-    // =========================================================
-
-    function formatDate(date) {
-
+      function formatDate(date) {
         if (!date) {
-
-            return "";
-
+          return "";
         }
 
-
-        const parsed =
-            new Date(date);
-
+        const parsed = new Date(date);
 
         if (isNaN(parsed)) {
-
-            return date;
-
+          return date;
         }
-
 
         return parsed.toLocaleDateString();
+      }
 
-    }
+      // =========================================================
+      // SECURITY
+      // =========================================================
 
-
-    // =========================================================
-    // SECURITY
-    // =========================================================
-
-    function escapeHTML(value) {
-
-        if (
-            value === null ||
-            value === undefined
-        ) {
-
-            return "";
-
+      function escapeHTML(value) {
+        if (value === null || value === undefined) {
+          return "";
         }
 
-
         return String(value)
-            .replace(/&/g, "&amp;")
-            .replace(
-                /</g,
-                "&lt;"
-            )
-            .replace(
-                />/g,
-                "&gt;"
-            )
-            .replace(
-                /"/g,
-                "&quot;"
-            )
-            .replace(
-                /'/g,
-                "&#039;"
-            );
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#039;");
+      }
 
-    }
+      // =========================================================
+      // INITIALIZE
+      // =========================================================
 
-
-    // =========================================================
-    // INITIALIZE
-    // =========================================================
-
-    loadMatches();
-
-</script>
-
-
-</body>
+      loadMatches();
+    </script>
+  </body>
 </html>

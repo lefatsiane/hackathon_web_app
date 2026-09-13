@@ -21,11 +21,56 @@
         box-sizing: border-box;
       }
 
+      :root {
+        --background: #05070d;
+        --navbar: #070a12;
+        --card: #0b101c;
+        --input: #070b14;
+        --border: #182238;
+        --input-border: #25324b;
+        --text: #ffffff;
+        --secondary-text: #9da7ba;
+        --muted-text: #737e94;
+        --blue: #1677ff;
+        --blue-hover: #0867e9;
+        --blue-light: #10213d;
+        --blue-light-border: #1e4b83;
+        --blue-light-text: #cfe3ff;
+        --blue-light-icon: #83a9d9;
+        --danger-bg: #35131a;
+        --danger-border: #71303a;
+        --danger-text: #ffadb7;
+      }
+
+      body.light-theme {
+        --background: #f4f7fb;
+        --navbar: #ffffff;
+        --card: #ffffff;
+        --input: #f8fafc;
+        --border: #dce3ee;
+        --input-border: #c8d2e2;
+        --text: #111827;
+        --secondary-text: #5c677a;
+        --muted-text: #697586;
+        --blue: #1266e3;
+        --blue-hover: #0958c9;
+        --blue-light: #eaf2ff;
+        --blue-light-border: #b9d3ff;
+        --blue-light-text: #0958c9;
+        --blue-light-icon: #1266e3;
+        --danger-bg: #fdeceb;
+        --danger-border: #f3b8b3;
+        --danger-text: #b42318;
+      }
+
       body {
         font-family: "Inter", sans-serif;
-        background: #05070d;
-        color: white;
+        background: var(--background);
+        color: var(--text);
         min-height: 100vh;
+        transition:
+          background 0.25s ease,
+          color 0.25s ease;
       }
 
       /* NAVBAR */
@@ -36,15 +81,15 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
-        border-bottom: 1px solid #151b2a;
-        background: #070a12;
+        border-bottom: 1px solid var(--border);
+        background: var(--navbar);
       }
 
       .logo {
         display: flex;
         align-items: center;
         gap: 10px;
-        color: white;
+        color: var(--text);
         text-decoration: none;
         font-weight: 800;
         font-size: 21px;
@@ -58,13 +103,13 @@
       }
 
       .back {
-        color: #9da7ba;
+        color: var(--secondary-text);
         text-decoration: none;
         font-size: 14px;
       }
 
       .back:hover {
-        color: #398eff;
+        color: var(--blue);
       }
 
       /* MAIN */
@@ -86,7 +131,7 @@
       }
 
       .heading p {
-        color: #929caf;
+        color: var(--muted-text);
         line-height: 1.6;
         font-size: 15px;
       }
@@ -94,8 +139,8 @@
       /* FORM */
 
       .form-card {
-        background: #0b101c;
-        border: 1px solid #182238;
+        background: var(--card);
+        border: 1px solid var(--border);
         border-radius: 18px;
         padding: 32px;
       }
@@ -121,7 +166,7 @@
       }
 
       .required {
-        color: #398eff;
+        color: var(--blue);
       }
 
       input,
@@ -129,9 +174,9 @@
       select {
         width: 100%;
         padding: 13px 14px;
-        background: #070b14;
-        color: white;
-        border: 1px solid #25324b;
+        background: var(--input);
+        color: var(--text);
+        border: 1px solid var(--input-border);
         border-radius: 9px;
         outline: none;
         font-family: inherit;
@@ -141,7 +186,7 @@
       input:focus,
       textarea:focus,
       select:focus {
-        border-color: #267fff;
+        border-color: var(--blue);
       }
 
       textarea {
@@ -151,7 +196,7 @@
       }
 
       select option {
-        background: #0b101c;
+        background: var(--card);
       }
 
       .two-columns {
@@ -162,7 +207,7 @@
 
       .helper {
         margin-top: 7px;
-        color: #737e94;
+        color: var(--muted-text);
         font-size: 12px;
         line-height: 1.5;
       }
@@ -179,9 +224,9 @@
       }
 
       .add-btn {
-        border: 1px solid #263655;
-        background: #10192b;
-        color: white;
+        border: 1px solid var(--input-border);
+        background: var(--input);
+        color: var(--text);
         padding: 0 17px;
         border-radius: 9px;
         cursor: pointer;
@@ -189,7 +234,7 @@
       }
 
       .add-btn:hover {
-        border-color: #398eff;
+        border-color: var(--blue);
       }
 
       .tags {
@@ -204,17 +249,17 @@
         align-items: center;
         gap: 7px;
         padding: 7px 10px;
-        background: #10213d;
-        border: 1px solid #1e4b83;
+        background: var(--blue-light);
+        border: 1px solid var(--blue-light-border);
         border-radius: 20px;
-        color: #cfe3ff;
+        color: var(--blue-light-text);
         font-size: 12px;
       }
 
       .remove-tag {
         background: none;
         border: none;
-        color: #83a9d9;
+        color: var(--blue-light-icon);
         cursor: pointer;
       }
 
@@ -224,16 +269,16 @@
         display: flex;
         justify-content: flex-end;
         gap: 12px;
-        border-top: 1px solid #182238;
+        border-top: 1px solid var(--border);
         padding-top: 25px;
       }
 
       .cancel-btn {
         padding: 13px 20px;
         border-radius: 9px;
-        border: 1px solid #25324b;
+        border: 1px solid var(--input-border);
         background: transparent;
-        color: #a7b0c1;
+        color: var(--secondary-text);
         text-decoration: none;
         font-size: 14px;
         font-weight: 600;
@@ -243,7 +288,7 @@
         padding: 13px 22px;
         border: none;
         border-radius: 9px;
-        background: #1677ff;
+        background: var(--blue);
         color: white;
         font-weight: 700;
         cursor: pointer;
@@ -251,7 +296,7 @@
       }
 
       .submit-btn:hover {
-        background: #0867e9;
+        background: var(--blue-hover);
       }
 
       .message {
@@ -264,9 +309,9 @@
 
       .message.error {
         display: block;
-        background: #35131a;
-        border: 1px solid #71303a;
-        color: #ffadb7;
+        background: var(--danger-bg);
+        border: 1px solid var(--danger-border);
+        color: var(--danger-text);
       }
 
       /* MOBILE */
@@ -298,6 +343,7 @@
   </head>
 
   <body>
+    <script src="theme.js"></script>
     <nav class="navbar">
       <a href="index.html" class="logo">
         <img src="logo1.jpg" alt="Gradurat Logo" />
@@ -368,12 +414,34 @@
 
                 <option value="Technology">Technology</option>
                 <option value="Business">Business</option>
+                <option value="Finance">Finance</option>
+                <option value="Marketing">Marketing</option>
                 <option value="Healthcare">Healthcare</option>
                 <option value="Engineering">Engineering</option>
                 <option value="Creative">Creative</option>
                 <option value="Science">Science</option>
-                <option value="Finance">Finance</option>
                 <option value="Education">Education</option>
+                <option value="Retail & Sales">Retail &amp; Sales</option>
+                <option value="Manufacturing">Manufacturing</option>
+                <option value="Hospitality & Tourism">
+                  Hospitality &amp; Tourism
+                </option>
+                <option value="Legal">Legal</option>
+                <option value="Agriculture">Agriculture</option>
+                <option value="Construction">Construction</option>
+                <option value="Government & Public Sector">
+                  Government &amp; Public Sector
+                </option>
+                <option value="Media & Communications">
+                  Media &amp; Communications
+                </option>
+                <option value="Transportation & Logistics">
+                  Transportation &amp; Logistics
+                </option>
+                <option value="Energy & Utilities">
+                  Energy &amp; Utilities
+                </option>
+                <option value="Non-Profit">Non-Profit</option>
                 <option value="Other">Other</option>
               </select>
             </div>

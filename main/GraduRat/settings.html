@@ -1,2771 +1,1894 @@
-
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-
-<head>
-
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <title>Settings | Gradurat</title>
 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 
     <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
-        rel="stylesheet"
-    >
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
 
     <style>
-
-        /* ==========================================
+      /* ==========================================
            DEFAULT DARK THEME
         ========================================== */
 
-        :root {
+      :root {
+        --background: #05070d;
+        --navbar: #070a12;
+        --card: #0b101c;
+        --input: #070b14;
 
-            --background: #05070d;
-            --navbar: #070a12;
-            --card: #0b101c;
-            --input: #070b14;
+        --border: #182238;
+        --input-border: #26334c;
 
-            --border: #182238;
-            --input-border: #26334c;
+        --text: #ffffff;
+        --secondary-text: #9ca6ba;
+        --muted-text: #7f899d;
 
-            --text: #ffffff;
-            --secondary-text: #9ca6ba;
-            --muted-text: #7f899d;
+        --blue: #1677ff;
+        --blue-hover: #0867e9;
 
-            --blue: #1677ff;
-            --blue-hover: #0867e9;
+        --blue-light: #10213d;
+        --blue-border: #1e4b83;
+      }
 
-            --blue-light: #10213d;
-            --blue-border: #1e4b83;
-
-        }
-
-
-        /* ==========================================
+      /* ==========================================
            LIGHT THEME
         ========================================== */
 
-        body.light-theme {
+      body.light-theme {
+        --background: #f4f7fb;
+        --navbar: #ffffff;
+        --card: #ffffff;
+        --input: #f8fafc;
 
-            --background: #f4f7fb;
-            --navbar: #ffffff;
-            --card: #ffffff;
-            --input: #f8fafc;
+        --border: #dce3ee;
+        --input-border: #c8d2e2;
 
-            --border: #dce3ee;
-            --input-border: #c8d2e2;
+        --text: #111827;
+        --secondary-text: #5c677a;
+        --muted-text: #697586;
 
-            --text: #111827;
-            --secondary-text: #5c677a;
-            --muted-text: #697586;
+        --blue: #1266e3;
+        --blue-hover: #0958c9;
 
-            --blue: #1266e3;
-            --blue-hover: #0958c9;
+        --blue-light: #eaf2ff;
+        --blue-border: #b9d3ff;
+      }
 
-            --blue-light: #eaf2ff;
-            --blue-border: #b9d3ff;
-
-        }
-
-
-        /* ==========================================
+      /* ==========================================
            GLOBAL
         ========================================== */
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
 
+      body {
+        font-family: "Inter", sans-serif;
 
-        body {
+        background: var(--background);
 
-            font-family: "Inter", sans-serif;
+        color: var(--text);
 
-            background: var(--background);
+        min-height: 100vh;
 
-            color: var(--text);
+        transition:
+          background 0.25s ease,
+          color 0.25s ease;
+      }
 
-            min-height: 100vh;
-
-            transition:
-                background 0.25s ease,
-                color 0.25s ease;
-
-        }
-
-
-        /* ==========================================
+      /* ==========================================
            NAVBAR
         ========================================== */
 
-        .navbar {
+      .navbar {
+        height: 75px;
 
-            height: 75px;
+        padding: 0 6%;
 
-            padding: 0 6%;
+        display: flex;
 
-            display: flex;
+        align-items: center;
 
-            align-items: center;
+        justify-content: space-between;
 
-            justify-content: space-between;
+        background: var(--navbar);
 
-            background: var(--navbar);
+        border-bottom: 1px solid var(--border);
 
-            border-bottom: 1px solid var(--border);
+        transition:
+          background 0.25s ease,
+          border 0.25s ease;
+      }
 
-            transition:
-                background 0.25s ease,
-                border 0.25s ease;
+      .logo {
+        display: flex;
 
-        }
+        align-items: center;
 
+        gap: 10px;
 
-        .logo {
+        color: var(--text);
 
-            display: flex;
+        text-decoration: none;
 
-            align-items: center;
+        font-size: 21px;
 
-            gap: 10px;
+        font-weight: 800;
+      }
 
-            color: var(--text);
+      .logo img {
+        width: 42px;
+        height: 42px;
 
-            text-decoration: none;
+        border-radius: 10px;
 
-            font-size: 21px;
+        object-fit: cover;
+      }
 
-            font-weight: 800;
+      .back {
+        color: var(--secondary-text);
 
-        }
+        text-decoration: none;
 
+        font-size: 14px;
 
-        .logo img {
+        transition: color 0.2s;
+      }
 
-            width: 42px;
-            height: 42px;
+      .back:hover {
+        color: var(--blue);
+      }
 
-            border-radius: 10px;
-
-            object-fit: cover;
-
-        }
-
-
-        .back {
-
-            color: var(--secondary-text);
-
-            text-decoration: none;
-
-            font-size: 14px;
-
-            transition: color 0.2s;
-
-        }
-
-
-        .back:hover {
-
-            color: var(--blue);
-
-        }
-
-
-        /* ==========================================
+      /* ==========================================
            MAIN
         ========================================== */
 
-        .container {
+      .container {
+        width: 90%;
 
-            width: 90%;
+        max-width: 1100px;
 
-            max-width: 1100px;
+        margin: auto;
 
-            margin: auto;
+        padding: 45px 0 80px;
+      }
 
-            padding: 45px 0 80px;
+      .heading {
+        margin-bottom: 35px;
+      }
 
-        }
+      .heading h1 {
+        font-size: 34px;
 
+        margin-bottom: 9px;
+      }
 
-        .heading {
+      .heading p {
+        color: var(--secondary-text);
 
-            margin-bottom: 35px;
+        font-size: 15px;
+      }
 
-        }
-
-
-        .heading h1 {
-
-            font-size: 34px;
-
-            margin-bottom: 9px;
-
-        }
-
-
-        .heading p {
-
-            color: var(--secondary-text);
-
-            font-size: 15px;
-
-        }
-
-
-        /* ==========================================
+      /* ==========================================
            SETTINGS LAYOUT
         ========================================== */
 
-        .settings-layout {
+      .settings-layout {
+        display: grid;
 
-            display: grid;
+        grid-template-columns: 230px 1fr;
 
-            grid-template-columns: 230px 1fr;
+        gap: 25px;
 
-            gap: 25px;
+        align-items: start;
+      }
 
-            align-items: start;
-
-        }
-
-
-        /* ==========================================
+      /* ==========================================
            SIDEBAR
         ========================================== */
 
-        .sidebar {
+      .sidebar {
+        background: var(--card);
 
-            background: var(--card);
+        border: 1px solid var(--border);
 
-            border: 1px solid var(--border);
+        border-radius: 15px;
 
-            border-radius: 15px;
+        padding: 10px;
 
-            padding: 10px;
+        transition:
+          background 0.25s,
+          border 0.25s;
+      }
 
-            transition:
-                background 0.25s,
-                border 0.25s;
+      .side-btn {
+        width: 100%;
 
-        }
+        display: flex;
 
+        align-items: center;
 
-        .side-btn {
+        gap: 10px;
 
-            width: 100%;
+        padding: 12px;
 
-            display: flex;
+        margin-bottom: 3px;
 
-            align-items: center;
+        border: none;
 
-            gap: 10px;
+        border-radius: 9px;
 
-            padding: 12px;
+        background: transparent;
 
-            margin-bottom: 3px;
+        color: var(--secondary-text);
 
-            border: none;
+        text-align: left;
 
-            border-radius: 9px;
+        font-family: inherit;
 
-            background: transparent;
+        font-size: 13px;
 
-            color: var(--secondary-text);
+        cursor: pointer;
 
-            text-align: left;
+        transition: 0.2s;
+      }
 
-            font-family: inherit;
+      .side-btn:hover {
+        background: var(--blue-light);
 
-            font-size: 13px;
+        color: var(--text);
+      }
 
-            cursor: pointer;
+      .side-btn.active {
+        background: var(--blue-light);
 
-            transition: 0.2s;
+        color: var(--blue);
+      }
 
-        }
+      .sidebar-divider {
+        height: 1px;
 
+        background: var(--border);
 
-        .side-btn:hover {
+        margin: 10px 5px;
+      }
 
-            background: var(--blue-light);
+      .logout-side {
+        color: #e45b68;
+      }
 
-            color: var(--text);
-
-        }
-
-
-        .side-btn.active {
-
-            background: var(--blue-light);
-
-            color: var(--blue);
-
-        }
-
-
-        .sidebar-divider {
-
-            height: 1px;
-
-            background: var(--border);
-
-            margin: 10px 5px;
-
-        }
-
-
-        .logout-side {
-
-            color: #e45b68;
-
-        }
-
-
-        /* ==========================================
+      /* ==========================================
            CONTENT
         ========================================== */
 
-        .settings-content {
+      .settings-content {
+        min-width: 0;
+      }
 
-            min-width: 0;
+      .settings-section {
+        display: none;
+      }
 
-        }
+      .settings-section.active {
+        display: block;
+      }
 
+      .section-title {
+        margin-bottom: 18px;
+      }
 
-        .settings-section {
+      .section-title h2 {
+        font-size: 21px;
 
-            display: none;
+        margin-bottom: 6px;
+      }
 
-        }
+      .section-title p {
+        color: var(--muted-text);
 
+        font-size: 13px;
 
-        .settings-section.active {
+        line-height: 1.5;
+      }
 
-            display: block;
-
-        }
-
-
-        .section-title {
-
-            margin-bottom: 18px;
-
-        }
-
-
-        .section-title h2 {
-
-            font-size: 21px;
-
-            margin-bottom: 6px;
-
-        }
-
-
-        .section-title p {
-
-            color: var(--muted-text);
-
-            font-size: 13px;
-
-            line-height: 1.5;
-
-        }
-
-
-        /* ==========================================
+      /* ==========================================
            CARD
         ========================================== */
 
-        .card {
+      .card {
+        background: var(--card);
 
-            background: var(--card);
+        border: 1px solid var(--border);
 
-            border: 1px solid var(--border);
+        border-radius: 15px;
 
-            border-radius: 15px;
+        margin-bottom: 18px;
 
-            margin-bottom: 18px;
+        overflow: hidden;
 
-            overflow: hidden;
+        transition:
+          background 0.25s,
+          border 0.25s;
+      }
 
-            transition:
-                background 0.25s,
-                border 0.25s;
+      .setting-row {
+        min-height: 75px;
 
-        }
+        padding: 18px 22px;
 
+        display: flex;
 
-        .setting-row {
+        align-items: center;
 
-            min-height: 75px;
+        justify-content: space-between;
 
-            padding: 18px 22px;
+        gap: 20px;
 
-            display: flex;
+        border-bottom: 1px solid var(--border);
+      }
 
-            align-items: center;
+      .setting-row:last-child {
+        border-bottom: none;
+      }
 
-            justify-content: space-between;
+      .setting-info {
+        flex: 1;
+      }
 
-            gap: 20px;
+      .setting-info h3 {
+        font-size: 14px;
 
-            border-bottom: 1px solid var(--border);
+        margin-bottom: 5px;
+      }
 
-        }
+      .setting-info p {
+        color: var(--muted-text);
 
+        font-size: 12px;
 
-        .setting-row:last-child {
+        line-height: 1.5;
+      }
 
-            border-bottom: none;
-
-        }
-
-
-        .setting-info {
-
-            flex: 1;
-
-        }
-
-
-        .setting-info h3 {
-
-            font-size: 14px;
-
-            margin-bottom: 5px;
-
-        }
-
-
-        .setting-info p {
-
-            color: var(--muted-text);
-
-            font-size: 12px;
-
-            line-height: 1.5;
-
-        }
-
-
-        /* ==========================================
+      /* ==========================================
            INPUTS
         ========================================== */
 
-        input,
-        select {
+      input,
+      select {
+        background: var(--input);
 
-            background: var(--input);
+        color: var(--text);
 
-            color: var(--text);
+        border: 1px solid var(--input-border);
 
-            border: 1px solid var(--input-border);
+        border-radius: 8px;
 
-            border-radius: 8px;
+        padding: 10px 12px;
 
-            padding: 10px 12px;
+        font-family: inherit;
 
-            font-family: inherit;
+        outline: none;
 
-            outline: none;
+        transition:
+          background 0.25s,
+          color 0.25s,
+          border 0.2s;
+      }
 
-            transition:
-                background 0.25s,
-                color 0.25s,
-                border 0.2s;
+      input:focus,
+      select:focus {
+        border-color: var(--blue);
+      }
 
-        }
+      .setting-input {
+        width: 250px;
+      }
 
-
-        input:focus,
-        select:focus {
-
-            border-color: var(--blue);
-
-        }
-
-
-        .setting-input {
-
-            width: 250px;
-
-        }
-
-
-        /* ==========================================
+      /* ==========================================
            THEME SELECTOR
         ========================================== */
 
-        .theme-options {
+      .theme-options {
+        display: grid;
 
-            display: grid;
+        grid-template-columns: repeat(3, 1fr);
 
-            grid-template-columns:
-                repeat(3, 1fr);
+        gap: 12px;
 
-            gap: 12px;
+        width: 100%;
 
-            width: 100%;
+        margin-top: 10px;
+      }
 
-            margin-top: 10px;
+      .theme-option {
+        position: relative;
+      }
 
-        }
+      .theme-option input {
+        display: none;
+      }
 
+      .theme-card {
+        display: flex;
 
-        .theme-option {
+        flex-direction: column;
 
-            position: relative;
+        align-items: center;
 
-        }
+        justify-content: center;
 
+        gap: 8px;
 
-        .theme-option input {
+        min-height: 105px;
 
-            display: none;
+        padding: 15px;
 
-        }
+        border: 1px solid var(--border);
 
+        border-radius: 12px;
 
-        .theme-card {
+        background: var(--input);
 
-            display: flex;
+        color: var(--secondary-text);
 
-            flex-direction: column;
+        cursor: pointer;
 
-            align-items: center;
+        text-align: center;
 
-            justify-content: center;
+        transition: 0.2s;
+      }
 
-            gap: 8px;
+      .theme-card:hover {
+        border-color: var(--blue);
 
-            min-height: 105px;
+        transform: translateY(-2px);
+      }
 
-            padding: 15px;
+      .theme-icon {
+        font-size: 25px;
+      }
 
-            border: 1px solid var(--border);
+      .theme-name {
+        font-size: 13px;
 
-            border-radius: 12px;
+        font-weight: 700;
 
-            background: var(--input);
+        color: var(--text);
+      }
 
-            color: var(--secondary-text);
+      .theme-description {
+        font-size: 11px;
 
-            cursor: pointer;
+        color: var(--muted-text);
+      }
 
-            text-align: center;
+      .theme-option input:checked + .theme-card {
+        border: 2px solid var(--blue);
 
-            transition: 0.2s;
+        background: var(--blue-light);
 
-        }
+        color: var(--blue);
+      }
 
-
-        .theme-card:hover {
-
-            border-color: var(--blue);
-
-            transform: translateY(-2px);
-
-        }
-
-
-        .theme-icon {
-
-            font-size: 25px;
-
-        }
-
-
-        .theme-name {
-
-            font-size: 13px;
-
-            font-weight: 700;
-
-            color: var(--text);
-
-        }
-
-
-        .theme-description {
-
-            font-size: 11px;
-
-            color: var(--muted-text);
-
-        }
-
-
-        .theme-option input:checked + .theme-card {
-
-            border: 2px solid var(--blue);
-
-            background: var(--blue-light);
-
-            color: var(--blue);
-
-        }
-
-
-        /* ==========================================
+      /* ==========================================
            TOGGLE
         ========================================== */
 
-        .toggle {
+      .toggle {
+        position: relative;
 
-            position: relative;
+        width: 46px;
 
-            width: 46px;
+        height: 25px;
 
-            height: 25px;
+        flex-shrink: 0;
+      }
 
-            flex-shrink: 0;
+      .toggle input {
+        display: none;
+      }
 
-        }
+      .slider {
+        position: absolute;
 
+        inset: 0;
 
-        .toggle input {
+        background: #252e40;
 
-            display: none;
+        border-radius: 30px;
 
-        }
+        cursor: pointer;
 
+        transition: 0.2s;
+      }
 
-        .slider {
+      .slider::before {
+        content: "";
 
-            position: absolute;
+        position: absolute;
 
-            inset: 0;
+        width: 19px;
 
-            background: #252e40;
+        height: 19px;
 
-            border-radius: 30px;
+        left: 3px;
 
-            cursor: pointer;
+        top: 3px;
 
-            transition: 0.2s;
+        background: #a8b1c1;
 
-        }
+        border-radius: 50%;
 
+        transition: 0.2s;
+      }
 
-        .slider::before {
+      .toggle input:checked + .slider {
+        background: var(--blue);
+      }
 
-            content: "";
+      .toggle input:checked + .slider::before {
+        transform: translateX(21px);
 
-            position: absolute;
+        background: white;
+      }
 
-            width: 19px;
-
-            height: 19px;
-
-            left: 3px;
-
-            top: 3px;
-
-            background: #a8b1c1;
-
-            border-radius: 50%;
-
-            transition: 0.2s;
-
-        }
-
-
-        .toggle input:checked + .slider {
-
-            background: var(--blue);
-
-        }
-
-
-        .toggle input:checked + .slider::before {
-
-            transform: translateX(21px);
-
-            background: white;
-
-        }
-
-
-        /* ==========================================
+      /* ==========================================
            SAVE BAR
         ========================================== */
 
-        .save-bar {
+      .save-bar {
+        display: flex;
 
-            display: flex;
+        align-items: center;
 
-            align-items: center;
+        justify-content: space-between;
 
-            justify-content: space-between;
+        gap: 15px;
 
-            gap: 15px;
+        margin-top: 10px;
 
-            margin-top: 10px;
+        padding: 16px 20px;
 
-            padding: 16px 20px;
+        background: var(--card);
 
-            background: var(--card);
+        border: 1px solid var(--border);
 
-            border: 1px solid var(--border);
+        border-radius: 13px;
+      }
 
-            border-radius: 13px;
+      .save-status {
+        color: var(--muted-text);
 
-        }
+        font-size: 12px;
+      }
 
+      .account-status {
+        margin-top: 14px;
+        font-size: 13px;
+        color: var(--muted-text);
+        min-height: 16px;
+      }
 
-        .save-status {
+      .account-status.success {
+        color: #087443;
+      }
 
-            color: var(--muted-text);
+      .account-status.error {
+        color: #b42318;
+      }
 
-            font-size: 12px;
+      .save-btn {
+        border: none;
 
-        }
+        background: var(--blue);
 
+        color: white;
 
-        .save-btn {
+        padding: 11px 20px;
 
-            border: none;
+        border-radius: 8px;
 
-            background: var(--blue);
+        font-family: inherit;
 
-            color: white;
+        font-size: 13px;
 
-            padding: 11px 20px;
+        font-weight: 700;
 
-            border-radius: 8px;
+        cursor: pointer;
+      }
 
-            font-family: inherit;
+      .save-btn:hover {
+        background: var(--blue-hover);
+      }
 
-            font-size: 13px;
-
-            font-weight: 700;
-
-            cursor: pointer;
-
-        }
-
-
-        .save-btn:hover {
-
-            background: var(--blue-hover);
-
-        }
-
-
-        /* ==========================================
+      /* ==========================================
            DANGER
         ========================================== */
 
-        .danger-card {
+      .danger-card {
+        border-color: #44212a;
+      }
 
-            border-color: #44212a;
+      .danger-title {
+        color: #e45b68 !important;
+      }
 
-        }
+      .danger-btn {
+        border: 1px solid #6b2935;
 
+        background: #211016;
 
-        .danger-title {
+        color: #ff8d99;
 
-            color: #e45b68 !important;
+        padding: 10px 14px;
 
-        }
+        border-radius: 8px;
 
+        cursor: pointer;
 
-        .danger-btn {
+        font-family: inherit;
 
-            border: 1px solid #6b2935;
+        font-size: 12px;
 
-            background: #211016;
+        font-weight: 600;
+      }
 
-            color: #ff8d99;
-
-            padding: 10px 14px;
-
-            border-radius: 8px;
-
-            cursor: pointer;
-
-            font-family: inherit;
-
-            font-size: 12px;
-
-            font-weight: 600;
-
-        }
-
-
-        /* ==========================================
+      /* ==========================================
            MOBILE
         ========================================== */
 
-        @media (max-width: 800px) {
-
-            .settings-layout {
-
-                grid-template-columns: 1fr;
-
-            }
-
-
-            .sidebar {
-
-                display: flex;
-
-                overflow-x: auto;
-
-                gap: 5px;
-
-            }
-
-
-            .side-btn {
-
-                width: auto;
-
-                white-space: nowrap;
-
-                margin: 0;
-
-            }
-
-
-            .sidebar-divider {
-
-                display: none;
-
-            }
-
-
-            .setting-row {
-
-                align-items: flex-start;
-
-                flex-direction: column;
-
-            }
-
-
-            .setting-input {
-
-                width: 100%;
-
-            }
-
-
-            .theme-options {
-
-                grid-template-columns: 1fr;
-
-            }
-
-
-            .save-bar {
-
-                align-items: stretch;
-
-                flex-direction: column;
-
-            }
-
-
-            .save-btn {
-
-                width: 100%;
-
-            }
-
+      @media (max-width: 800px) {
+        .settings-layout {
+          grid-template-columns: 1fr;
         }
 
+        .sidebar {
+          display: flex;
+
+          overflow-x: auto;
+
+          gap: 5px;
+        }
+
+        .side-btn {
+          width: auto;
+
+          white-space: nowrap;
+
+          margin: 0;
+        }
+
+        .sidebar-divider {
+          display: none;
+        }
+
+        .setting-row {
+          align-items: flex-start;
+
+          flex-direction: column;
+        }
+
+        .setting-input {
+          width: 100%;
+        }
+
+        .theme-options {
+          grid-template-columns: 1fr;
+        }
+
+        .save-bar {
+          align-items: stretch;
+
+          flex-direction: column;
+        }
+
+        .save-btn {
+          width: 100%;
+        }
+      }
     </style>
+  </head>
 
-</head>
-
-
-<body>
-
-
-<!-- =========================
+  <body>
+    <script src="theme.js"></script>
+    <script src="auth-client.js"></script>
+    <!-- =========================
      NAVBAR
 ========================= -->
 
-<nav class="navbar">
-
-    <a href="index.html" class="logo">
-
-        <img
-            src="logo1.jpg"
-            alt="Gradurat Logo"
-        >
+    <nav class="navbar">
+      <a href="index.html" class="logo">
+        <img src="logo1.jpg" alt="Gradurat Logo" />
 
         Gradurat
+      </a>
 
-    </a>
-
-
-    <a
-        href="dashboard.html"
-        class="back"
-        id="backLink"
-    >
+      <a href="dashboard.html" class="back" id="backLink">
         ← Back to Dashboard
-    </a>
+      </a>
+    </nav>
 
-</nav>
-
-
-
-<main class="container">
-
-
-    <div class="heading">
-
+    <main class="container">
+      <div class="heading">
         <h1>Settings</h1>
 
-        <p>
-            Manage your Gradurat account, privacy and preferences.
-        </p>
+        <p>Manage your Gradurat account, privacy and preferences.</p>
+      </div>
 
-    </div>
-
-
-
-    <div class="settings-layout">
-
-
+      <div class="settings-layout">
         <!-- =========================
              SIDEBAR
         ========================= -->
 
         <aside class="sidebar">
+          <button class="side-btn active" data-section="account">
+            ⚙️ Account
+          </button>
 
+          <button class="side-btn" data-section="visibility">
+            👤 Profile & Visibility
+          </button>
 
-            <button
-                class="side-btn active"
-                data-section="account"
-            >
-                ⚙️ Account
-            </button>
+          <button class="side-btn" data-section="cv">🔒 CV & Privacy</button>
 
+          <button class="side-btn" data-section="career">
+            🎯 Career Preferences
+          </button>
 
-            <button
-                class="side-btn"
-                data-section="visibility"
-            >
-                👤 Profile & Visibility
-            </button>
+          <button class="side-btn" data-section="fyp">
+            💙 FYP Preferences
+          </button>
 
+          <button class="side-btn" data-section="notifications">
+            🔔 Notifications
+          </button>
 
-            <button
-                class="side-btn"
-                data-section="cv"
-            >
-                🔒 CV & Privacy
-            </button>
+          <button class="side-btn" data-section="security">🛡️ Security</button>
 
+          <button class="side-btn" data-section="data">
+            📊 Privacy & Data
+          </button>
 
-            <button
-                class="side-btn"
-                data-section="career"
-            >
-                🎯 Career Preferences
-            </button>
+          <button class="side-btn" data-section="appearance">
+            🎨 Appearance
+          </button>
 
+          <!-- EMPLOYER -->
 
-            <button
-                class="side-btn"
-                data-section="fyp"
-            >
-                💙 FYP Preferences
-            </button>
-
-
-            <button
-                class="side-btn"
-                data-section="notifications"
-            >
-                🔔 Notifications
-            </button>
-
-
-            <button
-                class="side-btn"
-                data-section="security"
-            >
-                🛡️ Security
-            </button>
-
-
-            <button
-                class="side-btn"
-                data-section="data"
-            >
-                📊 Privacy & Data
-            </button>
-
-
-            <button
-                class="side-btn"
-                data-section="appearance"
-            >
-                🎨 Appearance
-            </button>
-
-
-            <!-- EMPLOYER -->
-
-            <div
-                id="employerSettings"
-                style="display:none;"
-            >
-
-                <div class="sidebar-divider"></div>
-
-
-                <button
-                    class="side-btn"
-                    data-section="company"
-                >
-                    🏢 Company Settings
-                </button>
-
-
-                <button
-                    class="side-btn"
-                    data-section="recruitment"
-                >
-                    🎯 Recruitment Preferences
-                </button>
-
-            </div>
-
-
+          <div id="employerSettings" style="display: none">
             <div class="sidebar-divider"></div>
 
-
-            <button
-                class="side-btn logout-side"
-                onclick="logout()"
-            >
-                ↪ Log Out
+            <button class="side-btn" data-section="company">
+              🏢 Company Settings
             </button>
 
+            <button class="side-btn" data-section="recruitment">
+              🎯 Recruitment Preferences
+            </button>
+          </div>
+
+          <div class="sidebar-divider"></div>
+
+          <button class="side-btn logout-side" onclick="logout()">
+            ↪ Log Out
+          </button>
         </aside>
-
-
 
         <!-- =========================
              CONTENT
         ========================= -->
 
         <div class="settings-content">
+          <!-- ACCOUNT -->
 
+          <section class="settings-section active" id="account">
+            <div class="section-title">
+              <h2>Account</h2>
 
-            <!-- ACCOUNT -->
+              <p>
+                Manage the basic information connected to your Gradurat account.
+              </p>
+            </div>
 
-            <section
-                class="settings-section active"
-                id="account"
-            >
+            <div class="card">
+              <div class="setting-row">
+                <div class="setting-info">
+                  <h3>Email Address</h3>
 
-                <div class="section-title">
-
-                    <h2>Account</h2>
-
-                    <p>
-                        Manage the basic information connected
-                        to your Gradurat account.
-                    </p>
-
+                  <p>Your email address is used to sign in to Gradurat.</p>
                 </div>
 
+                <input
+                  type="email"
+                  id="email"
+                  class="setting-input"
+                  placeholder="Your email"
+                />
+              </div>
 
-                <div class="card">
+              <div class="setting-row">
+                <div class="setting-info">
+                  <h3>Phone Number</h3>
 
-
-                    <div class="setting-row">
-
-                        <div class="setting-info">
-
-                            <h3>Email Address</h3>
-
-                            <p>
-                                Your email address is used to
-                                sign in to Gradurat.
-                            </p>
-
-                        </div>
-
-
-                        <input
-                            type="email"
-                            id="email"
-                            class="setting-input"
-                            placeholder="Your email"
-                        >
-
-                    </div>
-
-
-                    <div class="setting-row">
-
-                        <div class="setting-info">
-
-                            <h3>Phone Number</h3>
-
-                            <p>
-                                Optional contact information.
-                            </p>
-
-                        </div>
-
-
-                        <input
-                            type="tel"
-                            id="phone"
-                            class="setting-input"
-                            placeholder="Phone number"
-                        >
-
-                    </div>
-
+                  <p>Optional contact information.</p>
                 </div>
 
-            </section>
+                <input
+                  type="tel"
+                  id="phone"
+                  class="setting-input"
+                  placeholder="Phone number"
+                />
+              </div>
+            </div>
+          </section>
 
+          <!-- VISIBILITY -->
 
+          <section class="settings-section" id="visibility">
+            <div class="section-title">
+              <h2>Profile & Visibility</h2>
 
-            <!-- VISIBILITY -->
+              <p>
+                Control how other Gradurat users discover and view your
+                professional profile.
+              </p>
+            </div>
 
-            <section
-                class="settings-section"
-                id="visibility"
-            >
+            <div class="card">
+              <div class="setting-row">
+                <div class="setting-info">
+                  <h3>Profile Discoverability</h3>
 
-                <div class="section-title">
-
-                    <h2>Profile & Visibility</h2>
-
-                    <p>
-                        Control how other Gradurat users discover
-                        and view your professional profile.
-                    </p>
-
+                  <p>
+                    Allow Gradurat to recommend your profile when you are a
+                    potential match.
+                  </p>
                 </div>
 
+                <label class="toggle">
+                  <input type="checkbox" id="profileDiscoverable" />
 
-                <div class="card">
+                  <span class="slider"></span>
+                </label>
+              </div>
 
+              <div class="setting-row">
+                <div class="setting-info">
+                  <h3>Show Profile Photo</h3>
 
-                    <div class="setting-row">
-
-                        <div class="setting-info">
-
-                            <h3>Profile Discoverability</h3>
-
-                            <p>
-                                Allow Gradurat to recommend your
-                                profile when you are a potential match.
-                            </p>
-
-                        </div>
-
-
-                        <label class="toggle">
-
-                            <input
-                                type="checkbox"
-                                id="profileDiscoverable"
-                            >
-
-                            <span class="slider"></span>
-
-                        </label>
-
-                    </div>
-
-
-                    <div class="setting-row">
-
-                        <div class="setting-info">
-
-                            <h3>Show Profile Photo</h3>
-
-                            <p>
-                                Allow your profile photo to appear
-                                on your professional profile.
-                            </p>
-
-                        </div>
-
-
-                        <label class="toggle">
-
-                            <input
-                                type="checkbox"
-                                id="showPhoto"
-                            >
-
-                            <span class="slider"></span>
-
-                        </label>
-
-                    </div>
-
-
-                    <div class="setting-row">
-
-                        <div class="setting-info">
-
-                            <h3>Show Interests</h3>
-
-                            <p>
-                                Allow your interests to be visible
-                                to potential matches.
-                            </p>
-
-                        </div>
-
-
-                        <label class="toggle">
-
-                            <input
-                                type="checkbox"
-                                id="showInterests"
-                            >
-
-                            <span class="slider"></span>
-
-                        </label>
-
-                    </div>
-
+                  <p>
+                    Allow your profile photo to appear on your professional
+                    profile.
+                  </p>
                 </div>
 
-            </section>
+                <label class="toggle">
+                  <input type="checkbox" id="showPhoto" />
 
+                  <span class="slider"></span>
+                </label>
+              </div>
 
+              <div class="setting-row">
+                <div class="setting-info">
+                  <h3>Show Interests</h3>
 
-            <!-- CV -->
-
-            <section
-                class="settings-section"
-                id="cv"
-            >
-
-                <div class="section-title">
-
-                    <h2>CV & Privacy</h2>
-
-                    <p>
-                        Control who can access your CV.
-                    </p>
-
+                  <p>
+                    Allow your interests to be visible to potential matches.
+                  </p>
                 </div>
 
+                <label class="toggle">
+                  <input type="checkbox" id="showInterests" />
 
-                <div class="card">
+                  <span class="slider"></span>
+                </label>
+              </div>
+            </div>
+          </section>
 
+          <!-- CV -->
 
-                    <div class="setting-row">
+          <section class="settings-section" id="cv">
+            <div class="section-title">
+              <h2>CV & Privacy</h2>
 
-                        <div class="setting-info">
+              <p>Control who can access your CV.</p>
+            </div>
 
-                            <h3>CV Visibility</h3>
+            <div class="card">
+              <div class="setting-row">
+                <div class="setting-info">
+                  <h3>CV Visibility</h3>
 
-                            <p>
-                                Your CV stays private until you
-                                have a professional connection.
-                            </p>
-
-                        </div>
-
-
-                        <select id="cvVisibility">
-
-                            <option value="connection">
-                                Private until connection
-                            </option>
-
-                            <option value="matches">
-                                Available to mutual matches
-                            </option>
-
-                        </select>
-
-                    </div>
-
-
-                    <div class="setting-row">
-
-                        <div class="setting-info">
-
-                            <h3>Allow CV Downloads</h3>
-
-                            <p>
-                                Allow connected employers to
-                                download your CV.
-                            </p>
-
-                        </div>
-
-
-                        <label class="toggle">
-
-                            <input
-                                type="checkbox"
-                                id="allowCVDownload"
-                            >
-
-                            <span class="slider"></span>
-
-                        </label>
-
-                    </div>
-
+                  <p>
+                    Your CV stays private until you have a professional
+                    connection.
+                  </p>
                 </div>
 
-            </section>
+                <select id="cvVisibility">
+                  <option value="connection">Private until connection</option>
 
+                  <option value="matches">Available to mutual matches</option>
+                </select>
+              </div>
 
+              <div class="setting-row">
+                <div class="setting-info">
+                  <h3>Allow CV Downloads</h3>
 
-            <!-- CAREER -->
-
-            <section
-                class="settings-section"
-                id="career"
-            >
-
-                <div class="section-title">
-
-                    <h2>Career Preferences</h2>
-
-                    <p>
-                        Help Gradurat understand what opportunities
-                        may be relevant to you.
-                    </p>
-
+                  <p>Allow connected employers to download your CV.</p>
                 </div>
 
+                <label class="toggle">
+                  <input type="checkbox" id="allowCVDownload" />
 
-                <div class="card">
+                  <span class="slider"></span>
+                </label>
+              </div>
+            </div>
+          </section>
 
+          <!-- CAREER -->
 
-                    <div class="setting-row">
+          <section class="settings-section" id="career">
+            <div class="section-title">
+              <h2>Career Preferences</h2>
 
-                        <div class="setting-info">
+              <p>
+                Help Gradurat understand what opportunities may be relevant to
+                you.
+              </p>
+            </div>
 
-                            <h3>Preferred Work Environment</h3>
+            <div class="card">
+              <div class="setting-row">
+                <div class="setting-info">
+                  <h3>Preferred Work Environment</h3>
 
-                            <p>
-                                Select your preferred working arrangement.
-                            </p>
-
-                        </div>
-
-
-                        <select id="workEnvironment">
-
-                            <option value="">
-                                Select
-                            </option>
-
-                            <option value="remote">
-                                Remote
-                            </option>
-
-                            <option value="hybrid">
-                                Hybrid
-                            </option>
-
-                            <option value="onsite">
-                                On-site
-                            </option>
-
-                            <option value="any">
-                                No preference
-                            </option>
-
-                        </select>
-
-                    </div>
-
-
-                    <div class="setting-row">
-
-                        <div class="setting-info">
-
-                            <h3>Employment Type</h3>
-
-                            <p>
-                                Select the type of opportunities
-                                you're interested in.
-                            </p>
-
-                        </div>
-
-
-                        <select id="employmentPreference">
-
-                            <option value="">
-                                Select
-                            </option>
-
-                            <option value="full-time">
-                                Full-time
-                            </option>
-
-                            <option value="part-time">
-                                Part-time
-                            </option>
-
-                            <option value="internship">
-                                Internship
-                            </option>
-
-                            <option value="graduate-programme">
-                                Graduate Programme
-                            </option>
-
-                            <option value="any">
-                                No preference
-                            </option>
-
-                        </select>
-
-                    </div>
-
+                  <p>Select your preferred working arrangement.</p>
                 </div>
 
-            </section>
+                <select id="workEnvironment">
+                  <option value="">Select</option>
 
+                  <option value="remote">Remote</option>
 
+                  <option value="hybrid">Hybrid</option>
 
-            <!-- FYP -->
+                  <option value="onsite">On-site</option>
 
-            <section
-                class="settings-section"
-                id="fyp"
-            >
+                  <option value="any">No preference</option>
+                </select>
+              </div>
 
-                <div class="section-title">
+              <div class="setting-row">
+                <div class="setting-info">
+                  <h3>Employment Type</h3>
 
-                    <h2>FYP Preferences</h2>
-
-                    <p>
-                        Control how Find Your People works for you.
-                    </p>
-
+                  <p>Select the type of opportunities you're interested in.</p>
                 </div>
 
+                <select id="employmentPreference">
+                  <option value="">Select</option>
 
-                <div class="card">
+                  <option value="full-time">Full-time</option>
 
+                  <option value="part-time">Part-time</option>
 
-                    <div class="setting-row">
+                  <option value="internship">Internship</option>
 
-                        <div class="setting-info">
+                  <option value="graduate-programme">Graduate Programme</option>
 
-                            <h3>Appear in Find Your People</h3>
+                  <option value="any">No preference</option>
+                </select>
+              </div>
+            </div>
+          </section>
 
-                            <p>
-                                Allow your profile to be recommended
-                                to potential professional connections.
-                            </p>
+          <!-- FYP -->
 
-                        </div>
+          <section class="settings-section" id="fyp">
+            <div class="section-title">
+              <h2>FYP Preferences</h2>
 
+              <p>Control how Find Your People works for you.</p>
+            </div>
 
-                        <label class="toggle">
+            <div class="card">
+              <div class="setting-row">
+                <div class="setting-info">
+                  <h3>Appear in Find Your People</h3>
 
-                            <input
-                                type="checkbox"
-                                id="appearInFYP"
-                            >
-
-                            <span class="slider"></span>
-
-                        </label>
-
-                    </div>
-
-
-                    <div class="setting-row">
-
-                        <div class="setting-info">
-
-                            <h3>Personalized Matching</h3>
-
-                            <p>
-                                Use your profile information to improve
-                                recommendation relevance.
-                            </p>
-
-                        </div>
-
-
-                        <label class="toggle">
-
-                            <input
-                                type="checkbox"
-                                id="personalizedMatching"
-                            >
-
-                            <span class="slider"></span>
-
-                        </label>
-
-                    </div>
-
+                  <p>
+                    Allow your profile to be recommended to potential
+                    professional connections.
+                  </p>
                 </div>
 
-            </section>
+                <label class="toggle">
+                  <input type="checkbox" id="appearInFYP" />
 
+                  <span class="slider"></span>
+                </label>
+              </div>
 
+              <div class="setting-row">
+                <div class="setting-info">
+                  <h3>Personalized Matching</h3>
 
-            <!-- NOTIFICATIONS -->
-
-            <section
-                class="settings-section"
-                id="notifications"
-            >
-
-                <div class="section-title">
-
-                    <h2>Notifications</h2>
-
-                    <p>
-                        Choose which Gradurat updates you receive.
-                    </p>
-
+                  <p>
+                    Use your profile information to improve recommendation
+                    relevance.
+                  </p>
                 </div>
 
+                <label class="toggle">
+                  <input type="checkbox" id="personalizedMatching" />
 
-                <div class="card">
+                  <span class="slider"></span>
+                </label>
+              </div>
+            </div>
+          </section>
 
+          <!-- NOTIFICATIONS -->
 
-                    <div class="setting-row">
+          <section class="settings-section" id="notifications">
+            <div class="section-title">
+              <h2>Notifications</h2>
 
-                        <div class="setting-info">
+              <p>Choose which Gradurat updates you receive.</p>
+            </div>
 
-                            <h3>New Matches</h3>
+            <div class="card">
+              <div class="setting-row">
+                <div class="setting-info">
+                  <h3>New Matches</h3>
 
-                            <p>
-                                Get notified when a new professional
-                                match is created.
-                            </p>
-
-                        </div>
-
-
-                        <label class="toggle">
-
-                            <input
-                                type="checkbox"
-                                id="notifyMatches"
-                            >
-
-                            <span class="slider"></span>
-
-                        </label>
-
-                    </div>
-
-
-                    <div class="setting-row">
-
-                        <div class="setting-info">
-
-                            <h3>New Opportunities</h3>
-
-                            <p>
-                                Receive relevant opportunity notifications.
-                            </p>
-
-                        </div>
-
-
-                        <label class="toggle">
-
-                            <input
-                                type="checkbox"
-                                id="notifyOpportunities"
-                            >
-
-                            <span class="slider"></span>
-
-                        </label>
-
-                    </div>
-
-
-                    <div class="setting-row">
-
-                        <div class="setting-info">
-
-                            <h3>Connections</h3>
-
-                            <p>
-                                Get notified about new professional
-                                connections.
-                            </p>
-
-                        </div>
-
-
-                        <label class="toggle">
-
-                            <input
-                                type="checkbox"
-                                id="notifyConnections"
-                            >
-
-                            <span class="slider"></span>
-
-                        </label>
-
-                    </div>
-
+                  <p>Get notified when a new professional match is created.</p>
                 </div>
 
-            </section>
+                <label class="toggle">
+                  <input type="checkbox" id="notifyMatches" />
 
+                  <span class="slider"></span>
+                </label>
+              </div>
 
+              <div class="setting-row">
+                <div class="setting-info">
+                  <h3>New Opportunities</h3>
 
-            <!-- SECURITY -->
-
-            <section
-                class="settings-section"
-                id="security"
-            >
-
-                <div class="section-title">
-
-                    <h2>Security</h2>
-
-                    <p>
-                        Keep your Gradurat account secure.
-                    </p>
-
+                  <p>Receive relevant opportunity notifications.</p>
                 </div>
 
+                <label class="toggle">
+                  <input type="checkbox" id="notifyOpportunities" />
 
-                <div class="card">
+                  <span class="slider"></span>
+                </label>
+              </div>
 
+              <div class="setting-row">
+                <div class="setting-info">
+                  <h3>Connections</h3>
 
-                    <div class="setting-row">
-
-                        <div class="setting-info">
-
-                            <h3>Change Password</h3>
-
-                            <p>
-                                Update the password used to access
-                                your account.
-                            </p>
-
-                        </div>
-
-
-                        <button
-                            class="view-btn"
-                            onclick="changePassword()"
-                        >
-                            Change
-                        </button>
-
-                    </div>
-
-
-                    <div class="setting-row">
-
-                        <div class="setting-info">
-
-                            <h3>Log Out of All Devices</h3>
-
-                            <p>
-                                End all active sessions associated
-                                with your account.
-                            </p>
-
-                        </div>
-
-
-                        <button
-                            class="view-btn"
-                            onclick="logoutAllDevices()"
-                        >
-                            Log Out
-                        </button>
-
-                    </div>
-
+                  <p>Get notified about new professional connections.</p>
                 </div>
 
-            </section>
+                <label class="toggle">
+                  <input type="checkbox" id="notifyConnections" />
 
+                  <span class="slider"></span>
+                </label>
+              </div>
+            </div>
+          </section>
 
+          <!-- SECURITY -->
 
-            <!-- PRIVACY & DATA -->
+          <section class="settings-section" id="security">
+            <div class="section-title">
+              <h2>Security</h2>
 
-            <section
-                class="settings-section"
-                id="data"
-            >
+              <p>Keep your Gradurat account secure.</p>
+            </div>
 
-                <div class="section-title">
+            <div class="card">
+              <div class="setting-row">
+                <div class="setting-info">
+                  <h3>Change Password</h3>
 
-                    <h2>Privacy & Data</h2>
-
-                    <p>
-                        Manage your Gradurat data and account.
-                    </p>
-
+                  <p>Update the password used to access your account.</p>
                 </div>
 
+                <button class="view-btn" onclick="changePassword()">
+                  Change
+                </button>
+              </div>
 
-                <div class="card">
+              <div class="setting-row">
+                <div class="setting-info">
+                  <h3>Log Out of All Devices</h3>
 
-
-                    <div class="setting-row">
-
-                        <div class="setting-info">
-
-                            <h3>Download Your Data</h3>
-
-                            <p>
-                                Request a copy of the information
-                                stored on your account.
-                            </p>
-
-                        </div>
-
-
-                        <button
-                            class="view-btn"
-                            onclick="downloadData()"
-                        >
-                            Request
-                        </button>
-
-                    </div>
-
+                  <p>End all active sessions associated with your account.</p>
                 </div>
 
+                <button class="view-btn" onclick="logoutAllDevices()">
+                  Log Out
+                </button>
+              </div>
+            </div>
 
-                <div class="card danger-card">
+            <p class="account-status" id="securityStatus"></p>
+          </section>
 
+          <!-- PRIVACY & DATA -->
 
-                    <div class="setting-row">
+          <section class="settings-section" id="data">
+            <div class="section-title">
+              <h2>Privacy & Data</h2>
 
-                        <div class="setting-info">
+              <p>Manage your Gradurat data and account.</p>
+            </div>
 
-                            <h3 class="danger-title">
-                                Delete Account
-                            </h3>
+            <div class="card">
+              <div class="setting-row">
+                <div class="setting-info">
+                  <h3>Download Your Data</h3>
 
-                            <p>
-                                Permanently delete your Gradurat
-                                account and associated information.
-                            </p>
-
-                        </div>
-
-
-                        <button
-                            class="danger-btn"
-                            onclick="deleteAccount()"
-                        >
-                            Delete Account
-                        </button>
-
-                    </div>
-
+                  <p>
+                    Request a copy of the information stored on your account.
+                  </p>
                 </div>
 
-            </section>
+                <button class="view-btn" onclick="downloadData()">
+                  Request
+                </button>
+              </div>
+            </div>
 
+            <div class="card danger-card">
+              <div class="setting-row">
+                <div class="setting-info">
+                  <h3 class="danger-title">Delete Account</h3>
 
+                  <p>
+                    Permanently delete your Gradurat account and associated
+                    information.
+                  </p>
+                </div>
 
-            <!-- =========================
+                <button class="danger-btn" onclick="deleteAccount()">
+                  Delete Account
+                </button>
+              </div>
+            </div>
+
+            <p class="account-status" id="dataStatus"></p>
+          </section>
+
+          <!-- =========================
                  APPEARANCE
             ========================= -->
 
-            <section
-                class="settings-section"
-                id="appearance"
-            >
-
-                <div class="section-title">
-
-                    <h2>Appearance</h2>
-
-                    <p>
-                        Choose how Gradurat looks on your device.
-                        Your choice is applied immediately.
-                    </p>
-
-                </div>
-
-
-                <div class="card">
-
-
-                    <div class="setting-row">
-
-                        <div class="setting-info">
-
-                            <h3>Theme</h3>
-
-                            <p>
-                                Choose between Gradurat Dark,
-                                Light, or your system preference.
-                            </p>
-
-                        </div>
-
-                    </div>
-
-
-                    <div
-                        style="
-                            padding: 20px;
-                            border-top: 1px solid var(--border);
-                        "
-                    >
-
-                        <div class="theme-options">
-
-
-                            <!-- DARK -->
-
-                            <label class="theme-option">
-
-                                <input
-                                    type="radio"
-                                    name="theme"
-                                    value="dark"
-                                >
-
-                                <div class="theme-card">
-
-                                    <div class="theme-icon">
-                                        🌙
-                                    </div>
-
-                                    <div class="theme-name">
-                                        Dark
-                                    </div>
-
-                                    <div class="theme-description">
-                                        Gradurat default
-                                    </div>
-
-                                </div>
-
-                            </label>
-
-
-                            <!-- LIGHT -->
-
-                            <label class="theme-option">
-
-                                <input
-                                    type="radio"
-                                    name="theme"
-                                    value="light"
-                                >
-
-                                <div class="theme-card">
-
-                                    <div class="theme-icon">
-                                        ☀️
-                                    </div>
-
-                                    <div class="theme-name">
-                                        Light
-                                    </div>
-
-                                    <div class="theme-description">
-                                        Bright interface
-                                    </div>
-
-                                </div>
-
-                            </label>
-
-
-                            <!-- SYSTEM -->
-
-                            <label class="theme-option">
-
-                                <input
-                                    type="radio"
-                                    name="theme"
-                                    value="system"
-                                >
-
-                                <div class="theme-card">
-
-                                    <div class="theme-icon">
-                                        💻
-                                    </div>
-
-                                    <div class="theme-name">
-                                        System
-                                    </div>
-
-                                    <div class="theme-description">
-                                        Follow device
-                                    </div>
-
-                                </div>
-
-                            </label>
-
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-            </section>
-
-
-
-            <!-- EMPLOYER COMPANY -->
-
-            <section
-                class="settings-section"
-                id="company"
-            >
-
-                <div class="section-title">
-
-                    <h2>Company Settings</h2>
-
-                    <p>
-                        Manage the information candidates see
-                        about your organisation.
-                    </p>
-
-                </div>
-
-
-                <div class="card">
-
-
-                    <div class="setting-row">
-
-                        <div class="setting-info">
-
-                            <h3>Company Name</h3>
-
-                            <p>
-                                Your organisation's display name.
-                            </p>
-
-                        </div>
-
-
-                        <input
-                            type="text"
-                            id="companyName"
-                            class="setting-input"
-                            placeholder="Company name"
-                        >
-
-                    </div>
-
-
-                    <div class="setting-row">
-
-                        <div class="setting-info">
-
-                            <h3>Industry</h3>
-
-                            <p>
-                                The industry your organisation
-                                operates in.
-                            </p>
-
-                        </div>
-
-
-                        <input
-                            type="text"
-                            id="companyIndustry"
-                            class="setting-input"
-                            placeholder="Industry"
-                        >
-
-                    </div>
-
-                </div>
-
-            </section>
-
-
-
-            <!-- EMPLOYER RECRUITMENT -->
-
-            <section
-                class="settings-section"
-                id="recruitment"
-            >
-
-                <div class="section-title">
-
-                    <h2>Recruitment Preferences</h2>
-
-                    <p>
-                        Control how Gradurat helps you discover
-                        potential candidates.
-                    </p>
-
-                </div>
-
-
-                <div class="card">
-
-
-                    <div class="setting-row">
-
-                        <div class="setting-info">
-
-                            <h3>AI Candidate Matching</h3>
-
-                            <p>
-                                Use your opportunity requirements
-                                to identify potentially suitable
-                                candidates.
-                            </p>
-
-                        </div>
-
-
-                        <label class="toggle">
-
-                            <input
-                                type="checkbox"
-                                id="aiMatching"
-                            >
-
-                            <span class="slider"></span>
-
-                        </label>
-
-                    </div>
-
-
-                    <div class="setting-row">
-
-                        <div class="setting-info">
-
-                            <h3>Candidate Recommendations</h3>
-
-                            <p>
-                                Receive candidate recommendations
-                                when Gradurat identifies potential
-                                matches.
-                            </p>
-
-                        </div>
-
-
-                        <label class="toggle">
-
-                            <input
-                                type="checkbox"
-                                id="candidateRecommendations"
-                            >
-
-                            <span class="slider"></span>
-
-                        </label>
-
-                    </div>
-
-                </div>
-
-            </section>
-
-
-
-            <!-- SAVE -->
-
-            <div class="save-bar">
-
-                <span
-                    class="save-status"
-                    id="saveStatus"
-                >
-                    Changes are not saved yet.
-                </span>
-
-
-                <button
-                    class="save-btn"
-                    onclick="saveSettings()"
-                >
-                    Save Changes
-                </button>
-
+          <section class="settings-section" id="appearance">
+            <div class="section-title">
+              <h2>Appearance</h2>
+
+              <p>
+                Choose how Gradurat looks on your device. Your choice is applied
+                immediately.
+              </p>
             </div>
 
+            <div class="card">
+              <div class="setting-row">
+                <div class="setting-info">
+                  <h3>Theme</h3>
 
+                  <p>
+                    Choose between Gradurat Dark, Light, or your system
+                    preference.
+                  </p>
+                </div>
+              </div>
+
+              <div style="padding: 20px; border-top: 1px solid var(--border)">
+                <div class="theme-options">
+                  <!-- DARK -->
+
+                  <label class="theme-option">
+                    <input type="radio" name="theme" value="dark" />
+
+                    <div class="theme-card">
+                      <div class="theme-icon">🌙</div>
+
+                      <div class="theme-name">Dark</div>
+
+                      <div class="theme-description">Gradurat default</div>
+                    </div>
+                  </label>
+
+                  <!-- LIGHT -->
+
+                  <label class="theme-option">
+                    <input type="radio" name="theme" value="light" />
+
+                    <div class="theme-card">
+                      <div class="theme-icon">☀️</div>
+
+                      <div class="theme-name">Light</div>
+
+                      <div class="theme-description">Bright interface</div>
+                    </div>
+                  </label>
+
+                  <!-- SYSTEM -->
+
+                  <label class="theme-option">
+                    <input type="radio" name="theme" value="system" />
+
+                    <div class="theme-card">
+                      <div class="theme-icon">💻</div>
+
+                      <div class="theme-name">System</div>
+
+                      <div class="theme-description">Follow device</div>
+                    </div>
+                  </label>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- EMPLOYER COMPANY -->
+
+          <section class="settings-section" id="company">
+            <div class="section-title">
+              <h2>Company Settings</h2>
+
+              <p>
+                Manage the information candidates see about your organisation.
+              </p>
+            </div>
+
+            <div class="card">
+              <div class="setting-row">
+                <div class="setting-info">
+                  <h3>Company Name</h3>
+
+                  <p>Your organisation's display name.</p>
+                </div>
+
+                <input
+                  type="text"
+                  id="companyName"
+                  class="setting-input"
+                  placeholder="Company name"
+                />
+              </div>
+
+              <div class="setting-row">
+                <div class="setting-info">
+                  <h3>Industry</h3>
+
+                  <p>The industry your organisation operates in.</p>
+                </div>
+
+                <select id="companyIndustry" class="setting-input">
+                  <option value="">Select industry</option>
+                  <option value="Technology">Technology</option>
+                  <option value="Business">Business</option>
+                  <option value="Finance">Finance</option>
+                  <option value="Marketing">Marketing</option>
+                  <option value="Healthcare">Healthcare</option>
+                  <option value="Engineering">Engineering</option>
+                  <option value="Creative">Creative</option>
+                  <option value="Science">Science</option>
+                  <option value="Education">Education</option>
+                  <option value="Retail & Sales">Retail &amp; Sales</option>
+                  <option value="Manufacturing">Manufacturing</option>
+                  <option value="Hospitality & Tourism">
+                    Hospitality &amp; Tourism
+                  </option>
+                  <option value="Legal">Legal</option>
+                  <option value="Agriculture">Agriculture</option>
+                  <option value="Construction">Construction</option>
+                  <option value="Government & Public Sector">
+                    Government &amp; Public Sector
+                  </option>
+                  <option value="Media & Communications">
+                    Media &amp; Communications
+                  </option>
+                  <option value="Transportation & Logistics">
+                    Transportation &amp; Logistics
+                  </option>
+                  <option value="Energy & Utilities">
+                    Energy &amp; Utilities
+                  </option>
+                  <option value="Non-Profit">Non-Profit</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+            </div>
+          </section>
+
+          <!-- EMPLOYER RECRUITMENT -->
+
+          <section class="settings-section" id="recruitment">
+            <div class="section-title">
+              <h2>Recruitment Preferences</h2>
+
+              <p>
+                Control how Gradurat helps you discover potential candidates.
+              </p>
+            </div>
+
+            <div class="card">
+              <div class="setting-row">
+                <div class="setting-info">
+                  <h3>AI Candidate Matching</h3>
+
+                  <p>
+                    Use your opportunity requirements to identify potentially
+                    suitable candidates.
+                  </p>
+                </div>
+
+                <label class="toggle">
+                  <input type="checkbox" id="aiMatching" />
+
+                  <span class="slider"></span>
+                </label>
+              </div>
+
+              <div class="setting-row">
+                <div class="setting-info">
+                  <h3>Candidate Recommendations</h3>
+
+                  <p>
+                    Receive candidate recommendations when Gradurat identifies
+                    potential matches.
+                  </p>
+                </div>
+
+                <label class="toggle">
+                  <input type="checkbox" id="candidateRecommendations" />
+
+                  <span class="slider"></span>
+                </label>
+              </div>
+            </div>
+          </section>
+
+          <!-- SAVE -->
+
+          <div class="save-bar">
+            <span class="save-status" id="saveStatus">
+              Changes are not saved yet.
+            </span>
+
+            <button class="save-btn" onclick="saveSettings()">
+              Save Changes
+            </button>
+          </div>
         </div>
+      </div>
+    </main>
 
-    </div>
-
-</main>
-
-
-
-<script>
-
-    /* ==========================================
+    <script>
+      /* ==========================================
        GRADURAT SETTINGS
     ========================================== */
 
+      let currentUser = null;
 
-    let currentUser = null;
-
-
-
-    /* ==========================================
+      /* ==========================================
        START
     ========================================== */
 
-    document.addEventListener(
-        "DOMContentLoaded",
-        function () {
+      document.addEventListener("DOMContentLoaded", function () {
+        loadCurrentUser();
 
-            loadCurrentUser();
+        setupNavigation();
 
-            setupNavigation();
+        setupThemeInputs();
 
-            setupTheme();
+        loadSettings();
+      });
 
-        }
-    );
+      /* ==========================================
+       STATUS MESSAGES
+    ========================================== */
 
+      function setStatus(elementId, message, isError = false) {
+        const element = document.getElementById(elementId);
 
+        if (!element) return;
 
-    /* ==========================================
+        element.textContent = message;
+
+        element.classList.remove("success", "error");
+
+        element.classList.add(isError ? "error" : "success");
+      }
+
+      /* ==========================================
        USER
     ========================================== */
 
-    function loadCurrentUser() {
-
-        const storedUser =
-            localStorage.getItem("graduratUser");
-
+      function loadCurrentUser() {
+        const storedUser = localStorage.getItem("graduratUser");
 
         if (!storedUser) {
+          window.location.href = "login.html";
 
-            window.location.href =
-                "login.html";
-
-            return;
-
+          return;
         }
-
 
         try {
-
-            currentUser =
-                JSON.parse(storedUser);
-
+          currentUser = JSON.parse(storedUser);
         } catch (error) {
+          window.location.href = "login.html";
 
-            window.location.href =
-                "login.html";
-
-            return;
-
+          return;
         }
-
 
         /*
          * Employer-specific settings
          */
 
-        if (
-            currentUser.role === "employer"
-        ) {
+        if (currentUser.role === "employer") {
+          document.getElementById("employerSettings").style.display = "block";
 
-            document.getElementById(
-                "employerSettings"
-            ).style.display = "block";
-
-
-            document.getElementById(
-                "backLink"
-            ).href =
-                "employer-dashboard.html";
-
+          document.getElementById("backLink").href = "employer-dashboard.html";
         }
+      }
 
-    }
-
-
-
-    /* ==========================================
+      /* ==========================================
        NAVIGATION
     ========================================== */
 
-    function setupNavigation() {
-
-        const buttons =
-            document.querySelectorAll(
-                ".side-btn[data-section]"
-            );
-
+      function setupNavigation() {
+        const buttons = document.querySelectorAll(".side-btn[data-section]");
 
         buttons.forEach(function (button) {
+          button.addEventListener("click", function () {
+            const sectionId = button.dataset.section;
 
-            button.addEventListener(
-                "click",
-                function () {
+            document
+              .querySelectorAll(".settings-section")
+              .forEach(function (section) {
+                section.classList.remove("active");
+              });
 
-                    const sectionId =
-                        button.dataset.section;
+            buttons.forEach(function (item) {
+              item.classList.remove("active");
+            });
 
+            const section = document.getElementById(sectionId);
 
-                    document
-                        .querySelectorAll(
-                            ".settings-section"
-                        )
-                        .forEach(function (section) {
+            if (section) {
+              section.classList.add("active");
+            }
 
-                            section.classList.remove(
-                                "active"
-                            );
-
-                        });
-
-
-                    buttons.forEach(function (item) {
-
-                        item.classList.remove(
-                            "active"
-                        );
-
-                    });
-
-
-                    const section =
-                        document.getElementById(
-                            sectionId
-                        );
-
-
-                    if (section) {
-
-                        section.classList.add(
-                            "active"
-                        );
-
-                    }
-
-
-                    button.classList.add(
-                        "active"
-                    );
-
-                }
-            );
-
+            button.classList.add("active");
+          });
         });
+      }
 
-    }
-
-
-
-    /* ==========================================
+      /* ==========================================
        THEME SYSTEM
     ========================================== */
 
-    function setupTheme() {
+      function setupThemeInputs() {
+        graduratTheme.applyTheme(graduratTheme.getStoredTheme());
 
-        const savedTheme =
-            localStorage.getItem(
-                "graduratTheme"
-            );
-
-
-        /*
-         * If the user has previously selected
-         * a theme, use it.
-         *
-         * Otherwise use system preference.
-         */
-
-        const theme =
-            savedTheme || "system";
-
-
-        applyTheme(theme);
-
-
-        const themeInputs =
-            document.querySelectorAll(
-                'input[name="theme"]'
-            );
-
+        const themeInputs = document.querySelectorAll('input[name="theme"]');
 
         themeInputs.forEach(function (input) {
+          input.addEventListener("change", async function () {
+            if (!input.checked) {
+              return;
+            }
 
-            input.addEventListener(
-                "change",
-                function () {
+            graduratTheme.setTheme(input.value);
 
-                    if (!input.checked) {
+            document.getElementById("saveStatus").textContent =
+              "Theme updated.";
 
-                        return;
+            try {
+              await graduratAuth.apiFetch("/api/settings", {
+                method: "PUT",
+                body: JSON.stringify({ theme: input.value }),
+              });
+            } catch (error) {
+              // The theme already applied locally; a failed sync is not
+              // shown to the user since the visual change already happened.
+            }
+          });
+        });
+      }
 
-                    }
+      /* ==========================================
+       LOAD SETTINGS
+    ========================================== */
 
+      async function loadSettings() {
+        try {
+          const response = await graduratAuth.apiFetch("/api/settings");
 
-                    const selectedTheme =
-                        input.value;
+          const data = await graduratAuth.readJson(
+            response,
+            "The settings response was not valid JSON.",
+          );
 
+          if (!response.ok) {
+            throw new Error(data.error || "Could not load settings.");
+          }
 
-                    applyTheme(
-                        selectedTheme
-                    );
+          applySettingsToForm(data);
+        } catch (error) {
+          setStatus(
+            "saveStatus",
+            `Could not load your saved settings: ${error.message}`,
+            true,
+          );
+        }
+      }
 
+      function applySettingsToForm(data) {
+        const preferences = data.preferences || {};
 
-                    /*
-                     * Save locally for now.
-                     *
-                     * Later this will also be saved
-                     * through:
-                     *
-                     * PUT /api/settings
-                     */
+        const emailField = document.getElementById("email");
 
-                    localStorage.setItem(
-                        "graduratTheme",
-                        selectedTheme
-                    );
+        if (emailField)
+          emailField.value =
+            data.student?.email ||
+            data.employer?.email ||
+            currentUser.email ||
+            "";
 
+        const phoneField = document.getElementById("phone");
 
-                    document.getElementById(
-                        "saveStatus"
-                    ).textContent =
-                        "Theme updated.";
+        if (phoneField) phoneField.value = data.student?.phone || "";
 
-                }
-            );
+        const checkboxFields = [
+          "profileDiscoverable",
+          "showPhoto",
+          "showInterests",
+          "allowCVDownload",
+          "appearInFYP",
+          "personalizedMatching",
+          "notifyMatches",
+          "notifyOpportunities",
+          "notifyConnections",
+        ];
 
+        checkboxFields.forEach(function (id) {
+          const field = document.getElementById(id);
+
+          if (field) field.checked = Boolean(preferences[id]);
         });
 
-    }
+        const valueFields = [
+          "cvVisibility",
+          "workEnvironment",
+          "employmentPreference",
+        ];
 
+        valueFields.forEach(function (id) {
+          const field = document.getElementById(id);
 
+          if (field && preferences[id] !== undefined)
+            field.value = preferences[id];
+        });
 
-    /* ==========================================
-       APPLY THEME
-    ========================================== */
+        if (currentUser.role === "employer") {
+          const companyNameField = document.getElementById("companyName");
 
-    function applyTheme(theme) {
+          if (companyNameField)
+            companyNameField.value = data.employer?.company_name || "";
 
+          const companyIndustryField =
+            document.getElementById("companyIndustry");
 
-        if (theme === "light") {
+          if (companyIndustryField)
+            companyIndustryField.value = data.employer?.industry || "";
 
-            document.body.classList.add(
-                "light-theme"
+          const aiMatchingField = document.getElementById("aiMatching");
+
+          if (aiMatchingField)
+            aiMatchingField.checked = Boolean(preferences.aiMatching);
+
+          const candidateRecommendationsField = document.getElementById(
+            "candidateRecommendations",
+          );
+
+          if (candidateRecommendationsField)
+            candidateRecommendationsField.checked = Boolean(
+              preferences.candidateRecommendations,
             );
-
         }
 
-        else if (theme === "dark") {
+        graduratTheme.setTheme(data.theme || "system");
+      }
 
-            document.body.classList.remove(
-                "light-theme"
-            );
-
-        }
-
-        else {
-
-            /*
-             * SYSTEM THEME
-             */
-
-            const prefersLight =
-                window.matchMedia(
-                    "(prefers-color-scheme: light)"
-                ).matches;
-
-
-            if (prefersLight) {
-
-                document.body.classList.add(
-                    "light-theme"
-                );
-
-            } else {
-
-                document.body.classList.remove(
-                    "light-theme"
-                );
-
-            }
-
-        }
-
-
-        /*
-         * Highlight selected option.
-         */
-
-        const input =
-            document.querySelector(
-                `input[name="theme"][value="${theme}"]`
-            );
-
-
-        if (input) {
-
-            input.checked = true;
-
-        }
-
-    }
-
-
-
-    /* ==========================================
-       SYSTEM THEME CHANGES
-    ========================================== */
-
-    window
-        .matchMedia(
-            "(prefers-color-scheme: light)"
-        )
-        .addEventListener(
-            "change",
-            function () {
-
-                const savedTheme =
-                    localStorage.getItem(
-                        "graduratTheme"
-                    );
-
-
-                /*
-                 * Only react automatically when
-                 * the user chose System.
-                 */
-
-                if (
-                    savedTheme === "system" ||
-                    !savedTheme
-                ) {
-
-                    applyTheme("system");
-
-                }
-
-            }
-        );
-
-
-
-    /* ==========================================
+      /* ==========================================
        SAVE SETTINGS
     ========================================== */
 
-    async function saveSettings() {
-
+      async function saveSettings() {
         if (!currentUser) {
-
-            return;
-
+          return;
         }
 
-
-        const selectedTheme =
-            document.querySelector(
-                'input[name="theme"]:checked'
-            );
-
+        const selectedTheme = document.querySelector(
+          'input[name="theme"]:checked',
+        );
 
         const settings = {
+          phone: document.getElementById("phone").value.trim(),
 
-            email:
-                document.getElementById(
-                    "email"
-                ).value.trim(),
+          profileDiscoverable: document.getElementById("profileDiscoverable")
+            .checked,
 
-            phone:
-                document.getElementById(
-                    "phone"
-                ).value.trim(),
+          showPhoto: document.getElementById("showPhoto").checked,
 
-            profileDiscoverable:
-                document.getElementById(
-                    "profileDiscoverable"
-                ).checked,
+          showInterests: document.getElementById("showInterests").checked,
 
-            showPhoto:
-                document.getElementById(
-                    "showPhoto"
-                ).checked,
+          cvVisibility: document.getElementById("cvVisibility").value,
 
-            showInterests:
-                document.getElementById(
-                    "showInterests"
-                ).checked,
+          allowCVDownload: document.getElementById("allowCVDownload").checked,
 
-            cvVisibility:
-                document.getElementById(
-                    "cvVisibility"
-                ).value,
+          workEnvironment: document.getElementById("workEnvironment").value,
 
-            allowCVDownload:
-                document.getElementById(
-                    "allowCVDownload"
-                ).checked,
+          employmentPreference: document.getElementById("employmentPreference")
+            .value,
 
-            workEnvironment:
-                document.getElementById(
-                    "workEnvironment"
-                ).value,
+          appearInFYP: document.getElementById("appearInFYP").checked,
 
-            employmentPreference:
-                document.getElementById(
-                    "employmentPreference"
-                ).value,
+          personalizedMatching: document.getElementById("personalizedMatching")
+            .checked,
 
-            appearInFYP:
-                document.getElementById(
-                    "appearInFYP"
-                ).checked,
+          notifyMatches: document.getElementById("notifyMatches").checked,
 
-            personalizedMatching:
-                document.getElementById(
-                    "personalizedMatching"
-                ).checked,
+          notifyOpportunities: document.getElementById("notifyOpportunities")
+            .checked,
 
-            notifyMatches:
-                document.getElementById(
-                    "notifyMatches"
-                ).checked,
+          notifyConnections:
+            document.getElementById("notifyConnections").checked,
 
-            notifyOpportunities:
-                document.getElementById(
-                    "notifyOpportunities"
-                ).checked,
-
-            notifyConnections:
-                document.getElementById(
-                    "notifyConnections"
-                ).checked,
-
-            theme:
-                selectedTheme
-                    ? selectedTheme.value
-                    : "system"
-
+          theme: selectedTheme ? selectedTheme.value : "system",
         };
-
 
         /*
          * Employer settings
          */
 
-        if (
-            currentUser.role === "employer"
-        ) {
+        if (currentUser.role === "employer") {
+          settings.companyName = document
+            .getElementById("companyName")
+            .value.trim();
 
-            settings.companyName =
-                document.getElementById(
-                    "companyName"
-                ).value.trim();
+          settings.companyIndustry = document
+            .getElementById("companyIndustry")
+            .value.trim();
 
+          settings.aiMatching = document.getElementById("aiMatching").checked;
 
-            settings.companyIndustry =
-                document.getElementById(
-                    "companyIndustry"
-                ).value.trim();
-
-
-            settings.aiMatching =
-                document.getElementById(
-                    "aiMatching"
-                ).checked;
-
-
-            settings.candidateRecommendations =
-                document.getElementById(
-                    "candidateRecommendations"
-                ).checked;
-
+          settings.candidateRecommendations = document.getElementById(
+            "candidateRecommendations",
+          ).checked;
         }
-
-
-        /*
-         * ======================================
-         * BACKEND
-         * ======================================
-         *
-         * PUT /api/settings
-         */
 
         try {
+          const response = await graduratAuth.apiFetch("/api/settings", {
+            method: "PUT",
+            body: JSON.stringify(settings),
+          });
 
-            const response =
-                await fetch(
-                    "/api/settings",
-                    {
+          const result = await graduratAuth.readJson(
+            response,
+            "The settings response was not valid JSON.",
+          );
 
-                        method: "PUT",
+          if (!response.ok) {
+            throw new Error(result.error || "Settings could not be saved.");
+          }
 
-                        headers: {
-                            "Content-Type":
-                                "application/json"
-                        },
-
-                        body:
-                            JSON.stringify(settings)
-
-                    }
-                );
-
-
-            if (!response.ok) {
-
-                throw new Error(
-                    "Settings could not be saved."
-                );
-
-            }
-
-
-            document.getElementById(
-                "saveStatus"
-            ).textContent =
-                "Changes saved successfully.";
-
+          setStatus("saveStatus", "Successful: your changes were saved.");
+        } catch (error) {
+          setStatus("saveStatus", `Unsuccessful: ${error.message}`, true);
+          return;
         }
 
+        await maybeUpdateEmail();
+      }
 
-        catch (error) {
+      /* ==========================================
+       EMAIL CHANGE
+    ========================================== */
 
-            document.getElementById(
-                "saveStatus"
-            ).textContent =
-                "Backend connection is not available yet. Theme remains saved on this device.";
+      async function maybeUpdateEmail() {
+        const emailField = document.getElementById("email");
 
+        const newEmail = emailField.value.trim();
+
+        if (!newEmail || newEmail === currentUser.email) {
+          return;
         }
 
-    }
+        try {
+          await graduratAuth.updateEmail(newEmail);
 
+          setStatus(
+            "saveStatus",
+            `Successful: a confirmation email was sent to ${newEmail}. Your login email updates once you confirm it.`,
+          );
+        } catch (error) {
+          setStatus(
+            "saveStatus",
+            `Unsuccessful: could not start the email change (${error.message}).`,
+            true,
+          );
+        }
+      }
 
-
-    /* ==========================================
+      /* ==========================================
        SECURITY
     ========================================== */
 
-    function changePassword() {
+      async function changePassword() {
+        try {
+          await graduratAuth.requestPasswordReset(currentUser.email);
 
-        alert(
-            "Password changing will be connected to the Gradurat backend."
-        );
+          setStatus(
+            "securityStatus",
+            `Successful: a password reset email was sent to ${currentUser.email}.`,
+          );
+        } catch (error) {
+          setStatus("securityStatus", `Unsuccessful: ${error.message}`, true);
+        }
+      }
 
-    }
+      async function logoutAllDevices() {
+        try {
+          await graduratAuth.logoutAllDevices();
 
+          setStatus(
+            "securityStatus",
+            "Successful: you were logged out of all devices.",
+          );
 
-    function logoutAllDevices() {
+          setTimeout(function () {
+            logout();
+          }, 1200);
+        } catch (error) {
+          setStatus("securityStatus", `Unsuccessful: ${error.message}`, true);
+        }
+      }
 
-        alert(
-            "This will be connected to Gradurat's authentication system."
-        );
-
-    }
-
-
-
-    /* ==========================================
+      /* ==========================================
        DATA
     ========================================== */
 
-    function downloadData() {
-
-        alert(
-            "Your data download will be connected to the Gradurat backend."
+      async function downloadData() {
+        setStatus(
+          "dataStatus",
+          "Preparing your data export. If Supabase applies its data-request policy, this may take a few days to arrive by email instead of downloading immediately.",
         );
 
-    }
+        try {
+          const response = await graduratAuth.apiFetch("/api/account/export");
 
-
-    function deleteAccount() {
-
-        const confirmed =
-            confirm(
-                "Are you sure you want to permanently delete your Gradurat account?"
+          if (!response.ok) {
+            const result = await graduratAuth.readJson(
+              response,
+              "The export response was not valid JSON.",
             );
 
+            throw new Error(result.error || "Could not export your data.");
+          }
 
-        if (!confirmed) {
+          const blob = await response.blob();
 
-            return;
+          const url = URL.createObjectURL(blob);
 
+          const link = document.createElement("a");
+
+          link.href = url;
+
+          link.download = `gradurat-data-${new Date().toISOString().slice(0, 10)}.csv`;
+
+          document.body.append(link);
+
+          link.click();
+
+          link.remove();
+
+          URL.revokeObjectURL(url);
+
+          setStatus("dataStatus", "Successful: your data export downloaded.");
+        } catch (error) {
+          setStatus("dataStatus", `Unsuccessful: ${error.message}`, true);
         }
+      }
 
-
-        alert(
-            "Account deletion will be connected to the Gradurat backend."
+      async function deleteAccount() {
+        const confirmed = confirm(
+          "Are you sure you want to permanently delete your Gradurat account?",
         );
 
-    }
+        if (!confirmed) {
+          return;
+        }
 
+        try {
+          const response = await graduratAuth.apiFetch("/api/account", {
+            method: "DELETE",
+          });
 
+          const result = await graduratAuth.readJson(
+            response,
+            "The account deletion response was not valid JSON.",
+          );
 
-    /* ==========================================
+          if (!response.ok) {
+            throw new Error(result.error || "Could not delete your account.");
+          }
+
+          setStatus("dataStatus", "Successful: your account was deleted.");
+
+          setTimeout(function () {
+            localStorage.removeItem("graduratLoggedIn");
+            localStorage.removeItem("graduratUser");
+            localStorage.removeItem("graduratProfile");
+            localStorage.removeItem("graduratPhoto");
+            localStorage.removeItem("graduRatStudentId");
+            localStorage.removeItem("graduRatEmployerId");
+            graduratAuth.saveSession(null);
+            window.location.href = "index.html";
+          }, 1200);
+        } catch (error) {
+          setStatus("dataStatus", `Unsuccessful: ${error.message}`, true);
+        }
+      }
+
+      /* ==========================================
        LOGOUT
     ========================================== */
 
-    function logout() {
+      function logout() {
+        localStorage.removeItem("graduratLoggedIn");
 
-        localStorage.removeItem(
-            "graduratLoggedIn"
-        );
+        localStorage.removeItem("graduratUser");
 
-        localStorage.removeItem(
-            "graduratUser"
-        );
+        localStorage.removeItem("graduratProfile");
 
-        localStorage.removeItem(
-            "graduratProfile"
-        );
+        localStorage.removeItem("graduratPhoto");
 
-        localStorage.removeItem(
-            "graduratPhoto"
-        );
+        graduratAuth.saveSession(null);
 
-
-        window.location.href =
-            "login.html";
-
-    }
-
-</script>
-
-</body>
-
+        window.location.href = "login.html";
+      }
+    </script>
+  </body>
 </html>
+
 ```

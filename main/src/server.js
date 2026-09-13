@@ -22,6 +22,18 @@ app.use(express.static(path.join(__dirname, "../GraduRat")));
 const publicSupabaseKey =
   process.env.SUPABASE_ANON_KEY ||
   process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
+const avatarBucket = "avatars";
+const avatarUrlExpiresIn = 60 * 60;
+const avatarExtensions = {
+  "image/jpeg": "jpg",
+  "image/png": "png",
+  "image/webp": "webp",
+};
+const cvBucket = "cvs";
+const cvUrlExpiresIn = 60 * 60;
+const cvExtensions = {
+  "application/pdf": "pdf",
+};
 
 const requireAuth = async (request, response, next) => {
   const authorization = request.headers.authorization || "";
@@ -163,6 +175,194 @@ const coerceText = (value, fallback = null) => {
   if (value === null || value === undefined || value === "") return fallback;
   const output = String(value).trim();
   return output || fallback;
+};
+
+const getAvatarExtension = (contentType) => {
+  const normalized = String(contentType || "")
+    .split(";", 1)[0]
+    .trim()
+    .toLowerCase();
+  const extension = avatarExtensions[normalized];
+  if (!extension) {
+    const error = new Error(
+      "Profile photos must be JPEG, PNG, or WebP images.",
+    );
+    error.statusCode = 422;
+    throw error;
+  }
+  return { contentType: normalized, extension };
+};
+
+const buildAvatarPath = (authUserId, profileId, extension) =>
+  `${authUserId}/${profileId}/avatar.${extension}`;
+
+const withProfilePictureUrl = async (profile) => {
+  if (!profile) return profile;
+  const { avatar_path: avatarPath, ...publicProfile } = profile;
+  if (!avatarPath) return { ...publicProfile, profile_picture_url: null };
+
+  const { data, error } = await supabaseServer.storage
+    .from(avatarBucket)
+    .createSignedUrl(avatarPath, avatarUrlExpiresIn);
+  if (error) throw error;
+  return { ...publicProfile, profile_picture_url: data.signedUrl };
+};
+
+const createAvatarUpload = async (
+  table,
+  profileId,
+  authUserId,
+  contentType,
+) => {
+  const profile =
+    table === "students"
+      ? await getOwnedStudent(profileId, authUserId)
+      : await getOwnedEmployer(profileId, authUserId);
+  const { contentType: normalizedContentType, extension } =
+    getAvatarExtension(contentType);
+  const path = buildAvatarPath(authUserId, profile.id, extension);
+  const { data, error } = await supabaseServer.storage
+    .from(avatarBucket)
+    .createSignedUploadUrl(path, { upsert: true });
+  if (error) throw error;
+  return {
+    upload_url: data.signedUrl,
+    avatar_path: path,
+    content_type: normalizedContentType,
+  };
+};
+
+const commitAvatarUpload = async (table, profileId, authUserId, avatarPath) => {
+  const profile =
+    table === "students"
+      ? await getOwnedStudent(profileId, authUserId)
+      : await getOwnedEmployer(profileId, authUserId);
+  const extension = String(avatarPath || "").match(/\.([a-z]+)$/i)?.[1];
+  const expectedPath = extension
+    ? buildAvatarPath(authUserId, profile.id, extension)
+    : null;
+  if (!expectedPath || avatarPath !== expectedPath) {
+    const error = new Error("The avatar upload path is invalid.");
+    error.statusCode = 422;
+    throw error;
+  }
+
+  const { data, error } = await supabaseServer
+    .from(table)
+    .update({ avatar_path: avatarPath })
+    .eq("id", profileId)
+    .select()
+    .single();
+  if (error) throw error;
+
+  if (profile.avatar_path && profile.avatar_path !== avatarPath) {
+    const { error: removeError } = await supabaseServer.storage
+      .from(avatarBucket)
+      .remove([profile.avatar_path]);
+    if (removeError) throw removeError;
+  }
+  return withProfilePictureUrl(data);
+};
+
+const removeAvatar = async (table, profileId, authUserId) => {
+  const profile =
+    table === "students"
+      ? await getOwnedStudent(profileId, authUserId)
+      : await getOwnedEmployer(profileId, authUserId);
+  if (profile.avatar_path) {
+    const { error } = await supabaseServer.storage
+      .from(avatarBucket)
+      .remove([profile.avatar_path]);
+    if (error) throw error;
+  }
+  const { data, error } = await supabaseServer
+    .from(table)
+    .update({ avatar_path: null })
+    .eq("id", profileId)
+    .select()
+    .single();
+  if (error) throw error;
+  return withProfilePictureUrl(data);
+};
+
+const getCvExtension = (contentType) => {
+  const normalized = String(contentType || "")
+    .split(";", 1)[0]
+    .trim()
+    .toLowerCase();
+  const extension = cvExtensions[normalized];
+  if (!extension) {
+    const error = new Error("CVs must be uploaded as PDF files.");
+    error.statusCode = 422;
+    throw error;
+  }
+  return { contentType: normalized, extension };
+};
+
+const buildCvPath = (authUserId, profileId, extension) =>
+  `${authUserId}/${profileId}/cv.${extension}`;
+
+const createCvUpload = async (studentId, authUserId, contentType) => {
+  const student = await getOwnedStudent(studentId, authUserId);
+  const { contentType: normalizedContentType, extension } =
+    getCvExtension(contentType);
+  const path = buildCvPath(authUserId, student.id, extension);
+  const { data, error } = await supabaseServer.storage
+    .from(cvBucket)
+    .createSignedUploadUrl(path, { upsert: true });
+  if (error) throw error;
+  return {
+    upload_url: data.signedUrl,
+    cv_path: path,
+    content_type: normalizedContentType,
+  };
+};
+
+const commitCvUpload = async (studentId, authUserId, cvPath) => {
+  const student = await getOwnedStudent(studentId, authUserId);
+  const extension = String(cvPath || "").match(/\.([a-z]+)$/i)?.[1];
+  const expectedPath = extension
+    ? buildCvPath(authUserId, student.id, extension)
+    : null;
+  if (!expectedPath || cvPath !== expectedPath) {
+    const error = new Error("The CV upload path is invalid.");
+    error.statusCode = 422;
+    throw error;
+  }
+
+  const { data, error } = await supabaseServer
+    .from("students")
+    .update({ cv_path: cvPath })
+    .eq("id", studentId)
+    .select()
+    .single();
+  if (error) throw error;
+
+  if (student.cv_path && student.cv_path !== cvPath) {
+    const { error: removeError } = await supabaseServer.storage
+      .from(cvBucket)
+      .remove([student.cv_path]);
+    if (removeError) throw removeError;
+  }
+  return data;
+};
+
+const removeCv = async (studentId, authUserId) => {
+  const student = await getOwnedStudent(studentId, authUserId);
+  if (student.cv_path) {
+    const { error } = await supabaseServer.storage
+      .from(cvBucket)
+      .remove([student.cv_path]);
+    if (error) throw error;
+  }
+  const { data, error } = await supabaseServer
+    .from("students")
+    .update({ cv_path: null })
+    .eq("id", studentId)
+    .select()
+    .single();
+  if (error) throw error;
+  return data;
 };
 
 const computeProfileCompleteness = (profile, type = "student") => {
@@ -772,7 +972,7 @@ app.get("/api/students/:studentId", requireAuth, async (request, response) => {
       request.authUser.id,
     );
     response.json({
-      student,
+      student: await withProfilePictureUrl(student),
       profile_completeness: computeProfileCompleteness(student, "student"),
     });
   } catch (error) {
@@ -799,7 +999,7 @@ app.patch(
         .single();
       if (error) throw error;
       response.json({
-        student: data,
+        student: await withProfilePictureUrl(data),
         profile_completeness: computeProfileCompleteness(data, "student"),
       });
     } catch (error) {
@@ -818,7 +1018,7 @@ app.get(
         request.authUser.id,
       );
       response.json({
-        employer,
+        employer: await withProfilePictureUrl(employer),
         profile_completeness: computeProfileCompleteness(employer, "employer"),
       });
     } catch (error) {
@@ -846,7 +1046,7 @@ app.patch(
         .single();
       if (error) throw error;
       response.json({
-        employer: data,
+        employer: await withProfilePictureUrl(data),
         profile_completeness: computeProfileCompleteness(data, "employer"),
       });
     } catch (error) {
@@ -854,6 +1054,457 @@ app.patch(
     }
   },
 );
+
+const addAvatarRoutes = (profileType, table, idParam, resultKey) => {
+  const basePath = `/api/${profileType}/:${idParam}/avatar`;
+
+  app.post(`${basePath}/upload-url`, requireAuth, async (request, response) => {
+    try {
+      const upload = await createAvatarUpload(
+        table,
+        request.params[idParam],
+        request.authUser.id,
+        request.body?.content_type ?? request.body?.contentType,
+      );
+      response.json(upload);
+    } catch (error) {
+      errorResponse(response, error, "Could not prepare profile photo upload");
+    }
+  });
+
+  app.post(basePath, requireAuth, async (request, response) => {
+    try {
+      const profile = await commitAvatarUpload(
+        table,
+        request.params[idParam],
+        request.authUser.id,
+        request.body?.avatar_path ?? request.body?.avatarPath,
+      );
+      response.json({ [resultKey]: profile });
+    } catch (error) {
+      errorResponse(response, error, "Could not save profile photo");
+    }
+  });
+
+  app.delete(basePath, requireAuth, async (request, response) => {
+    try {
+      const profile = await removeAvatar(
+        table,
+        request.params[idParam],
+        request.authUser.id,
+      );
+      response.json({ [resultKey]: profile });
+    } catch (error) {
+      errorResponse(response, error, "Could not remove profile photo");
+    }
+  });
+};
+
+addAvatarRoutes("students", "students", "studentId", "student");
+addAvatarRoutes("employers", "employers", "employerId", "employer");
+
+app.post(
+  "/api/students/:studentId/cv/upload-url",
+  requireAuth,
+  async (request, response) => {
+    try {
+      const upload = await createCvUpload(
+        request.params.studentId,
+        request.authUser.id,
+        request.body?.content_type ?? request.body?.contentType,
+      );
+      response.json(upload);
+    } catch (error) {
+      errorResponse(response, error, "Could not prepare CV upload");
+    }
+  },
+);
+
+app.post(
+  "/api/students/:studentId/cv",
+  requireAuth,
+  async (request, response) => {
+    try {
+      const student = await commitCvUpload(
+        request.params.studentId,
+        request.authUser.id,
+        request.body?.cv_path ?? request.body?.cvPath,
+      );
+      response.json({ student });
+    } catch (error) {
+      errorResponse(response, error, "Could not save CV");
+    }
+  },
+);
+
+app.delete(
+  "/api/students/:studentId/cv",
+  requireAuth,
+  async (request, response) => {
+    try {
+      const student = await removeCv(
+        request.params.studentId,
+        request.authUser.id,
+      );
+      response.json({ student });
+    } catch (error) {
+      errorResponse(response, error, "Could not remove CV");
+    }
+  },
+);
+
+app.get(
+  "/api/students/:studentId/cv",
+  requireAuth,
+  async (request, response) => {
+    try {
+      const student = await getStudent(request.params.studentId);
+      const isOwner = student.auth_user_id === request.authUser.id;
+      if (!isOwner) {
+        // Only an authenticated employer profile can request another
+        // student's CV; the candidate's own setting is the only gate.
+        const { data: employer, error: employerError } = await supabaseServer
+          .from("employers")
+          .select("id")
+          .eq("auth_user_id", request.authUser.id)
+          .maybeSingle();
+        if (employerError) throw employerError;
+        if (!employer) {
+          const error = new Error("You do not have access to this CV.");
+          error.statusCode = 403;
+          throw error;
+        }
+        const settings = await getOrCreateUserSettings(student.auth_user_id);
+        if (!settings.preferences?.allowCVDownload) {
+          const error = new Error(
+            "This candidate has not enabled CV downloads.",
+          );
+          error.statusCode = 403;
+          throw error;
+        }
+      }
+      if (!student.cv_path) {
+        return response
+          .status(404)
+          .json({ error: "This candidate has not uploaded a CV yet." });
+      }
+      const { data, error } = await supabaseServer.storage
+        .from(cvBucket)
+        .createSignedUrl(student.cv_path, cvUrlExpiresIn);
+      if (error) throw error;
+      response.json({ cv_url: data.signedUrl });
+    } catch (error) {
+      errorResponse(response, error, "Could not load CV");
+    }
+  },
+);
+
+const getOrCreateUserSettings = async (authUserId) => {
+  const { data, error } = await supabaseServer
+    .from("user_settings")
+    .select("*")
+    .eq("auth_user_id", authUserId)
+    .maybeSingle();
+  if (error) throw error;
+  if (data) return data;
+
+  const { data: created, error: createError } = await supabaseServer
+    .from("user_settings")
+    .insert({ auth_user_id: authUserId })
+    .select()
+    .single();
+  if (createError) throw createError;
+  return created;
+};
+
+app.get("/api/settings", requireAuth, async (request, response) => {
+  try {
+    const [settings, studentResult, employerResult] = await Promise.all([
+      getOrCreateUserSettings(request.authUser.id),
+      supabaseServer
+        .from("students")
+        .select("*")
+        .eq("auth_user_id", request.authUser.id)
+        .maybeSingle(),
+      supabaseServer
+        .from("employers")
+        .select("*")
+        .eq("auth_user_id", request.authUser.id)
+        .maybeSingle(),
+    ]);
+    if (studentResult.error) throw studentResult.error;
+    if (employerResult.error) throw employerResult.error;
+    response.json({
+      theme: settings.theme,
+      preferences: settings.preferences,
+      student: studentResult.data,
+      employer: employerResult.data,
+    });
+  } catch (error) {
+    errorResponse(response, error, "Could not load settings");
+  }
+});
+
+app.put("/api/settings", requireAuth, async (request, response) => {
+  try {
+    const body = request.body || {};
+    const existing = await getOrCreateUserSettings(request.authUser.id);
+    const theme = coerceText(body.theme, existing.theme);
+    if (theme && !["dark", "light", "system"].includes(theme)) {
+      return response
+        .status(422)
+        .json({ error: "Theme must be dark, light, or system." });
+    }
+    const preferenceKeys = [
+      "profileDiscoverable",
+      "showPhoto",
+      "showInterests",
+      "cvVisibility",
+      "allowCVDownload",
+      "workEnvironment",
+      "employmentPreference",
+      "appearInFYP",
+      "personalizedMatching",
+      "notifyMatches",
+      "notifyOpportunities",
+      "notifyConnections",
+      "aiMatching",
+      "candidateRecommendations",
+    ];
+    const nextPreferences = { ...(existing.preferences || {}) };
+    for (const key of preferenceKeys) {
+      if (body[key] !== undefined) nextPreferences[key] = body[key];
+    }
+
+    const { data: settings, error } = await supabaseServer
+      .from("user_settings")
+      .update({ theme, preferences: nextPreferences })
+      .eq("auth_user_id", request.authUser.id)
+      .select()
+      .single();
+    if (error) throw error;
+
+    let student = null;
+    let employer = null;
+    if (body.phone !== undefined) {
+      const { data: studentRow, error: studentLookupError } =
+        await supabaseServer
+          .from("students")
+          .select("id")
+          .eq("auth_user_id", request.authUser.id)
+          .maybeSingle();
+      if (studentLookupError) throw studentLookupError;
+      if (studentRow) {
+        const { data, error: updateError } = await supabaseServer
+          .from("students")
+          .update({
+            phone: coerceText(body.phone, null),
+            updated_at: new Date().toISOString(),
+          })
+          .eq("id", studentRow.id)
+          .select()
+          .single();
+        if (updateError) throw updateError;
+        student = data;
+      }
+    }
+    if (body.companyName !== undefined || body.companyIndustry !== undefined) {
+      const { data: employerRow, error: employerLookupError } =
+        await supabaseServer
+          .from("employers")
+          .select("id")
+          .eq("auth_user_id", request.authUser.id)
+          .maybeSingle();
+      if (employerLookupError) throw employerLookupError;
+      if (employerRow) {
+        const employerUpdates = { updated_at: new Date().toISOString() };
+        if (body.companyName !== undefined)
+          employerUpdates.company_name = coerceText(
+            body.companyName,
+            undefined,
+          );
+        if (body.companyIndustry !== undefined)
+          employerUpdates.industry = coerceText(body.companyIndustry, null);
+        const { data, error: updateError } = await supabaseServer
+          .from("employers")
+          .update(employerUpdates)
+          .eq("id", employerRow.id)
+          .select()
+          .single();
+        if (updateError) throw updateError;
+        employer = data;
+      }
+    }
+
+    response.json({
+      theme: settings.theme,
+      preferences: settings.preferences,
+      student,
+      employer,
+    });
+  } catch (error) {
+    errorResponse(response, error, "Could not save settings");
+  }
+});
+
+const toCsvValue = (value) => {
+  const stringValue =
+    value === null || value === undefined
+      ? ""
+      : Array.isArray(value)
+        ? value.join("; ")
+        : typeof value === "object"
+          ? JSON.stringify(value)
+          : String(value);
+  return /[",\n]/.test(stringValue)
+    ? `"${stringValue.replace(/"/g, '""')}"`
+    : stringValue;
+};
+
+const rowsToCsvSection = (title, rows) => {
+  if (!rows.length) return `${title}\n(no records)\n`;
+  const headers = Object.keys(rows[0]);
+  return [
+    title,
+    headers.join(","),
+    ...rows.map((row) =>
+      headers.map((header) => toCsvValue(row[header])).join(","),
+    ),
+  ].join("\n");
+};
+
+app.get("/api/account/export", requireAuth, async (request, response) => {
+  try {
+    const [settings, studentResult, employerResult] = await Promise.all([
+      getOrCreateUserSettings(request.authUser.id),
+      supabaseServer
+        .from("students")
+        .select("*")
+        .eq("auth_user_id", request.authUser.id)
+        .maybeSingle(),
+      supabaseServer
+        .from("employers")
+        .select("*")
+        .eq("auth_user_id", request.authUser.id)
+        .maybeSingle(),
+    ]);
+    if (studentResult.error) throw studentResult.error;
+    if (employerResult.error) throw employerResult.error;
+
+    const sections = [
+      rowsToCsvSection("ACCOUNT SETTINGS", [
+        { theme: settings.theme, ...settings.preferences },
+      ]),
+    ];
+
+    if (studentResult.data) {
+      const { avatar_path, cv_path, ...studentRow } = studentResult.data;
+      sections.push(rowsToCsvSection("STUDENT PROFILE", [studentRow]));
+      const { data: applications, error: applicationsError } =
+        await supabaseServer
+          .from("applications")
+          .select("*, opportunities(title)")
+          .eq("student_id", studentResult.data.id);
+      if (applicationsError) throw applicationsError;
+      sections.push(rowsToCsvSection("APPLICATIONS", applications || []));
+    }
+    if (employerResult.data) {
+      const { avatar_path, ...employerRow } = employerResult.data;
+      sections.push(rowsToCsvSection("EMPLOYER PROFILE", [employerRow]));
+      const { data: opportunities, error: opportunitiesError } =
+        await supabaseServer
+          .from("opportunities")
+          .select("*")
+          .eq("employer_id", employerResult.data.id);
+      if (opportunitiesError) throw opportunitiesError;
+      sections.push(rowsToCsvSection("OPPORTUNITIES", opportunities || []));
+    }
+
+    const csv = sections.join("\n\n");
+    const filename = `gradurat-data-${new Date().toISOString().slice(0, 10)}.csv`;
+    response.setHeader("Content-Type", "text/csv");
+    response.setHeader(
+      "Content-Disposition",
+      `attachment; filename="${filename}"`,
+    );
+    response.send(csv);
+  } catch (error) {
+    errorResponse(response, error, "Could not export account data");
+  }
+});
+
+app.delete("/api/account", requireAuth, async (request, response) => {
+  try {
+    const [studentResult, employerResult] = await Promise.all([
+      supabaseServer
+        .from("students")
+        .select("id, avatar_path, cv_path")
+        .eq("auth_user_id", request.authUser.id)
+        .maybeSingle(),
+      supabaseServer
+        .from("employers")
+        .select("id, avatar_path")
+        .eq("auth_user_id", request.authUser.id)
+        .maybeSingle(),
+    ]);
+    if (studentResult.error) throw studentResult.error;
+    if (employerResult.error) throw employerResult.error;
+
+    const filesToRemove = [];
+    if (studentResult.data?.avatar_path)
+      filesToRemove.push({
+        bucket: avatarBucket,
+        path: studentResult.data.avatar_path,
+      });
+    if (studentResult.data?.cv_path)
+      filesToRemove.push({
+        bucket: cvBucket,
+        path: studentResult.data.cv_path,
+      });
+    if (employerResult.data?.avatar_path)
+      filesToRemove.push({
+        bucket: avatarBucket,
+        path: employerResult.data.avatar_path,
+      });
+
+    for (const file of filesToRemove) {
+      const { error } = await supabaseServer.storage
+        .from(file.bucket)
+        .remove([file.path]);
+      if (error) throw error;
+    }
+
+    if (studentResult.data) {
+      const { error } = await supabaseServer
+        .from("students")
+        .delete()
+        .eq("id", studentResult.data.id);
+      if (error) throw error;
+    }
+    if (employerResult.data) {
+      const { error } = await supabaseServer
+        .from("employers")
+        .delete()
+        .eq("id", employerResult.data.id);
+      if (error) throw error;
+    }
+
+    const { error: settingsError } = await supabaseServer
+      .from("user_settings")
+      .delete()
+      .eq("auth_user_id", request.authUser.id);
+    if (settingsError) throw settingsError;
+
+    const { error: authError } = await supabaseServer.auth.admin.deleteUser(
+      request.authUser.id,
+    );
+    if (authError) throw authError;
+
+    response.json({ success: true });
+  } catch (error) {
+    errorResponse(response, error, "Could not delete account");
+  }
+});
 
 app.post("/api/ai/feedback", async (request, response) => {
   try {
@@ -1553,9 +2204,10 @@ app.get(
             .map((opportunity) => getMatch(student, opportunity)),
         )
       ).sort((left, right) => right.match_score - left.match_score);
+      const studentWithPicture = await withProfilePictureUrl(student);
 
       response.json({
-        student,
+        student: studentWithPicture,
         opportunities,
         stats: {
           matches: opportunities.filter(
@@ -1612,11 +2264,17 @@ app.get(
           }),
         )
       ).sort((left, right) => right.match_score - left.match_score);
+      const [employerWithPicture, candidatesWithPictures] = await Promise.all([
+        withProfilePictureUrl(employer),
+        Promise.all(
+          candidates.map((candidate) => withProfilePictureUrl(candidate)),
+        ),
+      ]);
 
       response.json({
-        employer,
+        employer: employerWithPicture,
         opportunities: opportunitiesResponse.data,
-        candidates,
+        candidates: candidatesWithPictures,
         stats: {
           active_jobs: opportunitiesResponse.data.length,
           candidates: candidates.filter(

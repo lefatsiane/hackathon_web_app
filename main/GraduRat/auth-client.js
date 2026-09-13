@@ -78,6 +78,50 @@ const graduratAuth = (() => {
     authRequest("signup", { email, password });
   const signIn = (email, password) =>
     authRequest("token?grant_type=password", { email, password });
+  const requestPasswordReset = (email) => authRequest("recover", { email });
+
+  const logoutAllDevices = async () => {
+    const session = getSession();
+    const config = await getConfig();
+    if (session?.access_token) {
+      await fetch(`${config.supabaseUrl}/auth/v1/logout?scope=global`, {
+        method: "POST",
+        headers: {
+          apikey: config.supabasePublishableKey,
+          Authorization: `Bearer ${session.access_token}`,
+        },
+      });
+    }
+    saveSession(null);
+  };
+
+  const updateEmail = async (newEmail) => {
+    const session = getSession();
+    if (!session?.access_token)
+      throw new Error("You must be signed in to change your email.");
+    const config = await getConfig();
+    const response = await fetch(`${config.supabaseUrl}/auth/v1/user`, {
+      method: "PUT",
+      headers: {
+        apikey: config.supabasePublishableKey,
+        Authorization: `Bearer ${session.access_token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email: newEmail }),
+    });
+    const result = await readJson(
+      response,
+      "Supabase returned an invalid email-change response.",
+    );
+    if (!response.ok)
+      throw new Error(
+        result.msg ||
+          result.error_description ||
+          result.message ||
+          "Could not start the email change.",
+      );
+    return result;
+  };
 
   const apiFetch = async (url, options = {}) => {
     const session = getSession();
@@ -133,5 +177,8 @@ const graduratAuth = (() => {
     setPendingProfile,
     completePendingProfile,
     readJson,
+    requestPasswordReset,
+    logoutAllDevices,
+    updateEmail,
   };
 })();

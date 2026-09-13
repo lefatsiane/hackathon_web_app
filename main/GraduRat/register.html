@@ -14,10 +14,57 @@
         font-family: Arial, Helvetica, sans-serif;
       }
 
+      :root {
+        --background: #050816;
+        --navbar: #060a1a;
+        --card: #0b1126;
+        --input: #070c1d;
+        --border: rgba(255, 255, 255, 0.08);
+        --input-border: #202b49;
+        --text: #ffffff;
+        --secondary-text: #b8c1d9;
+        --muted-text: #8993ad;
+        --blue: #315cff;
+        --blue-hover: #2449dc;
+        --blue-light: rgba(49, 92, 255, 0.1);
+        --blue-link: #5e80ff;
+        --danger-bg: rgba(255, 70, 70, 0.1);
+        --danger-border: rgba(255, 70, 70, 0.3);
+        --danger-text: #ff8d8d;
+        --success-bg: rgba(50, 200, 120, 0.1);
+        --success-border: rgba(50, 200, 120, 0.3);
+        --success-text: #79e6a7;
+      }
+
+      body.light-theme {
+        --background: #f4f7fb;
+        --navbar: #ffffff;
+        --card: #ffffff;
+        --input: #f8fafc;
+        --border: #dce3ee;
+        --input-border: #c8d2e2;
+        --text: #111827;
+        --secondary-text: #5c677a;
+        --muted-text: #697586;
+        --blue: #2b4fe0;
+        --blue-hover: #1f3cc0;
+        --blue-light: #eaf0ff;
+        --blue-link: #2b4fe0;
+        --danger-bg: #fdeceb;
+        --danger-border: #f3b8b3;
+        --danger-text: #b42318;
+        --success-bg: #e9f9ef;
+        --success-border: #a9e3bf;
+        --success-text: #0f7a3d;
+      }
+
       body {
-        background: #050816;
-        color: white;
+        background: var(--background);
+        color: var(--text);
         min-height: 100vh;
+        transition:
+          background 0.25s ease,
+          color 0.25s ease;
       }
 
       /* =========================
@@ -30,29 +77,29 @@
         align-items: center;
         justify-content: space-between;
         padding: 0 7%;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-        background: #060a1a;
+        border-bottom: 1px solid var(--border);
+        background: var(--navbar);
       }
 
       .logo {
         font-size: 26px;
         font-weight: bold;
-        color: #ffffff;
+        color: var(--text);
       }
 
       .logo span {
-        color: #315cff;
+        color: var(--blue);
       }
 
       .back-home {
         text-decoration: none;
-        color: #b8c1d9;
+        color: var(--secondary-text);
         font-size: 14px;
         transition: 0.3s;
       }
 
       .back-home:hover {
-        color: white;
+        color: var(--text);
       }
 
       /* =========================
@@ -70,8 +117,8 @@
       .register-container {
         width: 100%;
         max-width: 850px;
-        background: #0b1126;
-        border: 1px solid rgba(255, 255, 255, 0.08);
+        background: var(--card);
+        border: 1px solid var(--border);
         border-radius: 20px;
         padding: 45px;
         box-shadow: 0 25px 70px rgba(0, 0, 0, 0.4);
@@ -92,11 +139,11 @@
       }
 
       .header h1 span {
-        color: #315cff;
+        color: var(--blue);
       }
 
       .header p {
-        color: #8993ad;
+        color: var(--muted-text);
         font-size: 15px;
         line-height: 1.6;
       }
@@ -113,7 +160,7 @@
         font-size: 17px;
         font-weight: bold;
         margin-bottom: 18px;
-        color: #ffffff;
+        color: var(--text);
       }
 
       .form-grid {
@@ -133,7 +180,7 @@
       }
 
       label {
-        color: #c5cce0;
+        color: var(--secondary-text);
         font-size: 14px;
       }
 
@@ -142,9 +189,9 @@
         width: 100%;
         padding: 14px 15px;
         border-radius: 10px;
-        border: 1px solid #202b49;
-        background: #070c1d;
-        color: white;
+        border: 1px solid var(--input-border);
+        background: var(--input);
+        color: var(--text);
         outline: none;
         font-size: 14px;
         transition: 0.3s;
@@ -152,13 +199,13 @@
 
       input:focus,
       select:focus {
-        border-color: #315cff;
+        border-color: var(--blue);
         box-shadow: 0 0 0 3px rgba(49, 92, 255, 0.1);
       }
 
       select option {
-        background: #070c1d;
-        color: white;
+        background: var(--input);
+        color: var(--text);
       }
 
       /* =========================
@@ -184,21 +231,21 @@
       .role-label {
         display: block;
         padding: 20px;
-        background: #070c1d;
-        border: 1px solid #202b49;
+        background: var(--input);
+        border: 1px solid var(--input-border);
         border-radius: 12px;
         cursor: pointer;
         transition: 0.3s;
       }
 
       .role-label:hover {
-        border-color: #315cff;
+        border-color: var(--blue);
         transform: translateY(-2px);
       }
 
       .role-card input:checked + .role-label {
-        border-color: #315cff;
-        background: rgba(49, 92, 255, 0.1);
+        border-color: var(--blue);
+        background: var(--blue-light);
         box-shadow: 0 0 0 2px rgba(49, 92, 255, 0.15);
       }
 
@@ -214,7 +261,7 @@
       }
 
       .role-description {
-        color: #8993ad;
+        color: var(--muted-text);
         font-size: 12px;
         line-height: 1.5;
       }
@@ -240,7 +287,7 @@
         border: none;
         padding: 16px;
         border-radius: 10px;
-        background: #315cff;
+        background: var(--blue);
         color: white;
         font-size: 15px;
         font-weight: bold;
@@ -250,7 +297,7 @@
       }
 
       .submit-button:hover {
-        background: #2449dc;
+        background: var(--blue-hover);
         transform: translateY(-1px);
       }
 
@@ -278,15 +325,15 @@
       }
 
       .message.error {
-        background: rgba(255, 70, 70, 0.1);
-        border: 1px solid rgba(255, 70, 70, 0.3);
-        color: #ff8d8d;
+        background: var(--danger-bg);
+        border: 1px solid var(--danger-border);
+        color: var(--danger-text);
       }
 
       .message.success {
-        background: rgba(50, 200, 120, 0.1);
-        border: 1px solid rgba(50, 200, 120, 0.3);
-        color: #79e6a7;
+        background: var(--success-bg);
+        border: 1px solid var(--success-border);
+        color: var(--success-text);
       }
 
       /* =========================
@@ -296,12 +343,12 @@
       .login-text {
         text-align: center;
         margin-top: 25px;
-        color: #8993ad;
+        color: var(--muted-text);
         font-size: 14px;
       }
 
       .login-text a {
-        color: #5e80ff;
+        color: var(--blue-link);
         text-decoration: none;
       }
 
@@ -315,13 +362,13 @@
       }
 
       .admin-link a {
-        color: #8993ad;
+        color: var(--muted-text);
         font-size: 13px;
         text-decoration: none;
       }
 
       .admin-link a:hover {
-        color: white;
+        color: var(--text);
       }
 
       .required {
@@ -357,6 +404,7 @@
   </head>
 
   <body>
+    <script src="theme.js"></script>
     <!-- =========================
          NAVBAR
     ========================= -->
@@ -741,12 +789,41 @@
                     <span class="required">*</span>
                   </label>
 
-                  <input
-                    type="text"
-                    id="industry"
-                    name="industry"
-                    placeholder="e.g. Technology"
-                  />
+                  <select id="industry" name="industry">
+                    <option value="">Select industry</option>
+
+                    <option value="Technology">Technology</option>
+                    <option value="Business">Business</option>
+                    <option value="Finance">Finance</option>
+                    <option value="Marketing">Marketing</option>
+                    <option value="Healthcare">Healthcare</option>
+                    <option value="Engineering">Engineering</option>
+                    <option value="Creative">Creative</option>
+                    <option value="Science">Science</option>
+                    <option value="Education">Education</option>
+                    <option value="Retail & Sales">Retail &amp; Sales</option>
+                    <option value="Manufacturing">Manufacturing</option>
+                    <option value="Hospitality & Tourism">
+                      Hospitality &amp; Tourism
+                    </option>
+                    <option value="Legal">Legal</option>
+                    <option value="Agriculture">Agriculture</option>
+                    <option value="Construction">Construction</option>
+                    <option value="Government & Public Sector">
+                      Government &amp; Public Sector
+                    </option>
+                    <option value="Media & Communications">
+                      Media &amp; Communications
+                    </option>
+                    <option value="Transportation & Logistics">
+                      Transportation &amp; Logistics
+                    </option>
+                    <option value="Energy & Utilities">
+                      Energy &amp; Utilities
+                    </option>
+                    <option value="Non-Profit">Non-Profit</option>
+                    <option value="Other">Other</option>
+                  </select>
                 </div>
 
                 <div class="input-group">

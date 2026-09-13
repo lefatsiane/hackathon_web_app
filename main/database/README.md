@@ -9,6 +9,7 @@ Use the migration files in order after the initial schema is already applied in 
 3. `003_backend_hardening.sql`
 4. `004_applications.sql`
 5. `005_auth_ownership.sql`
+6. `006_profile_media.sql`
 
 Run them in Supabase Dashboard > **SQL Editor** before importing or updating data.
 
@@ -107,6 +108,9 @@ database/004_applications.sql
 
 -- 5
 database/005_auth_ownership.sql
+
+-- 6
+database/006_profile_media.sql
 ```
 
 If you are applying the schema outside of Supabase, keep the same order and run each file as a separate migration transaction.
@@ -155,3 +159,17 @@ These remain intentionally unimplemented in this foundation:
 - employer candidate profile pages
 - background worker pipelines for matching
 - public admin interfaces
+
+## Profile photos
+
+`006_profile_media.sql` adds `avatar_path` to student and employer profiles and
+creates the private `avatars` Storage bucket. The stored path is an internal
+value in the form `{auth_user_id}/{profile_id}/avatar.{ext}`; it is not a public
+URL.
+
+Authenticated browser and mobile clients request an upload URL from the Express
+API, upload directly to that signed URL, and then commit the returned path.
+Protected profile and dashboard responses expose a temporary
+`profile_picture_url` instead. The API checks profile ownership before every
+upload, replacement, and deletion, so no direct Storage policies are needed for
+client writes.

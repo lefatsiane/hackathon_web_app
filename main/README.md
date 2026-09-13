@@ -41,6 +41,8 @@ The project uses Node.js with ES modules, Express for HTTP/static serving, Supab
    database/002_backend_foundation.sql
    database/003_backend_hardening.sql
    database/004_applications.sql
+   database/005_auth_ownership.sql
+   database/006_profile_media.sql
    ```
 5. Set the required values in `.env`:
    - `SUPABASE_URL` (the project URL, for example `https://your-project.supabase.co`; do not append `/rest/v1`)
@@ -68,6 +70,7 @@ The project adds new schema in versioned migration files after the applied initi
 - `database/003_backend_hardening.sql` – update timestamp triggers, legacy skill normalization, and public listing indexes
 - `database/004_applications.sql` – internal student applications for public opportunities
 - `database/005_auth_ownership.sql` – links profiles to Supabase Auth users
+- `database/006_profile_media.sql` – private profile-photo storage and avatar paths
 
 Do not edit the already-applied initial migration. Create fresh migrations instead.
 
@@ -121,6 +124,8 @@ The backend keeps the existing public API shape while extending it with validati
 - `GET /api/employers/:employerId/applications` – list applications for an employer's opportunities
 - `PATCH /api/applications/:applicationId` – update an employer-owned application status
 - `GET /api/me` – return the authenticated user and owned profile
+- `POST /api/students/:studentId/avatar/upload-url` and `POST /api/employers/:employerId/avatar/upload-url` – issue ownership-checked upload URLs
+- `POST` and `DELETE` on the corresponding `/avatar` paths – commit or remove a profile photo
 
 Public opportunity listings and detail responses exclude archived, closed, draft,
 and expired opportunities. Listing filters use `keyword`, `skills`, `location`,
@@ -178,3 +183,4 @@ The following remain intentionally unimplemented in this backend foundation:
 - Match responses include `matching_skills` and `missing_skills` alongside the existing score and reasoning.
 - Opportunities are filtered out of public listings when they are archived or expired.
 - External applications continue to use `external_application_url`; internal applications are stored in `applications` when students apply in the platform.
+- Profile photos use the private `avatars` bucket. Profile and dashboard responses include a temporary `profile_picture_url`; the database stores only the internal `avatar_path`.

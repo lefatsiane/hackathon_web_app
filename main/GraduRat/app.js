@@ -121,6 +121,29 @@ const initials = (name, fallback = "GR") =>
     .join("")
     .toUpperCase();
 
+const renderAvatar = (element, name, profilePictureUrl, fallback = "GR") => {
+  if (!element) return;
+  element.replaceChildren();
+  if (!profilePictureUrl) {
+    element.textContent = initials(name, fallback);
+    return;
+  }
+  const image = document.createElement("img");
+  image.src = profilePictureUrl;
+  image.alt = `${name || "Profile"} profile picture`;
+  image.width = element.clientWidth || 52;
+  image.height = element.clientHeight || 52;
+  image.style.width = "100%";
+  image.style.height = "100%";
+  image.style.objectFit = "cover";
+  image.style.borderRadius = "inherit";
+  image.addEventListener("error", () => {
+    image.remove();
+    element.textContent = initials(name, fallback);
+  });
+  element.append(image);
+};
+
 const renderJobCard = (opportunity) => {
   // Build cards from API data instead of trusting the page's placeholder jobs.
   const card = document.createElement("article");
@@ -206,7 +229,7 @@ const renderGraduateDashboard = async () => {
       element.textContent = fullName;
     });
   document.querySelectorAll(".avatar, .large-avatar").forEach((element) => {
-    element.textContent = initials(fullName);
+    renderAvatar(element, fullName, student.profile_picture_url);
   });
   const skills = document.querySelector(".profile-skills div");
   if (skills) {
@@ -232,6 +255,11 @@ const renderCandidateCard = (candidate) => {
     <div class="candidate-skills">${(candidate.skills || []).map((skill) => `<span>${escapeHtml(skill)}</span>`).join("")}</div>
     <p class="match-reasoning">${escapeHtml(candidate.reasoning || "")}</p>
     <div class="candidate-bottom"><span>${escapeHtml(candidate.matching_skills?.join(", ") || "Skills developing")}</span><span>Open to work</span><button type="button">View Profile →</button></div></div>`;
+  renderAvatar(
+    card.querySelector(".candidate-avatar"),
+    candidate.full_name,
+    candidate.profile_picture_url,
+  );
   return card;
 };
 
@@ -311,7 +339,7 @@ const renderEmployerDashboard = async () => {
   document
     .querySelectorAll(".company-avatar, .large-company-avatar")
     .forEach((element) => {
-      element.textContent = initials(companyName, "CO");
+      renderAvatar(element, companyName, employer.profile_picture_url, "CO");
     });
   renderAiFeedback({
     profile: employer,
