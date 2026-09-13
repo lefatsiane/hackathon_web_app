@@ -514,6 +514,7 @@
       </form>
     </main>
 
+    <script src="auth-client.js"></script>
     <script>
       let skills = [];
       let interests = [];
@@ -640,7 +641,7 @@
               );
             }
 
-            const response = await fetch("/api/opportunities", {
+            const response = await graduratAuth.apiFetch("/api/opportunities", {
               method: "POST",
 
               headers: {
@@ -650,13 +651,15 @@
               body: JSON.stringify(jobData),
             });
 
+            const result = await graduratAuth.readJson(
+              response,
+              "The opportunity response was not valid JSON.",
+            );
             if (!response.ok) {
-              const result = await response.json();
-
-              throw new Error(result.message || "Could not post opportunity.");
+              throw new Error(
+                result.error || result.message || "Could not post opportunity.",
+              );
             }
-
-            const result = await response.json();
 
             alert(
               "Opportunity posted successfully! Gradurat will now identify potential candidates.",

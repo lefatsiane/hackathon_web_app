@@ -7,6 +7,8 @@ Use the migration files in order after the initial schema is already applied in 
 1. `001_initial_schema.sql`
 2. `002_backend_foundation.sql`
 3. `003_backend_hardening.sql`
+4. `004_applications.sql`
+5. `005_auth_ownership.sql`
 
 Run them in Supabase Dashboard > **SQL Editor** before importing or updating data.
 
@@ -99,6 +101,12 @@ database/002_backend_foundation.sql
 
 -- 3
 database/003_backend_hardening.sql
+
+-- 4
+database/004_applications.sql
+
+-- 5
+database/005_auth_ownership.sql
 ```
 
 If you are applying the schema outside of Supabase, keep the same order and run each file as a separate migration transaction.
@@ -135,10 +143,14 @@ The listing endpoint hides archived and expired items by default.
 
 These remain intentionally unimplemented in this foundation:
 
-- authentication and user ownership
 - file uploads and CV storage
 - company logo uploads
-- internal applications workflow
+- social connections and activity feed
+- events and event registration
+- in-app notifications
+- saved jobs persistence
+- analytics dashboards
+- lecturer profiles and dashboards
 - saved jobs and messaging features
 - employer candidate profile pages
 - background worker pipelines for matching

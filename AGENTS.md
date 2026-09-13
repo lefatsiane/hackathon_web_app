@@ -31,5 +31,5 @@ Read [`main/README.md`](main/README.md) for the complete environment and databas
 ## Security And Scope
 
 - Never commit `.env`, credentials, database passwords, or Supabase service-role keys. Use [`main/.env.example`](main/.env.example) only as a variable-name reference and verify its values before running checks.
-- Authentication, authorization, matching generation, applications, and file uploads are not implemented yet. Do not imply that current profile or opportunity endpoints enforce user ownership.
+- Authentication, authorization, matching generation, and internal applications are implemented in the current server; file uploads, social features, and notifications are not. Keep ownership checks on new private routes and do not imply that public opportunity listing is private.
 - Keep changes focused on the prototype's existing plain HTML/CSS/JavaScript and Express/Supabase architecture unless the task explicitly calls for a migration.

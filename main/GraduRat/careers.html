@@ -1,805 +1,771 @@
-
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <title>Career Explorer | Gradurat</title>
 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
 
     <style>
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: "Inter", sans-serif;
-            background: #05070d;
-            color: #ffffff;
-            min-height: 100vh;
-        }
-
-        /* ================= NAVBAR ================= */
-
-        nav {
-            height: 75px;
-            width: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-
-            padding: 0 6%;
-
-            background: rgba(5, 7, 13, 0.95);
-            border-bottom: 1px solid rgba(0, 136, 255, 0.15);
-
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-
-        .logo {
-            display: flex;
-            align-items: center;
-        }
-
-        .logo img {
-            width: 145px;
-            height: auto;
-            object-fit: contain;
-        }
-
-        .nav-links {
-            display: flex;
-            gap: 30px;
-            align-items: center;
-        }
-
-        .nav-links a {
-            color: #b8c0cc;
-            text-decoration: none;
-            font-size: 14px;
-            transition: 0.3s;
-        }
-
-        .nav-links a:hover,
-        .nav-links a.active {
-            color: #168cff;
-        }
-
-        .profile-btn {
-            border: 1px solid #168cff;
-            padding: 10px 18px;
-            border-radius: 8px;
-            color: #ffffff !important;
-        }
-
-        .profile-btn:hover {
-            background: #168cff;
-        }
-
-        /* ================= HERO ================= */
-
-        .hero {
-            text-align: center;
-            padding: 75px 20px 45px;
-        }
-
-        .hero-badge {
-            display: inline-block;
-
-            padding: 8px 16px;
-            border-radius: 30px;
-
-            background: rgba(22, 140, 255, 0.1);
-            border: 1px solid rgba(22, 140, 255, 0.3);
-
-            color: #168cff;
-            font-size: 13px;
-            font-weight: 600;
-
-            margin-bottom: 20px;
-        }
-
-        .hero h1 {
-            font-size: clamp(38px, 6vw, 62px);
-            line-height: 1.1;
-            margin-bottom: 18px;
-        }
-
-        .hero h1 span {
-            color: #168cff;
-        }
+      * {
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
+      }
+
+      body {
+          font-family: "Inter", sans-serif;
+          background: #05070d;
+          color: #ffffff;
+          min-height: 100vh;
+      }
+
+      /* ================= NAVBAR ================= */
+
+      nav {
+          height: 75px;
+          width: 100%;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+
+          padding: 0 6%;
+
+          background: rgba(5, 7, 13, 0.95);
+          border-bottom: 1px solid rgba(0, 136, 255, 0.15);
+
+          position: sticky;
+          top: 0;
+          z-index: 100;
+      }
+
+      .logo {
+          display: flex;
+          align-items: center;
+      }
+
+      .logo img {
+          width: 145px;
+          height: auto;
+          object-fit: contain;
+      }
+
+      .nav-links {
+          display: flex;
+          gap: 30px;
+          align-items: center;
+      }
+
+      .nav-links a {
+          color: #b8c0cc;
+          text-decoration: none;
+          font-size: 14px;
+          transition: 0.3s;
+      }
+
+      .nav-links a:hover,
+      .nav-links a.active {
+          color: #168cff;
+      }
+
+      .profile-btn {
+          border: 1px solid #168cff;
+          padding: 10px 18px;
+          border-radius: 8px;
+          color: #ffffff !important;
+      }
+
+      .profile-btn:hover {
+          background: #168cff;
+      }
+
+      /* ================= HERO ================= */
+
+      .hero {
+          text-align: center;
+          padding: 75px 20px 45px;
+      }
+
+      .hero-badge {
+          display: inline-block;
+
+          padding: 8px 16px;
+          border-radius: 30px;
+
+          background: rgba(22, 140, 255, 0.1);
+          border: 1px solid rgba(22, 140, 255, 0.3);
+
+          color: #168cff;
+          font-size: 13px;
+          font-weight: 600;
+
+          margin-bottom: 20px;
+      }
+
+      .hero h1 {
+          font-size: clamp(38px, 6vw, 62px);
+          line-height: 1.1;
+          margin-bottom: 18px;
+      }
+
+      .hero h1 span {
+          color: #168cff;
+      }
 
-        .hero p {
-            max-width: 700px;
-            margin: auto;
+      .hero p {
+          max-width: 700px;
+          margin: auto;
 
-            color: #9ca6b5;
-            font-size: 17px;
-            line-height: 1.7;
-        }
+          color: #9ca6b5;
+          font-size: 17px;
+          line-height: 1.7;
+      }
 
-        /* ================= SEARCH ================= */
+      /* ================= SEARCH ================= */
 
-        .search-section {
-            width: 90%;
-            max-width: 1050px;
-            margin: 20px auto 50px;
-        }
+      .search-section {
+          width: 90%;
+          max-width: 1050px;
+          margin: 20px auto 50px;
+      }
 
-        .search-box {
-            display: flex;
-            align-items: center;
+      .search-box {
+          display: flex;
+          align-items: center;
 
-            background: #0b1019;
-            border: 1px solid #1d2938;
+          background: #0b1019;
+          border: 1px solid #1d2938;
 
-            border-radius: 14px;
-            padding: 7px;
+          border-radius: 14px;
+          padding: 7px;
 
-            transition: 0.3s;
-        }
+          transition: 0.3s;
+      }
 
-        .search-box:focus-within {
-            border-color: #168cff;
-            box-shadow: 0 0 25px rgba(22, 140, 255, 0.12);
-        }
+      .search-box:focus-within {
+          border-color: #168cff;
+          box-shadow: 0 0 25px rgba(22, 140, 255, 0.12);
+      }
 
-        .search-icon {
-            font-size: 20px;
-            padding: 0 14px;
-            color: #168cff;
-        }
+      .search-icon {
+          font-size: 20px;
+          padding: 0 14px;
+          color: #168cff;
+      }
 
-        .search-box input {
-            flex: 1;
+      .search-box input {
+          flex: 1;
 
-            background: transparent;
-            border: none;
-            outline: none;
+          background: transparent;
+          border: none;
+          outline: none;
 
-            color: white;
-            font-size: 15px;
+          color: white;
+          font-size: 15px;
 
-            padding: 14px 5px;
-        }
+          padding: 14px 5px;
+      }
 
-        .search-box input::placeholder {
-            color: #667080;
-        }
+      .search-box input::placeholder {
+          color: #667080;
+      }
 
-        /* ================= FILTERS ================= */
+      /* ================= FILTERS ================= */
 
-        .filters {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
+      .filters {
+          display: flex;
+          gap: 10px;
+          flex-wrap: wrap;
 
-            margin-top: 18px;
-        }
+          margin-top: 18px;
+      }
 
-        .filter-btn {
-            background: #0b1019;
-            color: #9ca6b5;
+      .filter-btn {
+          background: #0b1019;
+          color: #9ca6b5;
 
-            border: 1px solid #1d2938;
+          border: 1px solid #1d2938;
 
-            padding: 10px 17px;
-            border-radius: 8px;
+          padding: 10px 17px;
+          border-radius: 8px;
 
-            cursor: pointer;
-            font-family: inherit;
+          cursor: pointer;
+          font-family: inherit;
 
-            transition: 0.3s;
-        }
+          transition: 0.3s;
+      }
 
-        .filter-btn:hover,
-        .filter-btn.active {
-            color: white;
-            border-color: #168cff;
-            background: rgba(22, 140, 255, 0.1);
-        }
+      .filter-btn:hover,
+      .filter-btn.active {
+          color: white;
+          border-color: #168cff;
+          background: rgba(22, 140, 255, 0.1);
+      }
 
-        /* ================= CAREER AREA ================= */
+      /* ================= CAREER AREA ================= */
 
-        .career-area {
-            width: 90%;
-            max-width: 1200px;
-            margin: auto;
+      .career-area {
+          width: 90%;
+          max-width: 1200px;
+          margin: auto;
 
-            padding-bottom: 80px;
-        }
+          padding-bottom: 80px;
+      }
 
-        .section-heading {
-            margin-bottom: 25px;
-        }
+      .section-heading {
+          margin-bottom: 25px;
+      }
 
-        .section-heading h2 {
-            font-size: 25px;
-            margin-bottom: 7px;
-        }
+      .section-heading h2 {
+          font-size: 25px;
+          margin-bottom: 7px;
+      }
 
-        .section-heading p {
-            color: #778292;
-            font-size: 14px;
-        }
+      .section-heading p {
+          color: #778292;
+          font-size: 14px;
+      }
 
-        /* ================= CAREER GRID ================= */
+      /* ================= CAREER GRID ================= */
 
-        .career-grid {
-            display: grid;
+      .career-grid {
+          display: grid;
 
-            grid-template-columns: repeat(3, 1fr);
+          grid-template-columns: repeat(3, 1fr);
 
-            gap: 20px;
-        }
+          gap: 20px;
+      }
 
-        .career-card {
-            background: #0b1019;
+      .career-card {
+          background: #0b1019;
 
-            border: 1px solid #1b2735;
+          border: 1px solid #1b2735;
 
-            border-radius: 15px;
+          border-radius: 15px;
 
-            padding: 25px;
+          padding: 25px;
 
-            cursor: pointer;
+          cursor: pointer;
 
-            transition: 0.3s;
-        }
+          transition: 0.3s;
+      }
 
-        .career-card:hover {
-            transform: translateY(-5px);
+      .career-card:hover {
+          transform: translateY(-5px);
 
-            border-color: #168cff;
+          border-color: #168cff;
 
-            box-shadow: 0 12px 35px rgba(22, 140, 255, 0.08);
-        }
+          box-shadow: 0 12px 35px rgba(22, 140, 255, 0.08);
+      }
 
-        .career-icon {
-            width: 48px;
-            height: 48px;
+      .career-icon {
+          width: 48px;
+          height: 48px;
 
-            display: flex;
-            align-items: center;
-            justify-content: center;
+          display: flex;
+          align-items: center;
+          justify-content: center;
 
-            background: rgba(22, 140, 255, 0.1);
+          background: rgba(22, 140, 255, 0.1);
 
-            border-radius: 10px;
+          border-radius: 10px;
 
-            font-size: 22px;
+          font-size: 22px;
 
-            margin-bottom: 18px;
-        }
+          margin-bottom: 18px;
+      }
 
-        .career-card h3 {
-            font-size: 18px;
-            margin-bottom: 9px;
-        }
+      .career-card h3 {
+          font-size: 18px;
+          margin-bottom: 9px;
+      }
 
-        .career-card p {
-            color: #8994a4;
+      .career-card p {
+          color: #8994a4;
 
-            font-size: 13px;
-            line-height: 1.6;
+          font-size: 13px;
+          line-height: 1.6;
 
-            margin-bottom: 17px;
-        }
+          margin-bottom: 17px;
+      }
 
-        .career-tag {
-            display: inline-block;
+      .career-tag {
+          display: inline-block;
 
-            padding: 6px 10px;
+          padding: 6px 10px;
 
-            border-radius: 6px;
+          border-radius: 6px;
 
-            background: rgba(22, 140, 255, 0.08);
+          background: rgba(22, 140, 255, 0.08);
 
-            color: #168cff;
+          color: #168cff;
 
-            font-size: 11px;
-            font-weight: 600;
-        }
+          font-size: 11px;
+          font-weight: 600;
+      }
 
-        /* ================= EMPTY STATE ================= */
+      .career-pagination {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          gap: 16px;
+          margin-top: 28px;
+      }
 
-        .empty-state {
-            display: none;
+      .career-pagination button {
+          border: 1px solid #2b4768;
+          border-radius: 8px;
+          padding: 10px 14px;
+          background: #102238;
+          color: #d9e8f8;
+          cursor: pointer;
+      }
 
-            text-align: center;
+      .career-pagination button:disabled {
+          cursor: not-allowed;
+          opacity: 0.45;
+      }
 
-            padding: 70px 20px;
+      /* ================= EMPTY STATE ================= */
 
-            border: 1px dashed #263446;
-            border-radius: 15px;
+      .empty-state {
+          display: none;
 
-            background: #090e16;
-        }
+          text-align: center;
 
-        .empty-state .empty-icon {
-            font-size: 42px;
-            margin-bottom: 15px;
-        }
+          padding: 70px 20px;
 
-        .empty-state h3 {
-            margin-bottom: 8px;
-        }
+          border: 1px dashed #263446;
+          border-radius: 15px;
 
-        .empty-state p {
-            color: #778292;
-        }
+          background: #090e16;
+      }
 
-        /* ================= MODAL ================= */
+      .empty-state .empty-icon {
+          font-size: 42px;
+          margin-bottom: 15px;
+      }
 
-        .modal {
-            display: none;
+      .empty-state h3 {
+          margin-bottom: 8px;
+      }
 
-            position: fixed;
+      .empty-state p {
+          color: #778292;
+      }
 
-            inset: 0;
+      /* ================= MODAL ================= */
 
-            background: rgba(0, 0, 0, 0.78);
+      .modal {
+          display: none;
 
-            z-index: 500;
+          position: fixed;
 
-            padding: 30px;
+          inset: 0;
 
-            overflow-y: auto;
-        }
+          background: rgba(0, 0, 0, 0.78);
 
-        .modal.show {
-            display: flex;
+          z-index: 500;
 
-            justify-content: center;
-            align-items: flex-start;
-        }
+          padding: 30px;
 
-        .career-details {
-            width: 100%;
-            max-width: 950px;
+          overflow-y: auto;
+      }
 
-            background: #080d15;
+      .modal.show {
+          display: flex;
 
-            border: 1px solid #1e2d40;
+          justify-content: center;
+          align-items: flex-start;
+      }
 
-            border-radius: 18px;
+      .career-details {
+          width: 100%;
+          max-width: 950px;
 
-            margin: 30px auto;
+          background: #080d15;
 
-            overflow: hidden;
-        }
+          border: 1px solid #1e2d40;
 
-        .details-header {
-            padding: 35px;
+          border-radius: 18px;
 
-            background:
-                linear-gradient(
-                    135deg,
-                    rgba(22, 140, 255, 0.15),
-                    rgba(5, 7, 13, 0.5)
-                );
+          margin: 30px auto;
 
-            border-bottom: 1px solid #1d2938;
+          overflow: hidden;
+      }
 
-            position: relative;
-        }
+      .details-header {
+          padding: 35px;
 
-        .close-btn {
-            position: absolute;
+          background:
+              linear-gradient(
+                  135deg,
+                  rgba(22, 140, 255, 0.15),
+                  rgba(5, 7, 13, 0.5)
+              );
 
-            right: 25px;
-            top: 22px;
+          border-bottom: 1px solid #1d2938;
+                              career.category
+                                  ?.toLowerCase()
+                                  .includes(selectedCategory.toLowerCase());
+          position: relative;
+      }
 
-            width: 38px;
-            height: 38px;
+      .close-btn {
+          position: absolute;
 
-            border-radius: 50%;
+          right: 25px;
+          top: 22px;
 
-            border: 1px solid #334155;
+          width: 38px;
+          height: 38px;
 
-            background: #0b1019;
+          border-radius: 50%;
 
-            color: white;
+          border: 1px solid #334155;
 
-            font-size: 20px;
+          background: #0b1019;
 
-            cursor: pointer;
-        }
+          color: white;
 
-        .close-btn:hover {
-            border-color: #168cff;
-            color: #168cff;
-        }
+          font-size: 20px;
 
-        .details-header .career-icon {
-            margin-bottom: 15px;
-        }
+          cursor: pointer;
+      }
 
-        .details-header h2 {
-            font-size: 32px;
-            margin-bottom: 10px;
-        }
+      .close-btn:hover {
+          border-color: #168cff;
+          color: #168cff;
+      }
 
-        .details-header p {
-            color: #8f9aaa;
-            line-height: 1.7;
-            max-width: 700px;
-        }
+      .details-header .career-icon {
+          margin-bottom: 15px;
+      }
 
-        .details-body {
-            padding: 35px;
-        }
+      .details-header h2 {
+          font-size: 32px;
+          margin-bottom: 10px;
+      }
 
-        /* ================= QUICK STATS ================= */
+      .details-header p {
+          color: #8f9aaa;
+          line-height: 1.7;
+          max-width: 700px;
+      }
 
-        .stats-grid {
-            display: grid;
+      .details-body {
+          padding: 35px;
+      }
 
-            grid-template-columns: repeat(3, 1fr);
+      /* ================= QUICK STATS ================= */
 
-            gap: 15px;
+      .stats-grid {
+          display: grid;
 
-            margin-bottom: 35px;
-        }
+          grid-template-columns: repeat(3, 1fr);
 
-        .stat-card {
-            background: #0c131d;
+          gap: 15px;
 
-            border: 1px solid #1d2938;
+          margin-bottom: 35px;
+      }
 
-            padding: 20px;
+      .stat-card {
+          background: #0c131d;
 
-            border-radius: 12px;
-        }
+          border: 1px solid #1d2938;
 
-        .stat-label {
-            color: #748094;
+          padding: 20px;
 
-            font-size: 12px;
+          border-radius: 12px;
+      }
 
-            margin-bottom: 9px;
-        }
+      .stat-label {
+          color: #748094;
 
-        .stat-value {
-            color: white;
+          font-size: 12px;
 
-            font-size: 16px;
+          margin-bottom: 9px;
+      }
 
-            font-weight: 700;
-        }
+      .stat-value {
+          color: white;
 
-        .stat-value.pending {
-            color: #667080;
-            font-weight: 500;
-            font-size: 14px;
-        }
+          font-size: 16px;
 
-        /* ================= DETAILS SECTIONS ================= */
+          font-weight: 700;
+      }
 
-        .details-section {
-            margin-bottom: 35px;
-        }
+      .stat-value.pending {
+          color: #667080;
+          font-weight: 500;
+          font-size: 14px;
+      }
 
-        .details-section h3 {
-            font-size: 18px;
+      /* ================= DETAILS SECTIONS ================= */
 
-            margin-bottom: 15px;
+      .details-section {
+          margin-bottom: 35px;
+      }
 
-            display: flex;
-            align-items: center;
-            gap: 9px;
-        }
+      .details-section h3 {
+          font-size: 18px;
 
-        .details-section h3::before {
-            content: "";
+          margin-bottom: 15px;
 
-            width: 4px;
-            height: 20px;
+          display: flex;
+          align-items: center;
+          gap: 9px;
+      }
 
-            background: #168cff;
+      .details-section h3::before {
+          content: "";
 
-            border-radius: 5px;
-        }
+          width: 4px;
+          height: 20px;
 
-        .details-section p {
-            color: #919baa;
+          background: #168cff;
 
-            font-size: 14px;
+          border-radius: 5px;
+      }
 
-            line-height: 1.8;
-        }
+      .details-section p {
+          color: #919baa;
 
-        .info-list {
-            display: grid;
+          font-size: 14px;
 
-            grid-template-columns: repeat(2, 1fr);
+          line-height: 1.8;
+      }
 
-            gap: 12px;
-        }
+      .info-list {
+          display: grid;
 
-        .info-item {
-            padding: 14px;
+          grid-template-columns: repeat(2, 1fr);
 
-            border-radius: 9px;
+          gap: 12px;
+      }
 
-            background: #0c131d;
+      .info-item {
+          padding: 14px;
 
-            border: 1px solid #182535;
+          border-radius: 9px;
 
-            color: #aeb7c4;
+          background: #0c131d;
 
-            font-size: 13px;
-        }
+          border: 1px solid #182535;
 
-        .info-item strong {
-            display: block;
+          color: #aeb7c4;
 
-            color: white;
+          font-size: 13px;
+      }
 
-            margin-bottom: 5px;
-        }
+      .info-item strong {
+          display: block;
 
-        /* ================= USER MATCH ================= */
+          color: white;
 
-        .match-section {
-            padding: 25px;
+          margin-bottom: 5px;
+      }
 
-            border-radius: 14px;
+      /* ================= USER MATCH ================= */
 
-            border: 1px solid rgba(22, 140, 255, 0.25);
+      .match-section {
+          padding: 25px;
 
-            background:
-                linear-gradient(
-                    135deg,
-                    rgba(22, 140, 255, 0.08),
-                    rgba(8, 13, 21, 0.5)
-                );
+          border-radius: 14px;
 
-            margin-top: 10px;
-        }
+          border: 1px solid rgba(22, 140, 255, 0.25);
 
-        .match-section h3 {
-            margin-bottom: 8px;
-        }
+          background:
+              linear-gradient(
+                  135deg,
+                  rgba(22, 140, 255, 0.08),
+                  rgba(8, 13, 21, 0.5)
+              );
 
-        .match-section h3::before {
-            display: none;
-        }
+          margin-top: 10px;
+      }
 
-        .match-score {
-            font-size: 40px;
+      .match-section h3 {
+          margin-bottom: 8px;
+      }
 
-            font-weight: 800;
+      .match-section h3::before {
+          display: none;
+      }
 
-            color: #168cff;
+      .match-score {
+          font-size: 40px;
 
-            margin: 12px 0;
-        }
+          font-weight: 800;
 
-        .match-pending {
-            color: #788494;
+          color: #168cff;
 
-            font-size: 14px;
+          margin: 12px 0;
+      }
 
-            line-height: 1.6;
-        }
+      .match-pending {
+          color: #788494;
 
-        /* ================= FOOTER ================= */
+          font-size: 14px;
 
-        footer {
-            text-align: center;
+          line-height: 1.6;
+      }
 
-            padding: 30px;
+      /* ================= FOOTER ================= */
 
-            border-top: 1px solid #121d29;
+      footer {
+          text-align: center;
 
-            color: #596575;
+          padding: 30px;
 
-            font-size: 12px;
-        }
+          border-top: 1px solid #121d29;
 
-        /* ================= RESPONSIVE ================= */
+          color: #596575;
 
-        @media (max-width: 900px) {
+          font-size: 12px;
+      }
 
-            .career-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
+      /* ================= RESPONSIVE ================= */
 
-            .stats-grid {
-                grid-template-columns: 1fr;
-            }
-        }
+      @media (max-width: 900px) {
 
-        @media (max-width: 650px) {
+          .career-grid {
+              grid-template-columns: repeat(2, 1fr);
+          }
 
-            nav {
-                padding: 0 4%;
-            }
+          .stats-grid {
+              grid-template-columns: 1fr;
+          }
+      }
 
-            .nav-links {
-                gap: 12px;
-            }
+      @media (max-width: 650px) {
 
-            .nav-links a:not(.profile-btn) {
-                display: none;
-            }
+          nav {
+              padding: 0 4%;
+          }
 
-            .hero {
-                padding-top: 50px;
-            }
+          .nav-links {
+              gap: 12px;
+          }
 
-            .career-grid {
-                grid-template-columns: 1fr;
-            }
+          .nav-links a:not(.profile-btn) {
+              display: none;
+          }
 
-            .info-list {
-                grid-template-columns: 1fr;
-            }
+          .hero {
+              padding-top: 50px;
+          }
 
-            .details-header,
-            .details-body {
-                padding: 25px;
-            }
+          .career-grid {
+              grid-template-columns: 1fr;
+          }
 
-            .modal {
-                padding: 10px;
-            }
-        }
+          .info-list {
+              grid-template-columns: 1fr;
+          }
 
+          .details-header,
+          .details-body {
+              padding: 25px;
+          }
+
+          .modal {
+              padding: 10px;
+          }
+      }
     </style>
-</head>
+  </head>
 
-<body>
+  <body>
+    <!-- ================= NAVBAR ================= -->
 
-<!-- ================= NAVBAR ================= -->
+    <nav>
+      <div class="logo">
+        <img src="logo1.jpg" alt="Gradurat Logo" />
+      </div>
 
-<nav>
+      <div class="nav-links">
+        <a href="dashboard.html"> Dashboard </a>
 
-    <div class="logo">
-        <img src="logo1.jpg" alt="Gradurat Logo">
-    </div>
+        <a href="careers.html" class="active"> Career Explorer </a>
 
-    <div class="nav-links">
+        <a href="fyp.html"> FYP </a>
 
-        <a href="dashboard.html">
-            Dashboard
-        </a>
+        <a href="profile.html" class="profile-btn"> Profile </a>
+      </div>
+    </nav>
 
-        <a href="careers.html" class="active">
-            Career Explorer
-        </a>
+    <!-- ================= HERO ================= -->
 
-        <a href="fyp.html">
-            FYP
-        </a>
+    <section class="hero">
+      <div class="hero-badge">GRADURAT CAREER EXPLORER</div>
 
-        <a href="profile.html" class="profile-btn">
-            Profile
-        </a>
+      <h1>Discover Your <span>Career.</span></h1>
 
-    </div>
+      <p>
+        Explore careers, understand what they involve, discover the
+        qualifications and skills you need, and see what the employment outlook
+        looks like.
+      </p>
+    </section>
 
-</nav>
+    <!-- ================= SEARCH ================= -->
 
-
-<!-- ================= HERO ================= -->
-
-<section class="hero">
-
-    <div class="hero-badge">
-        GRADURAT CAREER EXPLORER
-    </div>
-
-    <h1>
-        Discover Your <span>Career.</span>
-    </h1>
-
-    <p>
-        Explore careers, understand what they involve,
-        discover the qualifications and skills you need,
-        and see what the employment outlook looks like.
-    </p>
-
-</section>
-
-
-<!-- ================= SEARCH ================= -->
-
-<section class="search-section">
-
-    <div class="search-box">
-
-        <div class="search-icon">
-            🔎
-        </div>
+    <section class="search-section">
+      <div class="search-box">
+        <div class="search-icon">🔎</div>
 
         <input
-            type="text"
-            id="careerSearch"
-            placeholder="Search for a career..."
-            autocomplete="off"
-        >
+          type="text"
+          id="careerSearch"
+          placeholder="Search for a career..."
+          autocomplete="off"
+        />
+      </div>
 
-    </div>
-
-
-    <div class="filters">
-
-        <button
-            class="filter-btn active"
-            data-category="all">
-            All Careers
+      <div class="filters">
+        <button class="filter-btn active" data-category="all">
+          All Careers
         </button>
 
-        <button
-            class="filter-btn"
-            data-category="technology">
-            Technology
+        <button class="filter-btn" data-category="technology">
+          Technology
         </button>
 
-        <button
-            class="filter-btn"
-            data-category="business">
-            Business
+        <button class="filter-btn" data-category="business">Business</button>
+
+        <button class="filter-btn" data-category="healthcare">
+          Healthcare
         </button>
 
-        <button
-            class="filter-btn"
-            data-category="healthcare">
-            Healthcare
+        <button class="filter-btn" data-category="engineering">
+          Engineering
         </button>
 
-        <button
-            class="filter-btn"
-            data-category="engineering">
-            Engineering
-        </button>
+        <button class="filter-btn" data-category="creative">Creative</button>
 
-        <button
-            class="filter-btn"
-            data-category="creative">
-            Creative
-        </button>
+        <button class="filter-btn" data-category="science">Science</button>
+      </div>
+    </section>
 
-        <button
-            class="filter-btn"
-            data-category="science">
-            Science
-        </button>
+    <!-- ================= CAREERS ================= -->
 
-    </div>
+    <section class="career-area">
+      <div class="section-heading">
+        <h2>Explore Careers</h2>
 
-</section>
+        <p id="careerCount">Careers available through Gradurat</p>
+      </div>
 
-
-<!-- ================= CAREERS ================= -->
-
-<section class="career-area">
-
-    <div class="section-heading">
-
-        <h2>
-            Explore Careers
-        </h2>
-
-        <p id="careerCount">
-            Careers available through Gradurat
-        </p>
-
-    </div>
-
-
-    <!--
+      <!--
 
         IMPORTANT:
 
@@ -810,340 +776,180 @@
 
     -->
 
-    <div
-        class="career-grid"
-        id="careerGrid">
-    </div>
+      <div class="career-grid" id="careerGrid"></div>
 
+      <div class="empty-state" id="emptyState">
+        <div class="empty-icon">🔍</div>
 
-    <div
-        class="empty-state"
-        id="emptyState">
-
-        <div class="empty-icon">
-            🔍
-        </div>
-
-        <h3>
-            No careers found
-        </h3>
+        <h3>No careers found</h3>
 
         <p>
-            Try searching for another career or selecting
-            a different industry.
+          Try searching for another career or selecting a different industry.
         </p>
+      </div>
+    </section>
 
-    </div>
+    <!-- ================= CAREER DETAILS MODAL ================= -->
 
-</section>
-
-
-<!-- ================= CAREER DETAILS MODAL ================= -->
-
-<div
-    class="modal"
-    id="careerModal">
-
-    <div class="career-details">
-
+    <div class="modal" id="careerModal">
+      <div class="career-details">
         <div class="details-header">
+          <button class="close-btn" id="closeModal">×</button>
 
-            <button
-                class="close-btn"
-                id="closeModal">
-                ×
-            </button>
+          <div class="career-icon" id="detailIcon">💼</div>
 
-            <div
-                class="career-icon"
-                id="detailIcon">
-                💼
-            </div>
+          <h2 id="detailTitle">Career</h2>
 
-            <h2 id="detailTitle">
-                Career
-            </h2>
-
-            <p id="detailDescription">
-                Career description will appear here.
-            </p>
-
+          <p id="detailDescription">Career description will appear here.</p>
         </div>
-
 
         <div class="details-body">
+          <!-- QUICK INFORMATION -->
 
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-label">QUALIFICATION</div>
 
-            <!-- QUICK INFORMATION -->
-
-            <div class="stats-grid">
-
-                <div class="stat-card">
-
-                    <div class="stat-label">
-                        QUALIFICATION
-                    </div>
-
-                    <div
-                        class="stat-value"
-                        id="detailQualification">
-                        Awaiting data
-                    </div>
-
-                </div>
-
-
-                <div class="stat-card">
-
-                    <div class="stat-label">
-                        EMPLOYMENT OUTLOOK
-                    </div>
-
-                    <div
-                        class="stat-value"
-                        id="detailOutlook">
-                        Awaiting data
-                    </div>
-
-                </div>
-
-
-                <div class="stat-card">
-
-                    <div class="stat-label">
-                        PROJECTED GROWTH
-                    </div>
-
-                    <div
-                        class="stat-value"
-                        id="detailGrowth">
-                        Awaiting data
-                    </div>
-
-                </div>
-
+              <div class="stat-value" id="detailQualification">
+                Awaiting data
+              </div>
             </div>
 
+            <div class="stat-card">
+              <div class="stat-label">EMPLOYMENT OUTLOOK</div>
 
-            <!-- WHAT THEY DO -->
-
-            <div class="details-section">
-
-                <h3>
-                    What is this career?
-                </h3>
-
-                <p id="detailWhat">
-                    Career information will be supplied
-                    by the Gradurat career database.
-                </p>
-
+              <div class="stat-value" id="detailOutlook">Awaiting data</div>
             </div>
 
+            <div class="stat-card">
+              <div class="stat-label">PROJECTED GROWTH</div>
 
-            <!-- NORMAL DAY -->
-
-            <div class="details-section">
-
-                <h3>
-                    What does a normal day look like?
-                </h3>
-
-                <p id="detailDay">
-                    Daily responsibilities will appear here.
-                </p>
-
+              <div class="stat-value" id="detailGrowth">Awaiting data</div>
             </div>
+          </div>
 
+          <!-- WHAT THEY DO -->
 
-            <!-- QUALIFICATIONS -->
+          <div class="details-section">
+            <h3>What is this career?</h3>
 
-            <div class="details-section">
+            <p id="detailWhat">
+              Career information will be supplied by the Gradurat career
+              database.
+            </p>
+          </div>
 
-                <h3>
-                    Qualifications & Requirements
-                </h3>
+          <!-- NORMAL DAY -->
 
-                <div
-                    class="info-list"
-                    id="detailRequirements">
-                </div>
+          <div class="details-section">
+            <h3>What does a normal day look like?</h3>
 
-            </div>
+            <p id="detailDay">Daily responsibilities will appear here.</p>
+          </div>
 
+          <!-- QUALIFICATIONS -->
 
-            <!-- SKILLS -->
+          <div class="details-section">
+            <h3>Qualifications & Requirements</h3>
 
-            <div class="details-section">
+            <div class="info-list" id="detailRequirements"></div>
+          </div>
 
-                <h3>
-                    Skills You Need
-                </h3>
+          <!-- SKILLS -->
 
-                <div
-                    class="info-list"
-                    id="detailSkills">
-                </div>
+          <div class="details-section">
+            <h3>Skills You Need</h3>
 
-            </div>
+            <div class="info-list" id="detailSkills"></div>
+          </div>
 
+          <!-- WORK ENVIRONMENT -->
 
-            <!-- WORK ENVIRONMENT -->
+          <div class="details-section">
+            <h3>Work Environment</h3>
 
-            <div class="details-section">
+            <p id="detailEnvironment">
+              Work environment information will appear here.
+            </p>
+          </div>
 
-                <h3>
-                    Work Environment
-                </h3>
+          <!-- EMPLOYMENT -->
 
-                <p id="detailEnvironment">
-                    Work environment information will appear here.
-                </p>
+          <div class="details-section">
+            <h3>Employment & Job Outlook</h3>
 
-            </div>
+            <p id="detailEmployment">
+              Employment information will be supplied by the Gradurat career
+              database.
+            </p>
+          </div>
 
+          <!-- SALARY -->
 
-            <!-- EMPLOYMENT -->
+          <div class="details-section">
+            <h3>Salary Information</h3>
 
-            <div class="details-section">
+            <div class="info-list" id="detailSalary"></div>
+          </div>
 
-                <h3>
-                    Employment & Job Outlook
-                </h3>
+          <!-- CAREER PROGRESSION -->
 
-                <p id="detailEmployment">
-                    Employment information will be supplied
-                    by the Gradurat career database.
-                </p>
+          <div class="details-section">
+            <h3>Career Progression</h3>
 
-            </div>
+            <p id="detailProgression">
+              Career progression information will appear here.
+            </p>
+          </div>
 
+          <!-- ADVANTAGES -->
 
-            <!-- SALARY -->
+          <div class="details-section">
+            <h3>Advantages</h3>
 
-            <div class="details-section">
+            <p id="detailAdvantages">Advantages will appear here.</p>
+          </div>
 
-                <h3>
-                    Salary Information
-                </h3>
+          <!-- CHALLENGES -->
 
-                <div
-                    class="info-list"
-                    id="detailSalary">
-                </div>
+          <div class="details-section">
+            <h3>Challenges</h3>
 
-            </div>
+            <p id="detailChallenges">Challenges will appear here.</p>
+          </div>
 
+          <!-- RELATED CAREERS -->
 
-            <!-- CAREER PROGRESSION -->
+          <div class="details-section">
+            <h3>Related Careers</h3>
 
-            <div class="details-section">
+            <div class="info-list" id="detailRelated"></div>
+          </div>
 
-                <h3>
-                    Career Progression
-                </h3>
-
-                <p id="detailProgression">
-                    Career progression information will appear here.
-                </p>
-
-            </div>
-
-
-            <!-- ADVANTAGES -->
-
-            <div class="details-section">
-
-                <h3>
-                    Advantages
-                </h3>
-
-                <p id="detailAdvantages">
-                    Advantages will appear here.
-                </p>
-
-            </div>
-
-
-            <!-- CHALLENGES -->
-
-            <div class="details-section">
-
-                <h3>
-                    Challenges
-                </h3>
-
-                <p id="detailChallenges">
-                    Challenges will appear here.
-                </p>
-
-            </div>
-
-
-            <!-- RELATED CAREERS -->
-
-            <div class="details-section">
-
-                <h3>
-                    Related Careers
-                </h3>
-
-                <div
-                    class="info-list"
-                    id="detailRelated">
-                </div>
-
-            </div>
-
-
-            <!-- ================= YOUR MATCH ================= -->
-
-            <div class="match-section">
-
-                <h3>
-                    How well does this career fit YOU?
-                </h3>
-
-                <div
-                    class="match-score"
-                    id="matchScore">
-                    --
-                </div>
-
-                <p class="match-pending">
-
-                    Your personalised career match will appear
-                    after Gradurat analyses your profile.
-
-                    Your qualification, skills, interests,
-                    experience and career goals will be compared
-                    with the requirements of this career.
-
-                </p>
-
-            </div>
-
-
+          <!-- ================= YOUR MATCH ================= -->
+
+          <div class="match-section">
+            <h3>How well does this career fit YOU?</h3>
+
+            <div class="match-score" id="matchScore">--</div>
+
+            <p class="match-pending">
+              Your personalised career match will appear after Gradurat analyses
+              your profile. Your qualification, skills, interests, experience
+              and career goals will be compared with the requirements of this
+              career.
+            </p>
+          </div>
         </div>
-
+      </div>
     </div>
 
-</div>
+    <!-- ================= FOOTER ================= -->
 
+    <footer>© 2026 Gradurat. Discover yourself. Discover your future.</footer>
 
-<!-- ================= FOOTER ================= -->
-
-<footer>
-
-    © 2026 Gradurat.
-    Discover yourself. Discover your future.
-
-</footer>
-
-
-<script>
-
-/*
+    <script>
+      /*
 ==========================================================
 GRADURAT CAREER EXPLORER
 ==========================================================
@@ -1202,32 +1008,33 @@ GET /api/careers/:id
 ==========================================================
 */
 
+      let careers = [];
 
-let careers = [];
+      let selectedCategory = "all";
 
-let selectedCategory = "all";
+      const careerGrid = document.getElementById("careerGrid");
 
+      const emptyState = document.getElementById("emptyState");
 
-const careerGrid =
-    document.getElementById("careerGrid");
+      const searchInput = document.getElementById("careerSearch");
 
-const emptyState =
-    document.getElementById("emptyState");
+      const careerCount = document.getElementById("careerCount");
 
-const searchInput =
-    document.getElementById("careerSearch");
+      let careerPage = 1;
+      const careersPerPage = 5;
+      const pagination = document.createElement("div");
+      pagination.className = "career-pagination";
+      pagination.innerHTML = `
+    <button type="button" id="previousCareers" disabled>Previous</button>
+    <span id="careerPageLabel">Page 1</span>
+    <button type="button" id="nextCareers" disabled>Next five</button>`;
+      careerGrid.parentElement.appendChild(pagination);
 
-const careerCount =
-    document.getElementById("careerCount");
+      const modal = document.getElementById("careerModal");
 
-const modal =
-    document.getElementById("careerModal");
+      const closeModal = document.getElementById("closeModal");
 
-const closeModal =
-    document.getElementById("closeModal");
-
-
-/*
+      /*
 ==========================================================
 LOAD CAREERS
 
@@ -1242,129 +1049,118 @@ careers = await response.json();
 ==========================================================
 */
 
-async function loadCareers() {
+      async function loadCareers() {
+        try {
+          const response = await fetch("/api/opportunities?limit=100");
+          if (!response.ok) throw new Error("Could not load opportunities");
+          const payload = await response.json();
+          careers = (payload.opportunities || []).map((opportunity) => ({
+            ...opportunity,
+            category:
+              opportunity.industry ||
+              opportunity.opportunity_type ||
+              opportunity.type ||
+              "Opportunity",
+            shortDescription:
+              opportunity.description ||
+              "Explore this opportunity through Gradurat.",
+            qualification: opportunity.qualification_requirement,
+            skills:
+              opportunity.required_skills || opportunity.preferred_skills || [],
+            employment: opportunity.work_arrangement,
+            applicationDeadline: opportunity.application_deadline,
+          }));
 
-    try {
+          careerPage = 1;
+          renderCareers();
+        } catch (error) {
+          console.error("Career loading error:", error);
 
-        /*
-        ==============================================
-        BACKEND CONNECTION — ADD LATER
+          careers = [];
 
-        const response =
-            await fetch("/api/careers");
-
-        if (!response.ok) {
-            throw new Error("Could not load careers");
+          renderCareers();
         }
+      }
 
-        careers = await response.json();
-
-        renderCareers();
-
-        ==============================================
-        */
-
-
-        careers = [];
-
-        renderCareers();
-
-    }
-
-    catch (error) {
-
-        console.error(
-            "Career loading error:",
-            error
-        );
-
-        careers = [];
-
-        renderCareers();
-
-    }
-
-}
-
-
-/*
+      /*
 ==========================================================
 DISPLAY CAREERS
 ==========================================================
 */
 
-function renderCareers() {
+      function renderCareers() {
+        const searchTerm = searchInput.value.trim().toLowerCase();
 
-    const searchTerm =
-        searchInput.value
-            .trim()
-            .toLowerCase();
+        const filteredCareers = careers.filter((career) => {
+          const matchesSearch = career.title
+            ?.toLowerCase()
+            .includes(searchTerm);
 
+          const matchesCategory =
+            selectedCategory === "all" ||
+            career.category
+              ?.toLowerCase()
+              .includes(selectedCategory.toLowerCase());
 
-    const filteredCareers =
-        careers.filter(career => {
-
-            const matchesSearch =
-                career.title
-                    ?.toLowerCase()
-                    .includes(searchTerm);
-
-            const matchesCategory =
-                selectedCategory === "all" ||
-                career.category === selectedCategory;
-
-            return matchesSearch &&
-                   matchesCategory;
-
+          return matchesSearch && matchesCategory;
         });
 
+        careerGrid.innerHTML = "";
 
-    careerGrid.innerHTML = "";
+        if (filteredCareers.length === 0) {
+          careerGrid.style.display = "none";
 
+          emptyState.style.display = "block";
 
-    if (filteredCareers.length === 0) {
+          emptyState.querySelector("h3").textContent =
+            careers.length === 0
+              ? "No job opportunities are available at this time"
+              : "No opportunities match your search";
 
-        careerGrid.style.display = "none";
+          emptyState.querySelector("p").textContent =
+            careers.length === 0
+              ? "Please check back soon for new opportunities."
+              : "Try another search term or select a different industry.";
 
-        emptyState.style.display = "block";
+          careerCount.textContent =
+            careers.length === 0
+              ? "No opportunities available"
+              : "No matching opportunities";
 
-        if (careers.length === 0) {
+          pagination.style.display = "none";
 
-            emptyState.querySelector("h3")
-                .textContent =
-                "Career database ready for connection";
-
-            emptyState.querySelector("p")
-                .textContent =
-                "Career information will appear here once the Gradurat backend is connected.";
-
+          return;
         }
 
-        careerCount.textContent =
-            "Waiting for career data";
+        careerGrid.style.display = "grid";
 
-        return;
-    }
+        emptyState.style.display = "none";
 
+        const totalPages = Math.max(
+          1,
+          Math.ceil(filteredCareers.length / careersPerPage),
+        );
+        careerPage = Math.min(careerPage, totalPages);
+        const pageStart = (careerPage - 1) * careersPerPage;
+        const visibleCareers = filteredCareers.slice(
+          pageStart,
+          pageStart + careersPerPage,
+        );
 
-    careerGrid.style.display = "grid";
+        careerCount.textContent = `${filteredCareers.length} opportunity(s) available`;
+        pagination.style.display = "flex";
+        document.getElementById("careerPageLabel").textContent =
+          `Page ${careerPage} of ${totalPages}`;
+        document.getElementById("previousCareers").disabled = careerPage === 1;
+        document.getElementById("nextCareers").disabled =
+          careerPage === totalPages;
 
-    emptyState.style.display = "none";
+        visibleCareers.forEach((career) => {
+          const card = document.createElement("div");
 
+          card.className = "career-card";
 
-    careerCount.textContent =
-        `${filteredCareers.length} career(s) available`;
-
-
-    filteredCareers.forEach(career => {
-
-        const card =
-            document.createElement("div");
-
-        card.className = "career-card";
-
-
-        card.innerHTML = `
+          card.innerHTML = `
 
             <div class="career-icon">
                 ${career.icon || "💼"}
@@ -1376,142 +1172,91 @@ function renderCareers() {
 
             <p>
                 ${escapeHTML(
-                    career.shortDescription ||
-                    "Career information available through Gradurat."
+                  career.shortDescription ||
+                    "Career information available through Gradurat.",
                 )}
             </p>
 
             <span class="career-tag">
-                ${escapeHTML(
-                    career.category ||
-                    "Career"
-                )}
+                ${escapeHTML(career.category || "Career")}
             </span>
 
         `;
 
+          card.addEventListener("click", () => openCareer(career));
 
-        card.addEventListener(
-            "click",
-            () => openCareer(career)
-        );
+          careerGrid.appendChild(card);
+        });
+      }
 
+      document
+        .getElementById("previousCareers")
+        .addEventListener("click", () => {
+          careerPage -= 1;
+          renderCareers();
+        });
 
-        careerGrid.appendChild(card);
+      document.getElementById("nextCareers").addEventListener("click", () => {
+        careerPage += 1;
+        renderCareers();
+      });
 
-    });
-
-}
-
-
-/*
+      /*
 ==========================================================
 OPEN CAREER
 ==========================================================
 */
 
-function openCareer(career) {
+      function openCareer(career) {
+        document.getElementById("detailIcon").textContent = career.icon || "💼";
 
-    document.getElementById("detailIcon")
-        .textContent =
-        career.icon || "💼";
+        document.getElementById("detailTitle").textContent =
+          career.title || "Career";
 
+        document.getElementById("detailDescription").textContent =
+          career.shortDescription || "Career description will appear here.";
 
-    document.getElementById("detailTitle")
-        .textContent =
-        career.title || "Career";
+        document.getElementById("detailQualification").textContent =
+          career.qualification || "Awaiting data";
 
+        document.getElementById("detailOutlook").textContent =
+          career.employmentOutlook || "Awaiting data";
 
-    document.getElementById("detailDescription")
-        .textContent =
-        career.shortDescription ||
-        "Career description will appear here.";
+        document.getElementById("detailGrowth").textContent =
+          career.projectedGrowth || "Awaiting data";
 
+        document.getElementById("detailWhat").textContent =
+          career.description || "Career information will appear here.";
 
-    document.getElementById("detailQualification")
-        .textContent =
-        career.qualification ||
-        "Awaiting data";
+        document.getElementById("detailDay").textContent =
+          career.normalDay || "Daily responsibilities will appear here.";
 
+        document.getElementById("detailEnvironment").textContent =
+          career.environment ||
+          "Work environment information will appear here.";
 
-    document.getElementById("detailOutlook")
-        .textContent =
-        career.employmentOutlook ||
-        "Awaiting data";
+        document.getElementById("detailEmployment").textContent =
+          career.employment || "Employment information will appear here.";
 
+        document.getElementById("detailProgression").textContent =
+          career.progression ||
+          "Career progression information will appear here.";
 
-    document.getElementById("detailGrowth")
-        .textContent =
-        career.projectedGrowth ||
-        "Awaiting data";
+        document.getElementById("detailAdvantages").textContent =
+          career.advantages || "Advantages will appear here.";
 
+        document.getElementById("detailChallenges").textContent =
+          career.challenges || "Challenges will appear here.";
 
-    document.getElementById("detailWhat")
-        .textContent =
-        career.description ||
-        "Career information will appear here.";
+        renderList("detailRequirements", career.requirements);
 
+        renderList("detailSkills", career.skills);
 
-    document.getElementById("detailDay")
-        .textContent =
-        career.normalDay ||
-        "Daily responsibilities will appear here.";
+        renderSalary(career.salary);
 
+        renderList("detailRelated", career.relatedCareers);
 
-    document.getElementById("detailEnvironment")
-        .textContent =
-        career.environment ||
-        "Work environment information will appear here.";
-
-
-    document.getElementById("detailEmployment")
-        .textContent =
-        career.employment ||
-        "Employment information will appear here.";
-
-
-    document.getElementById("detailProgression")
-        .textContent =
-        career.progression ||
-        "Career progression information will appear here.";
-
-
-    document.getElementById("detailAdvantages")
-        .textContent =
-        career.advantages ||
-        "Advantages will appear here.";
-
-
-    document.getElementById("detailChallenges")
-        .textContent =
-        career.challenges ||
-        "Challenges will appear here.";
-
-
-    renderList(
-        "detailRequirements",
-        career.requirements
-    );
-
-
-    renderList(
-        "detailSkills",
-        career.skills
-    );
-
-
-    renderSalary(
-        career.salary
-    );
-
-
-    renderList(
-        "detailRelated",
-        career.relatedCareers
-    );
-
-
-    /*
+        /*
     ==============================================
     AI MATCH SCORE
 
@@ -1525,264 +1270,175 @@ function openCareer(career) {
     ==============================================
     */
 
-    const matchScore =
-        document.getElementById("matchScore");
+        const matchScore = document.getElementById("matchScore");
 
+        if (career.matchScore !== null && career.matchScore !== undefined) {
+          matchScore.textContent = `${career.matchScore}%`;
+        } else {
+          matchScore.textContent = "--";
+        }
 
-    if (
-        career.matchScore !== null &&
-        career.matchScore !== undefined
-    ) {
+        modal.classList.add("show");
 
-        matchScore.textContent =
-            `${career.matchScore}%`;
+        document.body.style.overflow = "hidden";
+      }
 
-    }
-
-    else {
-
-        matchScore.textContent =
-            "--";
-
-    }
-
-
-    modal.classList.add("show");
-
-    document.body.style.overflow = "hidden";
-
-}
-
-
-/*
+      /*
 ==========================================================
 RENDER LIST
 ==========================================================
 */
 
-function renderList(elementId, items) {
+      function renderList(elementId, items) {
+        const container = document.getElementById(elementId);
 
-    const container =
-        document.getElementById(elementId);
+        container.innerHTML = "";
 
-    container.innerHTML = "";
+        if (!items || items.length === 0) {
+          const item = document.createElement("div");
 
+          item.className = "info-item";
 
-    if (!items || items.length === 0) {
-
-        const item =
-            document.createElement("div");
-
-        item.className = "info-item";
-
-        item.innerHTML = `
+          item.innerHTML = `
             <strong>Awaiting data</strong>
             This information will be supplied by the Gradurat backend.
         `;
 
-        container.appendChild(item);
+          container.appendChild(item);
 
-        return;
+          return;
+        }
 
-    }
+        items.forEach((itemText) => {
+          const item = document.createElement("div");
 
+          item.className = "info-item";
 
-    items.forEach(itemText => {
+          item.textContent = itemText;
 
-        const item =
-            document.createElement("div");
+          container.appendChild(item);
+        });
+      }
 
-        item.className = "info-item";
-
-        item.textContent = itemText;
-
-        container.appendChild(item);
-
-    });
-
-}
-
-
-/*
+      /*
 ==========================================================
 RENDER SALARY
 ==========================================================
 */
 
-function renderSalary(salary) {
+      function renderSalary(salary) {
+        const container = document.getElementById("detailSalary");
 
-    const container =
-        document.getElementById("detailSalary");
+        container.innerHTML = "";
 
-    container.innerHTML = "";
+        if (!salary) {
+          renderList("detailSalary", []);
 
-
-    if (!salary) {
-
-        renderList(
-            "detailSalary",
-            []
-        );
-
-        return;
-
-    }
-
-
-    const salaryItems = [
-
-        {
-            title: "Entry Level",
-            value: salary.entry
-        },
-
-        {
-            title: "Average",
-            value: salary.average
-        },
-
-        {
-            title: "Experienced",
-            value: salary.experienced
+          return;
         }
 
-    ];
+        const salaryItems = [
+          {
+            title: "Entry Level",
+            value: salary.entry,
+          },
 
+          {
+            title: "Average",
+            value: salary.average,
+          },
 
-    salaryItems.forEach(itemData => {
+          {
+            title: "Experienced",
+            value: salary.experienced,
+          },
+        ];
 
-        const item =
-            document.createElement("div");
+        salaryItems.forEach((itemData) => {
+          const item = document.createElement("div");
 
-        item.className =
-            "info-item";
+          item.className = "info-item";
 
-
-        item.innerHTML = `
+          item.innerHTML = `
 
             <strong>
                 ${escapeHTML(itemData.title)}
             </strong>
 
-            ${escapeHTML(
-                itemData.value ||
-                "Awaiting data"
-            )}
+            ${escapeHTML(itemData.value || "Awaiting data")}
 
         `;
 
+          container.appendChild(item);
+        });
+      }
 
-        container.appendChild(item);
-
-    });
-
-}
-
-
-/*
+      /*
 ==========================================================
 SEARCH
 ==========================================================
 */
 
-searchInput.addEventListener(
-    "input",
-    renderCareers
-);
+      searchInput.addEventListener("input", () => {
+        careerPage = 1;
+        renderCareers();
+      });
+      careerPage = 1;
 
-
-/*
+      /*
 ==========================================================
 CATEGORY FILTERS
 ==========================================================
 */
 
-document
-    .querySelectorAll(".filter-btn")
-    .forEach(button => {
+      document.querySelectorAll(".filter-btn").forEach((button) => {
+        button.addEventListener("click", function () {
+          document
+            .querySelectorAll(".filter-btn")
+            .forEach((btn) => btn.classList.remove("active"));
 
-        button.addEventListener(
-            "click",
-            function() {
+          this.classList.add("active");
 
-                document
-                    .querySelectorAll(".filter-btn")
-                    .forEach(btn =>
-                        btn.classList.remove("active")
-                    );
+          selectedCategory = this.dataset.category;
 
+          renderCareers();
+        });
+      });
+      careerPage = 1;
 
-                this.classList.add("active");
-
-
-                selectedCategory =
-                    this.dataset.category;
-
-
-                renderCareers();
-
-            }
-        );
-
-    });
-
-
-/*
+      /*
 ==========================================================
 CLOSE MODAL
 ==========================================================
 */
 
-closeModal.addEventListener(
-    "click",
-    closeCareer
-);
+      closeModal.addEventListener("click", closeCareer);
 
-
-modal.addEventListener(
-    "click",
-    function(event) {
-
+      modal.addEventListener("click", function (event) {
         if (event.target === modal) {
-
-            closeCareer();
-
+          closeCareer();
         }
+      });
 
-    }
-);
+      function closeCareer() {
+        modal.classList.remove("show");
 
+        document.body.style.overflow = "";
+      }
 
-function closeCareer() {
-
-    modal.classList.remove("show");
-
-    document.body.style.overflow = "";
-
-}
-
-
-/*
+      /*
 ==========================================================
 ESCAPE KEY
 ==========================================================
 */
 
-document.addEventListener(
-    "keydown",
-    function(event) {
-
+      document.addEventListener("keydown", function (event) {
         if (event.key === "Escape") {
-
-            closeCareer();
-
+          closeCareer();
         }
+      });
 
-    }
-);
-
-
-/*
+      /*
 ==========================================================
 SECURITY HELPER
 
@@ -1791,33 +1447,26 @@ when we insert career information into the page.
 ==========================================================
 */
 
-function escapeHTML(value) {
+      function escapeHTML(value) {
+        if (!value) {
+          return "";
+        }
 
-    if (!value) {
-        return "";
-    }
+        return String(value)
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#039;");
+      }
 
-
-    return String(value)
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
-
-}
-
-
-/*
+      /*
 ==========================================================
 START
 ==========================================================
 */
 
-loadCareers();
-
-</script>
-
-</body>
+      loadCareers();
+    </script>
+  </body>
 </html>
-

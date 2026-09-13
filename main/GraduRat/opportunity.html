@@ -1,1196 +1,889 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <title>Opportunity | Gradurat</title>
 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
 
     <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+      body {
+        font-family: "Inter", sans-serif;
+        background: #050505;
+        color: white;
+        min-height: 100vh;
+      }
+
+      a {
+        text-decoration: none;
+        color: inherit;
+      }
+
+      button {
+        font-family: inherit;
+      }
+
+      /* ================= NAVBAR ================= */
+
+      nav {
+        height: 75px;
+        border-bottom: 1px solid #1b1b1b;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 6%;
+        background: #050505;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+      }
+
+      .logo {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .logo img {
+        width: 42px;
+        height: 42px;
+        border-radius: 10px;
+        object-fit: cover;
+      }
+
+      .logo span {
+        font-size: 22px;
+        font-weight: 800;
+      }
+
+      .nav-links {
+        display: flex;
+        gap: 28px;
+      }
+
+      .nav-links a {
+        color: #999;
+        font-size: 14px;
+        transition: 0.2s;
+      }
+
+      .nav-links a:hover,
+      .nav-links a.active {
+        color: #168cff;
+      }
+
+      /* ================= CONTAINER ================= */
+
+      .container {
+        width: min(1150px, 92%);
+        margin: auto;
+        padding: 40px 0 80px;
+      }
+
+      .back-btn {
+        display: inline-block;
+        color: #999;
+        margin-bottom: 25px;
+        font-size: 14px;
+      }
+
+      .back-btn:hover {
+        color: #168cff;
+      }
+
+      /* ================= STATES ================= */
+
+      .state {
+        text-align: center;
+        padding: 100px 20px;
+        color: #888;
+      }
+
+      .state h2 {
+        color: white;
+        margin-bottom: 10px;
+      }
+
+      .hidden {
+        display: none !important;
+      }
+
+      .spinner {
+        width: 42px;
+        height: 42px;
+        border: 3px solid #222;
+        border-top-color: #168cff;
+        border-radius: 50%;
+        margin: 0 auto 20px;
+        animation: spin 0.8s linear infinite;
+      }
+
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
         }
+      }
 
-        body {
-            font-family: "Inter", sans-serif;
-            background: #050505;
-            color: white;
-            min-height: 100vh;
-        }
+      /* ================= OPPORTUNITY HEADER ================= */
 
-        a {
-            text-decoration: none;
-            color: inherit;
-        }
+      .opportunity-header {
+        background: linear-gradient(135deg, #0d0d0d, #081522);
+        border: 1px solid #202020;
+        border-radius: 22px;
+        padding: 35px;
+        margin-bottom: 25px;
+      }
 
-        button {
-            font-family: inherit;
-        }
+      .status {
+        display: inline-block;
+        padding: 7px 12px;
+        border-radius: 20px;
+        background: #0a1d2d;
+        border: 1px solid #164d79;
+        color: #65b7ff;
+        font-size: 11px;
+        margin-bottom: 18px;
+      }
 
-        /* ================= NAVBAR ================= */
+      .opportunity-header h1 {
+        font-size: 32px;
+        margin-bottom: 12px;
+      }
 
-        nav {
-            height: 75px;
-            border-bottom: 1px solid #1b1b1b;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 6%;
-            background: #050505;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
+      .company {
+        color: #168cff;
+        font-weight: 600;
+        margin-bottom: 18px;
+      }
 
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
+      .description {
+        max-width: 850px;
+        color: #aaa;
+        line-height: 1.7;
+        font-size: 14px;
+      }
 
-        .logo img {
-            width: 42px;
-            height: 42px;
-            border-radius: 10px;
-            object-fit: cover;
-        }
+      .meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 22px;
+      }
 
-        .logo span {
-            font-size: 22px;
-            font-weight: 800;
-        }
+      .meta-item {
+        background: #111;
+        border: 1px solid #252525;
+        padding: 9px 13px;
+        border-radius: 8px;
+        color: #bbb;
+        font-size: 12px;
+      }
 
-        .nav-links {
-            display: flex;
-            gap: 28px;
-        }
+      /* ================= GRID ================= */
 
-        .nav-links a {
-            color: #999;
-            font-size: 14px;
-            transition: 0.2s;
-        }
+      .grid {
+        display: grid;
+        grid-template-columns: 1fr 2fr;
+        gap: 22px;
+      }
 
-        .nav-links a:hover,
-        .nav-links a.active {
-            color: #168cff;
-        }
+      .card {
+        background: #0c0c0c;
+        border: 1px solid #202020;
+        border-radius: 18px;
+        padding: 26px;
+        margin-bottom: 22px;
+      }
 
-        /* ================= CONTAINER ================= */
+      .card h2 {
+        font-size: 18px;
+        margin-bottom: 20px;
+      }
 
-        .container {
-            width: min(1150px, 92%);
-            margin: auto;
-            padding: 40px 0 80px;
-        }
+      .card p {
+        color: #999;
+        font-size: 14px;
+        line-height: 1.7;
+      }
 
-        .back-btn {
-            display: inline-block;
-            color: #999;
-            margin-bottom: 25px;
-            font-size: 14px;
-        }
+      /* ================= REQUIREMENTS ================= */
 
-        .back-btn:hover {
-            color: #168cff;
-        }
+      .requirement {
+        margin-bottom: 20px;
+      }
 
-        /* ================= STATES ================= */
+      .requirement:last-child {
+        margin-bottom: 0;
+      }
 
-        .state {
-            text-align: center;
-            padding: 100px 20px;
-            color: #888;
-        }
+      .requirement-title {
+        color: #777;
+        text-transform: uppercase;
+        letter-spacing: 0.7px;
+        font-size: 11px;
+        margin-bottom: 8px;
+      }
 
-        .state h2 {
-            color: white;
-            margin-bottom: 10px;
-        }
+      .requirement-value {
+        color: #ddd;
+        font-size: 14px;
+      }
 
-        .hidden {
-            display: none !important;
-        }
+      /* ================= TAGS ================= */
 
-        .spinner {
-            width: 42px;
-            height: 42px;
-            border: 3px solid #222;
-            border-top-color: #168cff;
-            border-radius: 50%;
-            margin: 0 auto 20px;
-            animation: spin 0.8s linear infinite;
-        }
+      .tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
 
-        @keyframes spin {
-            to {
-                transform: rotate(360deg);
-            }
-        }
+      .tag {
+        background: #0b1b2a;
+        border: 1px solid #16476e;
+        color: #64b5ff;
+        padding: 7px 11px;
+        border-radius: 20px;
+        font-size: 12px;
+      }
 
-        /* ================= OPPORTUNITY HEADER ================= */
+      /* ================= CANDIDATES ================= */
 
-        .opportunity-header {
-            background: linear-gradient(135deg, #0d0d0d, #081522);
-            border: 1px solid #202020;
-            border-radius: 22px;
-            padding: 35px;
-            margin-bottom: 25px;
-        }
+      .candidate-list {
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+      }
 
-        .status {
-            display: inline-block;
-            padding: 7px 12px;
-            border-radius: 20px;
-            background: #0a1d2d;
-            border: 1px solid #164d79;
-            color: #65b7ff;
-            font-size: 11px;
-            margin-bottom: 18px;
-        }
+      .candidate-card {
+        border: 1px solid #222;
+        background: #101010;
+        border-radius: 14px;
+        padding: 18px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+        transition: 0.2s;
+      }
 
-        .opportunity-header h1 {
-            font-size: 32px;
-            margin-bottom: 12px;
-        }
+      .candidate-card:hover {
+        border-color: #168cff;
+        transform: translateY(-2px);
+      }
 
-        .company {
-            color: #168cff;
-            font-weight: 600;
-            margin-bottom: 18px;
-        }
+      .candidate-main {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        min-width: 0;
+      }
 
-        .description {
-            max-width: 850px;
-            color: #aaa;
-            line-height: 1.7;
-            font-size: 14px;
-        }
+      .candidate-photo {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        object-fit: cover;
+        background: #181818;
+        border: 2px solid #168cff;
+        flex-shrink: 0;
+      }
 
-        .meta {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-top: 22px;
-        }
+      .candidate-info {
+        min-width: 0;
+      }
 
-        .meta-item {
-            background: #111;
-            border: 1px solid #252525;
-            padding: 9px 13px;
-            border-radius: 8px;
-            color: #bbb;
-            font-size: 12px;
-        }
+      .candidate-info h3 {
+        font-size: 15px;
+        margin-bottom: 5px;
+      }
 
-        /* ================= GRID ================= */
+      .candidate-role {
+        color: #168cff;
+        font-size: 12px;
+        margin-bottom: 5px;
+      }
 
+      .candidate-details {
+        color: #777;
+        font-size: 12px;
+        line-height: 1.5;
+      }
+
+      .candidate-actions {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        flex-shrink: 0;
+      }
+
+      .match {
+        text-align: center;
+      }
+
+      .match-score {
+        font-size: 22px;
+        font-weight: 800;
+        color: #168cff;
+      }
+
+      .match-label {
+        color: #666;
+        font-size: 9px;
+        text-transform: uppercase;
+      }
+
+      /* ================= BUTTON ================= */
+
+      .btn {
+        border: none;
+        border-radius: 9px;
+        padding: 11px 16px;
+        cursor: pointer;
+        font-size: 12px;
+        font-weight: 600;
+        transition: 0.2s;
+      }
+
+      .primary-btn {
+        background: #168cff;
+        color: white;
+      }
+
+      .primary-btn:hover {
+        background: #0875df;
+      }
+
+      .secondary-btn {
+        background: #151515;
+        border: 1px solid #292929;
+        color: #ddd;
+      }
+
+      .secondary-btn:hover {
+        border-color: #168cff;
+        color: #168cff;
+      }
+
+      /* ================= MATCHING STATUS ================= */
+
+      .ai-box {
+        background: #081522;
+        border: 1px solid #123a5c;
+        border-radius: 13px;
+        padding: 18px;
+      }
+
+      .ai-box h3 {
+        font-size: 14px;
+        margin-bottom: 8px;
+        color: #65b7ff;
+      }
+
+      .ai-box p {
+        font-size: 12px;
+        color: #8fa7ba;
+      }
+
+      .application-actions {
+        margin-top: 20px;
+      }
+
+      .fit-meter {
+        height: 10px;
+        margin: 14px 0 8px;
+        overflow: hidden;
+        border-radius: 999px;
+        background: #162b3d;
+      }
+
+      .fit-meter span {
+        display: block;
+        width: 0;
+        height: 100%;
+        border-radius: inherit;
+        background: #3bb273;
+        transition: width 0.35s ease;
+      }
+
+      /* ================= EMPTY ================= */
+
+      .empty {
+        text-align: center;
+        padding: 60px 20px;
+        border: 1px dashed #292929;
+        border-radius: 14px;
+        color: #777;
+      }
+
+      .empty h3 {
+        color: #ccc;
+        margin-bottom: 8px;
+      }
+
+      /* ================= RESPONSIVE ================= */
+
+      @media (max-width: 850px) {
         .grid {
-            display: grid;
-            grid-template-columns: 1fr 2fr;
-            gap: 22px;
-        }
-
-        .card {
-            background: #0c0c0c;
-            border: 1px solid #202020;
-            border-radius: 18px;
-            padding: 26px;
-            margin-bottom: 22px;
-        }
-
-        .card h2 {
-            font-size: 18px;
-            margin-bottom: 20px;
-        }
-
-        .card p {
-            color: #999;
-            font-size: 14px;
-            line-height: 1.7;
-        }
-
-        /* ================= REQUIREMENTS ================= */
-
-        .requirement {
-            margin-bottom: 20px;
-        }
-
-        .requirement:last-child {
-            margin-bottom: 0;
-        }
-
-        .requirement-title {
-            color: #777;
-            text-transform: uppercase;
-            letter-spacing: 0.7px;
-            font-size: 11px;
-            margin-bottom: 8px;
-        }
-
-        .requirement-value {
-            color: #ddd;
-            font-size: 14px;
-        }
-
-        /* ================= TAGS ================= */
-
-        .tags {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-        }
-
-        .tag {
-            background: #0b1b2a;
-            border: 1px solid #16476e;
-            color: #64b5ff;
-            padding: 7px 11px;
-            border-radius: 20px;
-            font-size: 12px;
-        }
-
-        /* ================= CANDIDATES ================= */
-
-        .candidate-list {
-            display: flex;
-            flex-direction: column;
-            gap: 14px;
+          grid-template-columns: 1fr;
         }
 
         .candidate-card {
-            border: 1px solid #222;
-            background: #101010;
-            border-radius: 14px;
-            padding: 18px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 20px;
-            transition: 0.2s;
-        }
-
-        .candidate-card:hover {
-            border-color: #168cff;
-            transform: translateY(-2px);
-        }
-
-        .candidate-main {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            min-width: 0;
-        }
-
-        .candidate-photo {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            object-fit: cover;
-            background: #181818;
-            border: 2px solid #168cff;
-            flex-shrink: 0;
-        }
-
-        .candidate-info {
-            min-width: 0;
-        }
-
-        .candidate-info h3 {
-            font-size: 15px;
-            margin-bottom: 5px;
-        }
-
-        .candidate-role {
-            color: #168cff;
-            font-size: 12px;
-            margin-bottom: 5px;
-        }
-
-        .candidate-details {
-            color: #777;
-            font-size: 12px;
-            line-height: 1.5;
+          align-items: flex-start;
+          flex-direction: column;
         }
 
         .candidate-actions {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            flex-shrink: 0;
+          width: 100%;
+          justify-content: space-between;
+        }
+      }
+
+      @media (max-width: 600px) {
+        nav {
+          padding: 0 4%;
         }
 
-        .match {
-            text-align: center;
+        .nav-links {
+          gap: 12px;
         }
 
-        .match-score {
-            font-size: 22px;
-            font-weight: 800;
-            color: #168cff;
+        .nav-links a {
+          font-size: 11px;
         }
 
-        .match-label {
-            color: #666;
-            font-size: 9px;
-            text-transform: uppercase;
+        .opportunity-header h1 {
+          font-size: 25px;
         }
 
-        /* ================= BUTTON ================= */
-
-        .btn {
-            border: none;
-            border-radius: 9px;
-            padding: 11px 16px;
-            cursor: pointer;
-            font-size: 12px;
-            font-weight: 600;
-            transition: 0.2s;
+        .candidate-actions {
+          flex-direction: column;
+          align-items: stretch;
         }
 
-        .primary-btn {
-            background: #168cff;
-            color: white;
+        .candidate-actions .btn {
+          width: 100%;
         }
-
-        .primary-btn:hover {
-            background: #0875df;
-        }
-
-        .secondary-btn {
-            background: #151515;
-            border: 1px solid #292929;
-            color: #ddd;
-        }
-
-        .secondary-btn:hover {
-            border-color: #168cff;
-            color: #168cff;
-        }
-
-        /* ================= MATCHING STATUS ================= */
-
-        .ai-box {
-            background: #081522;
-            border: 1px solid #123a5c;
-            border-radius: 13px;
-            padding: 18px;
-        }
-
-        .ai-box h3 {
-            font-size: 14px;
-            margin-bottom: 8px;
-            color: #65b7ff;
-        }
-
-        .ai-box p {
-            font-size: 12px;
-            color: #8fa7ba;
-        }
-
-        /* ================= EMPTY ================= */
-
-        .empty {
-            text-align: center;
-            padding: 60px 20px;
-            border: 1px dashed #292929;
-            border-radius: 14px;
-            color: #777;
-        }
-
-        .empty h3 {
-            color: #ccc;
-            margin-bottom: 8px;
-        }
-
-        /* ================= RESPONSIVE ================= */
-
-        @media (max-width: 850px) {
-
-            .grid {
-                grid-template-columns: 1fr;
-            }
-
-            .candidate-card {
-                align-items: flex-start;
-                flex-direction: column;
-            }
-
-            .candidate-actions {
-                width: 100%;
-                justify-content: space-between;
-            }
-
-        }
-
-        @media (max-width: 600px) {
-
-            nav {
-                padding: 0 4%;
-            }
-
-            .nav-links {
-                gap: 12px;
-            }
-
-            .nav-links a {
-                font-size: 11px;
-            }
-
-            .opportunity-header h1 {
-                font-size: 25px;
-            }
-
-            .candidate-actions {
-                flex-direction: column;
-                align-items: stretch;
-            }
-
-            .candidate-actions .btn {
-                width: 100%;
-            }
-
-        }
-
+      }
     </style>
-</head>
+  </head>
 
+  <body>
+    <!-- ================= NAVBAR ================= -->
 
-<body>
-
-
-<!-- ================= NAVBAR ================= -->
-
-<nav>
-
-    <a href="index.html" class="logo">
-
-        <img
-            src="logo1.jpg"
-            alt="Gradurat Logo"
-        >
+    <nav>
+      <a href="index.html" class="logo">
+        <img src="logo1.jpg" alt="Gradurat Logo" />
 
         <span>Gradurat</span>
+      </a>
 
-    </a>
+      <div class="nav-links">
+        <a href="employer-dashboard.html"> Dashboard </a>
 
+        <a href="fyp.html"> Find Your People </a>
 
-    <div class="nav-links">
+        <a href="matches.html"> Matches </a>
 
-        <a href="employer-dashboard.html">
-            Dashboard
-        </a>
+        <a href="settings.html"> Settings </a>
+      </div>
+    </nav>
 
-        <a href="fyp.html">
-            Find Your People
-        </a>
+    <main class="container">
+      <a href="javascript:history.back()" class="back-btn"> ← Back </a>
 
-        <a href="matches.html">
-            Matches
-        </a>
+      <!-- ================= LOADING ================= -->
 
-        <a href="settings.html">
-            Settings
-        </a>
-
-    </div>
-
-</nav>
-
-
-
-<main class="container">
-
-
-    <a
-        href="javascript:history.back()"
-        class="back-btn">
-
-        ← Back
-
-    </a>
-
-
-    <!-- ================= LOADING ================= -->
-
-    <div
-        id="loadingState"
-        class="state">
-
+      <div id="loadingState" class="state">
         <div class="spinner"></div>
 
-        <h2>
-            Loading opportunity...
-        </h2>
+        <h2>Loading opportunity...</h2>
 
-        <p>
-            Retrieving opportunity information.
-        </p>
+        <p>Retrieving opportunity information.</p>
+      </div>
 
-    </div>
+      <!-- ================= ERROR ================= -->
 
+      <div id="errorState" class="state hidden">
+        <h2>Unable to load opportunity</h2>
 
-
-    <!-- ================= ERROR ================= -->
-
-    <div
-        id="errorState"
-        class="state hidden">
-
-        <h2>
-            Unable to load opportunity
-        </h2>
-
-        <p id="errorMessage">
-            Something went wrong.
-        </p>
+        <p id="errorMessage">Something went wrong.</p>
 
         <button
-            class="btn secondary-btn"
-            onclick="loadOpportunity()"
-            style="margin-top:20px;">
-
-            Try Again
-
+          class="btn secondary-btn"
+          onclick="loadOpportunity()"
+          style="margin-top: 20px"
+        >
+          Try Again
         </button>
+      </div>
 
-    </div>
+      <!-- ================= NOT FOUND ================= -->
 
+      <div id="emptyState" class="state hidden">
+        <h2>Opportunity not found</h2>
 
+        <p>This opportunity may have been removed or does not exist.</p>
+      </div>
 
-    <!-- ================= NOT FOUND ================= -->
+      <!-- ================= CONTENT ================= -->
 
-    <div
-        id="emptyState"
-        class="state hidden">
-
-        <h2>
-            Opportunity not found
-        </h2>
-
-        <p>
-            This opportunity may have been removed or does not exist.
-        </p>
-
-    </div>
-
-
-
-    <!-- ================= CONTENT ================= -->
-
-    <section
-        id="content"
-        class="hidden">
-
-
+      <section id="content" class="hidden">
         <!-- ================= HEADER ================= -->
 
         <div class="opportunity-header">
+          <span id="status" class="status"> Active Opportunity </span>
 
-            <span
-                id="status"
-                class="status">
+          <h1 id="jobTitle">Opportunity</h1>
 
-                Active Opportunity
+          <div id="company" class="company">--</div>
 
-            </span>
+          <p id="description" class="description">--</p>
 
+          <div id="meta" class="meta"></div>
 
-            <h1 id="jobTitle">
-                Opportunity
-            </h1>
-
-
-            <div
-                id="company"
-                class="company">
-
-                --
-
-            </div>
-
-
-            <p
-                id="description"
-                class="description">
-
-                --
-
-            </p>
-
-
-            <div
-                id="meta"
-                class="meta">
-
-            </div>
-
+          <div class="application-actions">
+            <button id="applyButton" class="btn primary-btn" type="button">
+              Apply for this opportunity
+            </button>
+          </div>
         </div>
-
-
 
         <!-- ================= MAIN GRID ================= -->
 
         <div class="grid">
+          <!-- ================= LEFT ================= -->
 
-
-            <!-- ================= LEFT ================= -->
-
-            <div>
-
-
-                <!-- REQUIREMENTS -->
-
-                <div class="card">
-
-                    <h2>
-                        Requirements
-                    </h2>
-
-
-                    <div class="requirement">
-
-                        <div class="requirement-title">
-                            Qualification
-                        </div>
-
-                        <div
-                            id="qualification"
-                            class="requirement-value">
-
-                            --
-
-                        </div>
-
-                    </div>
-
-
-                    <div class="requirement">
-
-                        <div class="requirement-title">
-                            Experience
-                        </div>
-
-                        <div
-                            id="experience"
-                            class="requirement-value">
-
-                            --
-
-                        </div>
-
-                    </div>
-
-
-                    <div class="requirement">
-
-                        <div class="requirement-title">
-                            Work Environment
-                        </div>
-
-                        <div
-                            id="workEnvironment"
-                            class="requirement-value">
-
-                            --
-
-                        </div>
-
-                    </div>
-
-
-                    <div class="requirement">
-
-                        <div class="requirement-title">
-                            Employment Type
-                        </div>
-
-                        <div
-                            id="employmentType"
-                            class="requirement-value">
-
-                            --
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-
-
-                <!-- SKILLS -->
-
-                <div class="card">
-
-                    <h2>
-                        Skills Required
-                    </h2>
-
-                    <div
-                        id="skills"
-                        class="tags">
-
-                    </div>
-
-                </div>
-
-
-
-                <!-- AI -->
-
-                <div class="card">
-
-                    <div class="ai-box">
-
-                        <h3>
-                            ✦ Gradurat AI Matching
-                        </h3>
-
-                        <p>
-                            Gradurat compares this opportunity with student and graduate profiles using their qualifications, skills, interests, experience and career goals.
-                        </p>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-
-
-            <!-- ================= RIGHT ================= -->
+          <div>
+            <!-- REQUIREMENTS -->
 
             <div class="card">
+              <h2>Requirements</h2>
 
-                <h2>
-                    Potential Candidates
-                </h2>
+              <div class="requirement">
+                <div class="requirement-title">Qualification</div>
 
+                <div id="qualification" class="requirement-value">--</div>
+              </div>
 
-                <p style="margin-bottom:20px;">
+              <div class="requirement">
+                <div class="requirement-title">Experience</div>
 
-                    Candidates below are ranked according to their compatibility with this opportunity.
+                <div id="experience" class="requirement-value">--</div>
+              </div>
 
-                </p>
+              <div class="requirement">
+                <div class="requirement-title">Work Environment</div>
 
+                <div id="workEnvironment" class="requirement-value">--</div>
+              </div>
 
-                <!-- CANDIDATE LOADING -->
+              <div class="requirement">
+                <div class="requirement-title">Employment Type</div>
 
-                <div
-                    id="candidateLoading"
-                    class="state hidden"
-                    style="padding:50px 10px;">
-
-                    <div class="spinner"></div>
-
-                    <p>
-                        Finding potential candidates...
-                    </p>
-
-                </div>
-
-
-
-                <!-- CANDIDATES -->
-
-                <div
-                    id="candidateList"
-                    class="candidate-list">
-
-                </div>
-
-
-
-                <!-- EMPTY -->
-
-                <div
-                    id="candidateEmpty"
-                    class="empty hidden">
-
-                    <h3>
-                        No potential candidates yet
-                    </h3>
-
-                    <p>
-                        Gradurat hasn't found suitable candidates for this opportunity yet.
-                    </p>
-
-                </div>
-
+                <div id="employmentType" class="requirement-value">--</div>
+              </div>
             </div>
 
+            <!-- SKILLS -->
+
+            <div class="card">
+              <h2>Skills Required</h2>
+
+              <div id="skills" class="tags"></div>
+            </div>
+
+            <!-- AI -->
+
+            <div class="card">
+              <div id="fitCard" class="ai-box" hidden>
+                <h3>Your fit for this opportunity</h3>
+                <div class="fit-meter" aria-label="Your fit percentage">
+                  <span id="fitMeterFill"></span>
+                </div>
+                <p id="fitScore">Assessing your fit...</p>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="ai-box">
+                <h3>✦ Gradurat AI Matching</h3>
+
+                <p>
+                  Gradurat compares this opportunity with student and graduate
+                  profiles using their qualifications, skills, interests,
+                  experience and career goals.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- ================= RIGHT ================= -->
+
+          <div class="card">
+            <h2>Potential Candidates</h2>
+
+            <p style="margin-bottom: 20px">
+              Candidates below are ranked according to their compatibility with
+              this opportunity.
+            </p>
+
+            <!-- CANDIDATE LOADING -->
+
+            <div
+              id="candidateLoading"
+              class="state hidden"
+              style="padding: 50px 10px"
+            >
+              <div class="spinner"></div>
+
+              <p>Finding potential candidates...</p>
+            </div>
+
+            <!-- CANDIDATES -->
+
+            <div id="candidateList" class="candidate-list"></div>
+
+            <!-- EMPTY -->
+
+            <div id="candidateEmpty" class="empty hidden">
+              <h3>No potential candidates yet</h3>
+
+              <p>
+                Gradurat hasn't found suitable candidates for this opportunity
+                yet.
+              </p>
+            </div>
+          </div>
         </div>
+      </section>
+    </main>
 
-    </section>
-
-</main>
-
-
-
-<script>
-
-
-/* =========================================
+    <script src="auth-client.js"></script>
+    <script>
+      /* =========================================
    GET OPPORTUNITY ID
 ========================================= */
 
-const params =
-    new URLSearchParams(
-        window.location.search
-    );
+      const params = new URLSearchParams(window.location.search);
 
-const opportunityId =
-    params.get("id");
+      const opportunityId = params.get("id");
 
-
-
-/* =========================================
+      /* =========================================
    LOAD OPPORTUNITY
 ========================================= */
 
-async function loadOpportunity() {
+      async function loadOpportunity() {
+        const loading = document.getElementById("loadingState");
 
-    const loading =
-        document.getElementById(
-            "loadingState"
-        );
+        const error = document.getElementById("errorState");
 
-    const error =
-        document.getElementById(
-            "errorState"
-        );
+        const empty = document.getElementById("emptyState");
 
-    const empty =
-        document.getElementById(
-            "emptyState"
-        );
+        const content = document.getElementById("content");
 
-    const content =
-        document.getElementById(
-            "content"
-        );
+        loading.classList.remove("hidden");
 
+        error.classList.add("hidden");
 
-    loading.classList.remove("hidden");
+        empty.classList.add("hidden");
 
-    error.classList.add("hidden");
+        content.classList.add("hidden");
 
-    empty.classList.add("hidden");
+        if (!opportunityId) {
+          loading.classList.add("hidden");
 
-    content.classList.add("hidden");
+          empty.classList.remove("hidden");
 
+          return;
+        }
 
-    if (!opportunityId) {
-
-        loading.classList.add("hidden");
-
-        empty.classList.remove("hidden");
-
-        return;
-    }
-
-
-    try {
-
-        /*
+        try {
+          /*
             Backend:
 
             GET /api/jobs/:id
         */
 
-        const response =
-            await fetch(
-                `/api/jobs/${opportunityId}`
-            );
+          const response = await fetch(
+            `/api/opportunities/${encodeURIComponent(opportunityId)}`,
+          );
 
-
-        if (!response.ok) {
-
+          if (!response.ok) {
             if (response.status === 404) {
+              loading.classList.add("hidden");
 
-                loading.classList.add("hidden");
+              empty.classList.remove("hidden");
 
-                empty.classList.remove("hidden");
-
-                return;
+              return;
             }
 
-            throw new Error(
-                "Unable to load opportunity"
-            );
-        }
+            throw new Error("Unable to load opportunity");
+          }
 
+          const payload = await response.json();
+          const opportunity = payload.opportunity || payload;
 
-        const opportunity =
-            await response.json();
+          renderOpportunity(opportunity);
 
+          loading.classList.add("hidden");
 
-        renderOpportunity(
-            opportunity
-        );
+          content.classList.remove("hidden");
 
-
-        loading.classList.add("hidden");
-
-        content.classList.remove("hidden");
-
-
-        /*
+          /*
             Once opportunity is loaded,
             get AI-ranked candidates.
         */
 
-        loadCandidates();
+          loadCandidates();
+          loadStudentFit(opportunity);
+        } catch (err) {
+          console.error(err);
 
+          loading.classList.add("hidden");
 
-    } catch (err) {
+          error.classList.remove("hidden");
 
-        console.error(err);
-
-        loading.classList.add("hidden");
-
-        error.classList.remove("hidden");
-
-        document.getElementById(
-            "errorMessage"
-        ).textContent =
+          document.getElementById("errorMessage").textContent =
             "The opportunity could not be loaded. Please try again.";
+        }
+      }
 
-    }
-
-}
-
-
-
-/* =========================================
+      /* =========================================
    RENDER OPPORTUNITY
 ========================================= */
 
-function renderOpportunity(job) {
+      function renderOpportunity(job) {
+        document.getElementById("jobTitle").textContent =
+          job.title || "Opportunity";
 
-    document.getElementById(
-        "jobTitle"
-    ).textContent =
-        job.title || "Opportunity";
+        document.getElementById("company").textContent =
+          job.employers?.company_name ||
+          job.companyName ||
+          job.company ||
+          "Company";
 
+        document.getElementById("description").textContent =
+          job.description || "No description provided.";
 
-    document.getElementById(
-        "company"
-    ).textContent =
-        job.companyName ||
-        job.company ||
-        "Company";
+        document.getElementById("qualification").textContent =
+          job.qualification_requirement || job.qualification || "Not specified";
 
+        document.getElementById("experience").textContent =
+          job.duration || job.experience || "Not specified";
 
-    document.getElementById(
-        "description"
-    ).textContent =
-        job.description ||
-        "No description provided.";
+        document.getElementById("workEnvironment").textContent =
+          job.work_arrangement || job.workEnvironment || "Not specified";
 
+        document.getElementById("employmentType").textContent =
+          job.opportunity_type ||
+          job.type ||
+          job.employmentType ||
+          "Not specified";
 
-    document.getElementById(
-        "qualification"
-    ).textContent =
-        job.qualification ||
-        "Not specified";
-
-
-    document.getElementById(
-        "experience"
-    ).textContent =
-        job.experience ||
-        "Not specified";
-
-
-    document.getElementById(
-        "workEnvironment"
-    ).textContent =
-        job.workEnvironment ||
-        "Not specified";
-
-
-    document.getElementById(
-        "employmentType"
-    ).textContent =
-        job.employmentType ||
-        "Not specified";
-
-
-    renderTags(
-        "skills",
-        job.skills
-    );
-
-
-    renderMeta(
-        job
-    );
-
-
-    const status =
-        document.getElementById(
-            "status"
+        renderTags(
+          "skills",
+          job.required_skills || job.preferred_skills || job.skills,
         );
 
+        renderMeta(job);
 
-    if (job.status) {
+        const status = document.getElementById("status");
 
-        status.textContent =
-            job.status;
+        if (job.status) {
+          status.textContent = job.status;
+        }
+      }
 
-    }
-
-}
-
-
-
-/* =========================================
+      /* =========================================
    META
 ========================================= */
 
-function renderMeta(job) {
+      function renderMeta(job) {
+        const container = document.getElementById("meta");
 
-    const container =
-        document.getElementById(
-            "meta"
-        );
+        container.innerHTML = "";
 
-    container.innerHTML = "";
+        const values = [
+          job.location,
 
+          job.industry,
 
-    const values = [
+          job.salary,
 
-        job.location,
+          job.application_deadline || job.applicationDeadline,
+        ];
 
-        job.industry,
+        values.filter(Boolean).forEach((value) => {
+          const div = document.createElement("div");
 
-        job.salary,
+          div.className = "meta-item";
 
-        job.applicationDeadline
+          div.textContent = value;
 
-    ];
-
-
-    values
-        .filter(Boolean)
-        .forEach(value => {
-
-            const div =
-                document.createElement(
-                    "div"
-                );
-
-            div.className =
-                "meta-item";
-
-            div.textContent =
-                value;
-
-            container.appendChild(div);
-
+          container.appendChild(div);
         });
+      }
 
-}
-
-
-
-/* =========================================
+      /* =========================================
    TAGS
 ========================================= */
 
-function renderTags(
-    elementId,
-    tags
-) {
+      function renderTags(elementId, tags) {
+        const container = document.getElementById(elementId);
 
-    const container =
-        document.getElementById(
-            elementId
-        );
+        container.innerHTML = "";
 
-    container.innerHTML = "";
-
-
-    if (
-        !Array.isArray(tags) ||
-        tags.length === 0
-    ) {
-
-        container.innerHTML =
-            `<span style="color:#666;font-size:13px;">
+        if (!Array.isArray(tags) || tags.length === 0) {
+          container.innerHTML = `<span style="color:#666;font-size:13px;">
                 No skills specified
             </span>`;
 
-        return;
-    }
+          return;
+        }
 
+        tags.forEach((skill) => {
+          const tag = document.createElement("span");
 
-    tags.forEach(skill => {
+          tag.className = "tag";
 
-        const tag =
-            document.createElement(
-                "span"
-            );
+          tag.textContent = skill;
 
-        tag.className =
-            "tag";
+          container.appendChild(tag);
+        });
+      }
 
-        tag.textContent =
-            skill;
-
-        container.appendChild(tag);
-
-    });
-
-}
-
-
-
-/* =========================================
+      /* =========================================
    LOAD CANDIDATES
 ========================================= */
 
-async function loadCandidates() {
+      async function loadCandidates() {
+        const loading = document.getElementById("candidateLoading");
 
-    const loading =
-        document.getElementById(
-            "candidateLoading"
-        );
+        const list = document.getElementById("candidateList");
 
-    const list =
-        document.getElementById(
-            "candidateList"
-        );
+        const empty = document.getElementById("candidateEmpty");
 
-    const empty =
-        document.getElementById(
-            "candidateEmpty"
-        );
+        loading.classList.remove("hidden");
 
+        list.innerHTML = "";
 
-    loading.classList.remove(
-        "hidden"
-    );
+        empty.classList.add("hidden");
 
-    list.innerHTML = "";
-
-    empty.classList.add(
-        "hidden"
-    );
-
-
-    try {
-
-        /*
+        try {
+          /*
             Backend:
 
             GET /api/jobs/:id/candidates
@@ -1199,25 +892,15 @@ async function loadCandidates() {
             AI-ranked candidates.
         */
 
-        const response =
-            await fetch(
-                `/api/jobs/${opportunityId}/candidates`
-            );
+          const response = await fetch(`/api/jobs/${opportunityId}/candidates`);
 
+          if (!response.ok) {
+            throw new Error("Unable to load candidates");
+          }
 
-        if (!response.ok) {
+          const data = await response.json();
 
-            throw new Error(
-                "Unable to load candidates"
-            );
-        }
-
-
-        const data =
-            await response.json();
-
-
-        /*
+          /*
             Supports either:
 
             [...]
@@ -1229,49 +912,25 @@ async function loadCandidates() {
             }
         */
 
-        const candidates =
-            Array.isArray(data)
-                ? data
-                : data.candidates || [];
+          const candidates = Array.isArray(data) ? data : data.candidates || [];
 
+          loading.classList.add("hidden");
 
-        loading.classList.add(
-            "hidden"
-        );
-
-
-        if (
-            candidates.length === 0
-        ) {
-
-            empty.classList.remove(
-                "hidden"
-            );
+          if (candidates.length === 0) {
+            empty.classList.remove("hidden");
 
             return;
-        }
+          }
 
+          candidates.forEach((candidate) => {
+            renderCandidate(candidate);
+          });
+        } catch (error) {
+          console.error(error);
 
-        candidates.forEach(
-            candidate => {
+          loading.classList.add("hidden");
 
-                renderCandidate(
-                    candidate
-                );
-
-            }
-        );
-
-
-    } catch (error) {
-
-        console.error(error);
-
-        loading.classList.add(
-            "hidden"
-        );
-
-        list.innerHTML = `
+          list.innerHTML = `
             <div class="empty">
 
                 <h3>
@@ -1293,49 +952,29 @@ async function loadCandidates() {
 
             </div>
         `;
+        }
+      }
 
-    }
-
-}
-
-
-
-/* =========================================
+      /* =========================================
    RENDER CANDIDATE
 ========================================= */
 
-function renderCandidate(
-    candidate
-) {
+      function renderCandidate(candidate) {
+        const list = document.getElementById("candidateList");
 
-    const list =
-        document.getElementById(
-            "candidateList"
-        );
+        const card = document.createElement("div");
 
+        card.className = "candidate-card";
 
-    const card =
-        document.createElement(
-            "div"
-        );
+        const photo =
+          candidate.photo || "https://via.placeholder.com/60?text=Profile";
 
-    card.className =
-        "candidate-card";
-
-
-    const photo =
-        candidate.photo ||
-        "https://via.placeholder.com/60?text=Profile";
-
-
-    const score =
-        candidate.matchScore !== null &&
-        candidate.matchScore !== undefined
+        const score =
+          candidate.matchScore !== null && candidate.matchScore !== undefined
             ? `${candidate.matchScore}%`
             : "--";
 
-
-    card.innerHTML = `
+        card.innerHTML = `
 
         <div class="candidate-main">
 
@@ -1349,19 +988,13 @@ function renderCandidate(
             <div class="candidate-info">
 
                 <h3>
-                    ${escapeHTML(
-                        candidate.name ||
-                        "Candidate"
-                    )}
+                    ${escapeHTML(candidate.name || "Candidate")}
                 </h3>
 
 
                 <div class="candidate-role">
 
-                    ${escapeHTML(
-                        candidate.role ||
-                        "Student / Graduate"
-                    )}
+                    ${escapeHTML(candidate.role || "Student / Graduate")}
 
                 </div>
 
@@ -1369,23 +1002,16 @@ function renderCandidate(
                 <div class="candidate-details">
 
                     ${escapeHTML(
-                        candidate.qualification ||
-                        "Qualification not provided"
+                      candidate.qualification || "Qualification not provided",
                     )}
 
-                    ${candidate.field
-                        ? " • " +
-                          escapeHTML(
-                              candidate.field
-                          )
-                        : ""
+                    ${
+                      candidate.field ? " • " + escapeHTML(candidate.field) : ""
                     }
 
-                    ${candidate.experience
-                        ? " • " +
-                          escapeHTML(
-                              candidate.experience
-                          )
+                    ${
+                      candidate.experience
+                        ? " • " + escapeHTML(candidate.experience)
                         : ""
                     }
 
@@ -1428,64 +1054,136 @@ function renderCandidate(
 
     `;
 
+        list.appendChild(card);
+      }
 
-    list.appendChild(
-        card
-    );
-
-}
-
-
-
-/* =========================================
+      /* =========================================
    VIEW CANDIDATE
 ========================================= */
 
-function viewCandidate(
-    id
-) {
+      function viewCandidate(id) {
+        if (!id) {
+          return;
+        }
 
-    if (!id) {
+        window.location.href = `candidate.html?id=${encodeURIComponent(id)}`;
+      }
 
-        return;
-    }
+      async function loadStudentFit(opportunity) {
+        const fitCard = document.getElementById("fitCard");
+        const fitScore = document.getElementById("fitScore");
+        const fitMeterFill = document.getElementById("fitMeterFill");
+        const studentId = localStorage.getItem("graduRatStudentId");
+        if (!studentId) return;
 
+        try {
+          const studentResponse = await graduratAuth.apiFetch(
+            `/api/students/${encodeURIComponent(studentId)}`,
+          );
+          const studentPayload = await graduratAuth.readJson(
+            studentResponse,
+            "The student profile response was not valid JSON.",
+          );
+          if (!studentResponse.ok)
+            throw new Error(
+              studentPayload.error || "Could not load your profile.",
+            );
 
-    window.location.href =
-        `candidate.html?id=${encodeURIComponent(id)}`;
+          const feedbackResponse = await graduratAuth.apiFetch(
+            "/api/ai/feedback",
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                subject_type: "student",
+                subject: {
+                  name: studentPayload.student.full_name,
+                  qualification: studentPayload.student.qualification,
+                  skills: studentPayload.student.skills,
+                  experience: studentPayload.student.work_experience_summary,
+                  goals: studentPayload.student.preferred_industry,
+                  location: studentPayload.student.location,
+                },
+                target_type: "opportunity",
+                target: {
+                  title: opportunity.title,
+                  qualification: opportunity.qualification_requirement,
+                  skills:
+                    opportunity.required_skills || opportunity.preferred_skills,
+                  description: opportunity.description,
+                  industry: opportunity.industry,
+                  location: opportunity.location,
+                },
+              }),
+            },
+          );
+          const feedbackPayload = await graduratAuth.readJson(
+            feedbackResponse,
+            "The AI feedback response was not valid JSON.",
+          );
+          if (!feedbackResponse.ok)
+            throw new Error(
+              feedbackPayload.error || "Fit assessment unavailable.",
+            );
 
-}
+          const score = Number(feedbackPayload.assessment.fit_score);
+          fitCard.hidden = false;
+          fitScore.textContent = `${score}% fit for this opportunity`;
+          fitMeterFill.style.width = `${Math.max(0, Math.min(100, score))}%`;
+        } catch (error) {
+          fitCard.hidden = false;
+          fitScore.textContent = error.message;
+        }
+      }
 
+      document
+        .getElementById("applyButton")
+        .addEventListener("click", async () => {
+          const button = document.getElementById("applyButton");
+          const studentId = localStorage.getItem("graduRatStudentId");
+          if (!studentId) {
+            button.textContent = "Log in as a student to apply";
+            return;
+          }
+          button.disabled = true;
+          try {
+            const response = await graduratAuth.apiFetch(
+              `/api/opportunities/${encodeURIComponent(opportunityId)}/applications`,
+              {
+                method: "POST",
+                body: JSON.stringify({ student_id: studentId }),
+              },
+            );
+            const payload = await graduratAuth.readJson(
+              response,
+              "The application response was not valid JSON.",
+            );
+            if (!response.ok)
+              throw new Error(payload.error || "Could not submit application.");
+            button.textContent = "Application submitted";
+          } catch (error) {
+            button.disabled = false;
+            button.textContent = error.message;
+          }
+        });
 
-
-/* =========================================
+      /* =========================================
    SECURITY
 ========================================= */
 
-function escapeHTML(
-    value
-) {
+      function escapeHTML(value) {
+        const div = document.createElement("div");
 
-    const div =
-        document.createElement(
-            "div"
-        );
+        div.textContent = value;
 
-    div.textContent =
-        value;
+        return div.innerHTML;
+      }
 
-    return div.innerHTML;
-}
-
-
-
-/* =========================================
+      /* =========================================
    START
 ========================================= */
 
-loadOpportunity();
-
-</script>
-
-</body>
+      loadOpportunity();
+    </script>
+  </body>
 </html>

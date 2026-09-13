@@ -7,7 +7,7 @@ import express from "express";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { supabaseServer } from "./lib/supabase-server.js";
-import { scoreSkillsWithGroq } from "./lib/groq.js";
+import { assessFitWithGroq, scoreSkillsWithGroq } from "./lib/groq.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
@@ -18,6 +18,70 @@ const port = Number(process.env.PORT) || 3000;
 app.use(express.json({ limit: "1mb" }));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, "../GraduRat")));
+
+const publicSupabaseKey =
+  process.env.SUPABASE_ANON_KEY ||
+  process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
+
+const requireAuth = async (request, response, next) => {
+  const authorization = request.headers.authorization || "";
+  const token = authorization.startsWith("Bearer ")
+    ? authorization.slice(7).trim()
+    : null;
+  if (!token)
+    return response.status(401).json({ error: "Authentication required." });
+
+  const { data, error } = await supabaseServer.auth.getUser(token);
+  if (error || !data.user)
+    return response.status(401).json({ error: "Invalid or expired session." });
+
+  request.authUser = data.user;
+  next();
+};
+
+app.get("/api/config", (_request, response) => {
+  if (!publicSupabaseKey || publicSupabaseKey.startsWith("sb_secret_")) {
+    return response
+      .status(503)
+      .json({ error: "Supabase publishable key is not configured." });
+  }
+  response.json({
+    supabaseUrl: (process.env.SUPABASE_URL || "").replace(/\/rest\/v1\/?$/, ""),
+    supabasePublishableKey: publicSupabaseKey,
+  });
+});
+
+app.get("/api/me", requireAuth, async (request, response) => {
+  const [studentResult, employerResult] = await Promise.all([
+    supabaseServer
+      .from("students")
+      .select("id, full_name, email")
+      .eq("auth_user_id", request.authUser.id)
+      .maybeSingle(),
+    supabaseServer
+      .from("employers")
+      .select("id, company_name, email")
+      .eq("auth_user_id", request.authUser.id)
+      .maybeSingle(),
+  ]);
+  if (studentResult.error)
+    return errorResponse(
+      response,
+      studentResult.error,
+      "Could not load account",
+    );
+  if (employerResult.error)
+    return errorResponse(
+      response,
+      employerResult.error,
+      "Could not load account",
+    );
+  response.json({
+    user: request.authUser,
+    student: studentResult.data,
+    employer: employerResult.data,
+  });
+});
 
 // Forms send either comma-separated strings or repeated checkbox values. Keeping
 // this conversion at the API boundary gives the database one predictable shape.
@@ -650,6 +714,30 @@ const getEmployer = async (employerId) => {
   return data;
 };
 
+const requireOwnedProfile = async (table, profileId, authUserId) => {
+  const { data, error } = await supabaseServer
+    .from(table)
+    .select("id")
+    .eq("id", profileId)
+    .eq("auth_user_id", authUserId)
+    .single();
+  if (error || !data) {
+    const ownershipError = new Error("You do not own this profile.");
+    ownershipError.statusCode = 403;
+    throw ownershipError;
+  }
+};
+
+const getOwnedStudent = async (studentId, authUserId) => {
+  await requireOwnedProfile("students", studentId, authUserId);
+  return getStudent(studentId);
+};
+
+const getOwnedEmployer = async (employerId, authUserId) => {
+  await requireOwnedProfile("employers", employerId, authUserId);
+  return getEmployer(employerId);
+};
+
 const isPublicOpportunity = (opportunity) => {
   if (
     !opportunity ||
@@ -677,9 +765,12 @@ app.get("/api/health", async (_request, response) => {
   response.json({ status: "ok", database: "connected" });
 });
 
-app.get("/api/students/:studentId", async (request, response) => {
+app.get("/api/students/:studentId", requireAuth, async (request, response) => {
   try {
-    const student = await getStudent(request.params.studentId);
+    const student = await getOwnedStudent(
+      request.params.studentId,
+      request.authUser.id,
+    );
     response.json({
       student,
       profile_completeness: computeProfileCompleteness(student, "student"),
@@ -689,57 +780,131 @@ app.get("/api/students/:studentId", async (request, response) => {
   }
 });
 
-app.patch("/api/students/:studentId", async (request, response) => {
+app.patch(
+  "/api/students/:studentId",
+  requireAuth,
+  async (request, response) => {
+    try {
+      await requireOwnedProfile(
+        "students",
+        request.params.studentId,
+        request.authUser.id,
+      );
+      const updates = buildStudentUpdate(request.body || {});
+      const { data, error } = await supabaseServer
+        .from("students")
+        .update(updates)
+        .eq("id", request.params.studentId)
+        .select()
+        .single();
+      if (error) throw error;
+      response.json({
+        student: data,
+        profile_completeness: computeProfileCompleteness(data, "student"),
+      });
+    } catch (error) {
+      errorResponse(response, error, "Could not update student profile");
+    }
+  },
+);
+
+app.get(
+  "/api/employers/:employerId",
+  requireAuth,
+  async (request, response) => {
+    try {
+      const employer = await getOwnedEmployer(
+        request.params.employerId,
+        request.authUser.id,
+      );
+      response.json({
+        employer,
+        profile_completeness: computeProfileCompleteness(employer, "employer"),
+      });
+    } catch (error) {
+      errorResponse(response, error, "Could not load employer profile");
+    }
+  },
+);
+
+app.patch(
+  "/api/employers/:employerId",
+  requireAuth,
+  async (request, response) => {
+    try {
+      await requireOwnedProfile(
+        "employers",
+        request.params.employerId,
+        request.authUser.id,
+      );
+      const updates = buildEmployerUpdate(request.body || {});
+      const { data, error } = await supabaseServer
+        .from("employers")
+        .update(updates)
+        .eq("id", request.params.employerId)
+        .select()
+        .single();
+      if (error) throw error;
+      response.json({
+        employer: data,
+        profile_completeness: computeProfileCompleteness(data, "employer"),
+      });
+    } catch (error) {
+      errorResponse(response, error, "Could not update employer profile");
+    }
+  },
+);
+
+app.post("/api/ai/feedback", async (request, response) => {
   try {
-    const updates = buildStudentUpdate(request.body || {});
-    const { data, error } = await supabaseServer
-      .from("students")
-      .update(updates)
-      .eq("id", request.params.studentId)
-      .select()
-      .single();
-    if (error) throw error;
-    response.json({
-      student: data,
-      profile_completeness: computeProfileCompleteness(data, "student"),
+    const body = request.body || {};
+    const subjectType = coerceText(
+      body.subject_type ?? body.subjectType,
+      "profile",
+    );
+    const targetType = coerceText(
+      body.target_type ?? body.targetType,
+      "opportunity",
+    );
+    let subject = body.subject || {};
+    let target = body.target || null;
+
+    if (body.subject_id || body.subjectId) {
+      const subjectId = body.subject_id || body.subjectId;
+      subject =
+        subjectType === "employer"
+          ? await getEmployer(subjectId)
+          : await getStudent(subjectId);
+    }
+    if (body.target_id || body.targetId) {
+      const targetId = body.target_id || body.targetId;
+      target =
+        targetType === "opportunity"
+          ? await getOpportunity(targetId)
+          : targetType === "employer"
+            ? await getEmployer(targetId)
+            : await getStudent(targetId);
+    }
+
+    if (!subject || typeof subject !== "object") {
+      return response
+        .status(422)
+        .json({ error: "A profile is required for feedback." });
+    }
+
+    const assessment = await assessFitWithGroq({
+      subjectType,
+      subject,
+      targetType,
+      target,
     });
+    response.json({ assessment });
   } catch (error) {
-    errorResponse(response, error, "Could not update student profile");
+    errorResponse(response, error, "Could not generate AI feedback");
   }
 });
 
-app.get("/api/employers/:employerId", async (request, response) => {
-  try {
-    const employer = await getEmployer(request.params.employerId);
-    response.json({
-      employer,
-      profile_completeness: computeProfileCompleteness(employer, "employer"),
-    });
-  } catch (error) {
-    errorResponse(response, error, "Could not load employer profile");
-  }
-});
-
-app.patch("/api/employers/:employerId", async (request, response) => {
-  try {
-    const updates = buildEmployerUpdate(request.body || {});
-    const { data, error } = await supabaseServer
-      .from("employers")
-      .update(updates)
-      .eq("id", request.params.employerId)
-      .select()
-      .single();
-    if (error) throw error;
-    response.json({
-      employer: data,
-      profile_completeness: computeProfileCompleteness(data, "employer"),
-    });
-  } catch (error) {
-    errorResponse(response, error, "Could not update employer profile");
-  }
-});
-
-app.post("/api/students", async (request, response) => {
+app.post("/api/students", requireAuth, async (request, response) => {
   const body = request.body;
   if (
     !body.email ||
@@ -840,6 +1005,7 @@ app.post("/api/students", async (request, response) => {
           body.workMode,
         null,
       ),
+      auth_user_id: request.authUser.id,
     })
     .select()
     .single();
@@ -852,7 +1018,7 @@ app.post("/api/students", async (request, response) => {
   });
 });
 
-app.post("/api/employers", async (request, response) => {
+app.post("/api/employers", requireAuth, async (request, response) => {
   const body = request.body;
   const contactName = coerceText(
     body.contactPersonName ?? body.contact_person_name,
@@ -909,6 +1075,7 @@ app.post("/api/employers", async (request, response) => {
       industry: coerceText(body.industry, null),
       location: coerceText(body.location, null),
       contact_person_name: `${firstName} ${lastName}`.trim(),
+      auth_user_id: request.authUser.id,
       contact_email: contactEmail,
       contact_phone: coerceText(body.phone, null),
       company_size: coerceText(body.companySize, null),
@@ -1064,26 +1231,177 @@ app.get("/api/opportunities/:opportunityId", async (request, response) => {
   }
 });
 
-app.patch("/api/opportunities/:opportunityId", async (request, response) => {
-  try {
-    const updates = buildOpportunityUpdate(request.body || {});
-    const { data, error } = await supabaseServer
-      .from("opportunities")
-      .update(updates)
-      .eq("id", request.params.opportunityId)
-      .select()
-      .single();
-    if (error) throw error;
-    response.json({ opportunity: data });
-  } catch (error) {
-    errorResponse(response, error, "Could not update opportunity");
-  }
-});
+app.post(
+  "/api/opportunities/:opportunityId/applications",
+  requireAuth,
+  async (request, response) => {
+    try {
+      const studentId = request.body?.student_id || request.body?.studentId;
+      if (!studentId) {
+        return response
+          .status(422)
+          .json({ error: "A student profile is required to apply." });
+      }
+      const opportunity = await getOpportunity(request.params.opportunityId);
+      if (!isPublicOpportunity(opportunity)) {
+        return response
+          .status(404)
+          .json({ error: "Opportunity is not accepting applications." });
+      }
+      await getOwnedStudent(studentId, request.authUser.id);
+      const { data, error } = await supabaseServer
+        .from("applications")
+        .insert({
+          student_id: studentId,
+          opportunity_id: request.params.opportunityId,
+          cover_note: coerceText(
+            request.body?.cover_note ?? request.body?.coverNote,
+            null,
+          ),
+          status: "submitted",
+          updated_at: new Date().toISOString(),
+        })
+        .select("*, opportunities(title, employer_id)")
+        .single();
+      if (error) throw error;
+      response.status(201).json({ application: data });
+    } catch (error) {
+      errorResponse(response, error, "Could not submit application");
+    }
+  },
+);
+
+app.get(
+  "/api/students/:studentId/applications",
+  requireAuth,
+  async (request, response) => {
+    try {
+      await requireOwnedProfile(
+        "students",
+        request.params.studentId,
+        request.authUser.id,
+      );
+      const { data, error } = await supabaseServer
+        .from("applications")
+        .select(
+          "*, opportunities(title, description, location, type, employers(company_name))",
+        )
+        .eq("student_id", request.params.studentId)
+        .order("created_at", { ascending: false });
+      if (error) throw error;
+      response.json({ applications: data });
+    } catch (error) {
+      errorResponse(response, error, "Could not load applications");
+    }
+  },
+);
+
+app.get(
+  "/api/employers/:employerId/applications",
+  requireAuth,
+  async (request, response) => {
+    try {
+      await requireOwnedProfile(
+        "employers",
+        request.params.employerId,
+        request.authUser.id,
+      );
+      const { data, error } = await supabaseServer
+        .from("applications")
+        .select(
+          "*, students(id, full_name, email, skills, qualification, location), opportunities!inner(id, title, employer_id)",
+        )
+        .eq("opportunities.employer_id", request.params.employerId)
+        .order("created_at", { ascending: false });
+      if (error) throw error;
+      response.json({ applications: data });
+    } catch (error) {
+      errorResponse(response, error, "Could not load employer applications");
+    }
+  },
+);
+
+app.patch(
+  "/api/applications/:applicationId",
+  requireAuth,
+  async (request, response) => {
+    try {
+      const { data: application, error: lookupError } = await supabaseServer
+        .from("applications")
+        .select("id, status, opportunities!inner(employer_id)")
+        .eq("id", request.params.applicationId)
+        .single();
+      if (lookupError) throw lookupError;
+      await requireOwnedProfile(
+        "employers",
+        application.opportunities.employer_id,
+        request.authUser.id,
+      );
+      const status = coerceText(request.body?.status, null);
+      if (
+        ![
+          "submitted",
+          "reviewing",
+          "shortlisted",
+          "rejected",
+          "withdrawn",
+        ].includes(status)
+      ) {
+        return response
+          .status(422)
+          .json({ error: "Invalid application status." });
+      }
+      const { data, error } = await supabaseServer
+        .from("applications")
+        .update({ status, updated_at: new Date().toISOString() })
+        .eq("id", request.params.applicationId)
+        .select()
+        .single();
+      if (error) throw error;
+      response.json({ application: data });
+    } catch (error) {
+      errorResponse(response, error, "Could not update application");
+    }
+  },
+);
+
+app.patch(
+  "/api/opportunities/:opportunityId",
+  requireAuth,
+  async (request, response) => {
+    try {
+      const current = await getOpportunity(request.params.opportunityId);
+      await requireOwnedProfile(
+        "employers",
+        current.employer_id,
+        request.authUser.id,
+      );
+      const updates = buildOpportunityUpdate(request.body || {});
+      const { data, error } = await supabaseServer
+        .from("opportunities")
+        .update(updates)
+        .eq("id", request.params.opportunityId)
+        .select()
+        .single();
+      if (error) throw error;
+      response.json({ opportunity: data });
+    } catch (error) {
+      errorResponse(response, error, "Could not update opportunity");
+    }
+  },
+);
 
 app.post(
   "/api/opportunities/:opportunityId/close",
+  requireAuth,
   async (request, response) => {
     try {
+      const current = await getOpportunity(request.params.opportunityId);
+      await requireOwnedProfile(
+        "employers",
+        current.employer_id,
+        request.authUser.id,
+      );
       const { data, error } = await supabaseServer
         .from("opportunities")
         .update({
@@ -1107,8 +1425,15 @@ app.post(
 
 app.post(
   "/api/opportunities/:opportunityId/archive",
+  requireAuth,
   async (request, response) => {
     try {
+      const current = await getOpportunity(request.params.opportunityId);
+      await requireOwnedProfile(
+        "employers",
+        current.employer_id,
+        request.authUser.id,
+      );
       const { data, error } = await supabaseServer
         .from("opportunities")
         .update({
@@ -1129,8 +1454,15 @@ app.post(
 
 app.post(
   "/api/opportunities/:opportunityId/reopen",
+  requireAuth,
   async (request, response) => {
     try {
+      const owner = await getOpportunity(request.params.opportunityId);
+      await requireOwnedProfile(
+        "employers",
+        owner.employer_id,
+        request.authUser.id,
+      );
       const { data: current, error: lookupError } = await supabaseServer
         .from("opportunities")
         .select("application_deadline")
@@ -1167,7 +1499,7 @@ app.post(
   },
 );
 
-app.post("/api/matches/refresh", async (request, response) => {
+app.post("/api/matches/refresh", requireAuth, async (request, response) => {
   try {
     const studentId = request.body?.student_id || request.body?.studentId;
     const opportunityId =
@@ -1180,7 +1512,7 @@ app.post("/api/matches/refresh", async (request, response) => {
     }
 
     const [student, opportunityResponse] = await Promise.all([
-      getStudent(studentId),
+      getOwnedStudent(studentId, request.authUser.id),
       supabaseServer
         .from("opportunities")
         .select("*, employers(company_name, website)")
@@ -1196,101 +1528,109 @@ app.post("/api/matches/refresh", async (request, response) => {
   }
 });
 
-app.get("/api/students/:studentId/dashboard", async (request, response) => {
-  try {
-    // Load the profile and public opportunities concurrently; neither query
-    // depends on the other, which reduces dashboard response time.
-    const [student, opportunitiesResponse] = await Promise.all([
-      getStudent(request.params.studentId),
-      supabaseServer
-        .from("opportunities")
-        .select("*, employers(company_name, website)")
-        .order("created_at", { ascending: false }),
-    ]);
-    if (opportunitiesResponse.error) throw opportunitiesResponse.error;
-
-    // Groq is called for each student/opportunity pair, then the completed
-    // scores are sorted before they are returned to the browser.
-    const opportunities = (
-      await Promise.all(
-        opportunitiesResponse.data
-          .filter(isPublicOpportunity)
-          .map((opportunity) => getMatch(student, opportunity)),
-      )
-    ).sort((left, right) => right.match_score - left.match_score);
-
-    response.json({
-      student,
-      opportunities,
-      stats: {
-        matches: opportunities.filter(
-          (opportunity) => opportunity.match_score >= 50,
-        ).length,
-        opportunities: opportunities.length,
-      },
-    });
-  } catch (error) {
-    errorResponse(response, error, "Could not load graduate dashboard");
-  }
-});
-
-app.get("/api/employers/:employerId/dashboard", async (request, response) => {
-  try {
-    // Employer dashboards only use that employer's jobs, while candidate
-    // profiles are compared against those jobs to produce ranked matches.
-    const [employer, opportunitiesResponse, studentsResponse] =
-      await Promise.all([
-        getEmployer(request.params.employerId),
+app.get(
+  "/api/students/:studentId/dashboard",
+  requireAuth,
+  async (request, response) => {
+    try {
+      // Load the profile and public opportunities concurrently; neither query
+      // depends on the other, which reduces dashboard response time.
+      const [student, opportunitiesResponse] = await Promise.all([
+        getOwnedStudent(request.params.studentId, request.authUser.id),
         supabaseServer
           .from("opportunities")
-          .select("*")
-          .eq("employer_id", request.params.employerId)
+          .select("*, employers(company_name, website)")
           .order("created_at", { ascending: false }),
-        supabaseServer.from("students").select("*"),
       ]);
-    if (opportunitiesResponse.error) throw opportunitiesResponse.error;
-    if (studentsResponse.error) throw studentsResponse.error;
+      if (opportunitiesResponse.error) throw opportunitiesResponse.error;
 
-    const dashboardOpportunities =
-      opportunitiesResponse.data.filter(isPublicOpportunity);
-    const candidates = (
-      await Promise.all(
-        studentsResponse.data.map(async (student) => {
-          const matches = dashboardOpportunities.map((opportunity) =>
-            getMatch(student, opportunity),
-          );
-          const resolvedMatches = await Promise.all(matches);
-          const bestMatch = resolvedMatches.sort(
-            (left, right) => right.match_score - left.match_score,
-          )[0];
-          return {
-            ...student,
-            match_score: bestMatch?.match_score || 0,
-            matching_skills: bestMatch?.matching_skills || [],
-            missing_skills: bestMatch?.missing_skills || [],
-            reasoning: bestMatch?.reasoning || "",
-          };
-        }),
-      )
-    ).sort((left, right) => right.match_score - left.match_score);
+      // Groq is called for each student/opportunity pair, then the completed
+      // scores are sorted before they are returned to the browser.
+      const opportunities = (
+        await Promise.all(
+          opportunitiesResponse.data
+            .filter(isPublicOpportunity)
+            .map((opportunity) => getMatch(student, opportunity)),
+        )
+      ).sort((left, right) => right.match_score - left.match_score);
 
-    response.json({
-      employer,
-      opportunities: opportunitiesResponse.data,
-      candidates,
-      stats: {
-        active_jobs: opportunitiesResponse.data.length,
-        candidates: candidates.filter(
-          (candidate) => candidate.match_score >= 50,
-        ).length,
-      },
-    });
-  } catch (error) {
-    errorResponse(response, error, "Could not load employer dashboard");
-  }
-});
+      response.json({
+        student,
+        opportunities,
+        stats: {
+          matches: opportunities.filter(
+            (opportunity) => opportunity.match_score >= 50,
+          ).length,
+          opportunities: opportunities.length,
+        },
+      });
+    } catch (error) {
+      errorResponse(response, error, "Could not load graduate dashboard");
+    }
+  },
+);
 
-app.post("/api/opportunities", async (request, response) => {
+app.get(
+  "/api/employers/:employerId/dashboard",
+  requireAuth,
+  async (request, response) => {
+    try {
+      // Employer dashboards only use that employer's jobs, while candidate
+      // profiles are compared against those jobs to produce ranked matches.
+      const [employer, opportunitiesResponse, studentsResponse] =
+        await Promise.all([
+          getOwnedEmployer(request.params.employerId, request.authUser.id),
+          supabaseServer
+            .from("opportunities")
+            .select("*")
+            .eq("employer_id", request.params.employerId)
+            .order("created_at", { ascending: false }),
+          supabaseServer.from("students").select("*"),
+        ]);
+      if (opportunitiesResponse.error) throw opportunitiesResponse.error;
+      if (studentsResponse.error) throw studentsResponse.error;
+
+      const dashboardOpportunities =
+        opportunitiesResponse.data.filter(isPublicOpportunity);
+      const candidates = (
+        await Promise.all(
+          studentsResponse.data.map(async (student) => {
+            const matches = dashboardOpportunities.map((opportunity) =>
+              getMatch(student, opportunity),
+            );
+            const resolvedMatches = await Promise.all(matches);
+            const bestMatch = resolvedMatches.sort(
+              (left, right) => right.match_score - left.match_score,
+            )[0];
+            return {
+              ...student,
+              match_score: bestMatch?.match_score || 0,
+              matching_skills: bestMatch?.matching_skills || [],
+              missing_skills: bestMatch?.missing_skills || [],
+              reasoning: bestMatch?.reasoning || "",
+            };
+          }),
+        )
+      ).sort((left, right) => right.match_score - left.match_score);
+
+      response.json({
+        employer,
+        opportunities: opportunitiesResponse.data,
+        candidates,
+        stats: {
+          active_jobs: opportunitiesResponse.data.length,
+          candidates: candidates.filter(
+            (candidate) => candidate.match_score >= 50,
+          ).length,
+        },
+      });
+    } catch (error) {
+      errorResponse(response, error, "Could not load employer dashboard");
+    }
+  },
+);
+
+app.post("/api/opportunities", requireAuth, async (request, response) => {
   const body = request.body || {};
   if (!body.jobTitle && !body.title) {
     return response.status(422).json({ error: "Job title is required." });
@@ -1306,6 +1646,7 @@ app.post("/api/opportunities", async (request, response) => {
       error: "An employer profile is required to publish an opportunity.",
     });
   }
+  await requireOwnedProfile("employers", employerId, request.authUser.id);
 
   const applicationUrl = coerceText(
     body.externalApplicationUrl ?? body.external_application_url,
@@ -1476,11 +1817,14 @@ app.post("/api/opportunities", async (request, response) => {
   });
 });
 
-app.use((_request, response) =>
-  // Unknown browser paths return the landing page; API paths are declared above
-  // and therefore never get mistaken for frontend navigation.
-  response.sendFile(path.join(__dirname, "../GraduRat/index.html")),
-);
+app.use((request, response) => {
+  // Never turn an unknown API request into an HTML page. This keeps frontend
+  // JSON parsing errors actionable when a route is misspelled or unavailable.
+  if (request.path.startsWith("/api/")) {
+    return response.status(404).json({ error: "API route not found." });
+  }
+  return response.sendFile(path.join(__dirname, "../GraduRat/index.html"));
+});
 
 export { app };
 

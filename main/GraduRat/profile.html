@@ -1,85 +1,86 @@
-<!DOCTYPE html>
+<!doctype html>
 
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
+    <title>Gradurat | Complete Your Profile</title>
 
-<title>Gradurat | Complete Your Profile</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
 
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-
-<style>
-
-    * {
+    <style>
+      * {
         margin: 0;
         padding: 0;
         box-sizing: border-box;
-    }
+      }
 
-    body {
-        font-family: 'Inter', sans-serif;
+      body {
+        font-family: "Inter", sans-serif;
         background: #05070d;
         color: white;
         min-height: 100vh;
-    }
+      }
 
-    /* NAVBAR */
+      /* NAVBAR */
 
-    .navbar {
+      .navbar {
         height: 80px;
         padding: 0 7%;
         display: flex;
         align-items: center;
         justify-content: space-between;
-        border-bottom: 1px solid rgba(255,255,255,0.08);
-    }
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      }
 
-    .brand img {
+      .brand img {
         width: 48px;
         height: 48px;
         object-fit: contain;
-    }
+      }
 
-    .home-link {
+      .home-link {
         color: #aab3c5;
         text-decoration: none;
         font-size: 14px;
-    }
+      }
 
-    .home-link:hover {
+      .home-link:hover {
         color: #258cff;
-    }
+      }
 
-    /* PAGE */
+      /* PAGE */
 
-    .page {
+      .page {
         width: 90%;
         max-width: 1000px;
         margin: 50px auto;
-    }
+      }
 
-    .page-heading {
+      .page-heading {
         margin-bottom: 35px;
-    }
+      }
 
-    .page-heading h1 {
+      .page-heading h1 {
         font-size: 32px;
         margin-bottom: 10px;
-    }
+      }
 
-    .page-heading p {
+      .page-heading p {
         color: #8994a8;
         line-height: 1.6;
         font-size: 14px;
-    }
+      }
 
-    /* PROFILE HEADER */
+      /* PROFILE HEADER */
 
-    .profile-header {
+      .profile-header {
         background: #0c101b;
         border: 1px solid #202a3d;
         border-radius: 18px;
@@ -88,13 +89,13 @@
         align-items: center;
         gap: 25px;
         margin-bottom: 25px;
-    }
+      }
 
-    .photo-section {
+      .photo-section {
         text-align: center;
-    }
+      }
 
-    .profile-photo {
+      .profile-photo {
         width: 110px;
         height: 110px;
         border-radius: 50%;
@@ -102,126 +103,126 @@
         background: #080c15;
         object-fit: cover;
         display: block;
-    }
+      }
 
-    .photo-button {
+      .photo-button {
         display: inline-block;
         margin-top: 12px;
         color: #258cff;
         font-size: 12px;
         cursor: pointer;
-    }
+      }
 
-    #photoInput {
+      #photoInput {
         display: none;
-    }
+      }
 
-    .user-info h2 {
+      .user-info h2 {
         font-size: 24px;
         margin-bottom: 8px;
-    }
+      }
 
-    .user-info p {
+      .user-info p {
         color: #8994a8;
         font-size: 14px;
         margin-bottom: 5px;
-    }
+      }
 
-    .role-badge {
+      .role-badge {
         display: inline-block;
         margin-top: 8px;
         padding: 6px 12px;
         border-radius: 20px;
-        background: rgba(37,140,255,0.1);
+        background: rgba(37, 140, 255, 0.1);
         color: #258cff;
         font-size: 12px;
         font-weight: 600;
-    }
+      }
 
-    /* COMPLETION */
+      /* COMPLETION */
 
-    .completion {
+      .completion {
         background: #0c101b;
         border: 1px solid #202a3d;
         border-radius: 18px;
         padding: 25px;
         margin-bottom: 25px;
-    }
+      }
 
-    .completion-top {
+      .completion-top {
         display: flex;
         justify-content: space-between;
         margin-bottom: 12px;
         font-size: 13px;
-    }
+      }
 
-    .completion-top span:last-child {
+      .completion-top span:last-child {
         color: #258cff;
         font-weight: 700;
-    }
+      }
 
-    .progress-bar {
+      .progress-bar {
         height: 7px;
         background: #1a2232;
         border-radius: 10px;
         overflow: hidden;
-    }
+      }
 
-    .progress {
+      .progress {
         width: 20%;
         height: 100%;
         background: #258cff;
         border-radius: 10px;
         transition: 0.3s;
-    }
+      }
 
-    /* SECTIONS */
+      /* SECTIONS */
 
-    .section {
+      .section {
         background: #0c101b;
         border: 1px solid #202a3d;
         border-radius: 18px;
         padding: 30px;
         margin-bottom: 25px;
-    }
+      }
 
-    .section h2 {
+      .section h2 {
         font-size: 20px;
         margin-bottom: 8px;
-    }
+      }
 
-    .section-description {
+      .section-description {
         color: #7f899d;
         font-size: 13px;
         margin-bottom: 25px;
-    }
+      }
 
-    /* FORM */
+      /* FORM */
 
-    .form-grid {
+      .form-grid {
         display: grid;
         grid-template-columns: 1fr 1fr;
         gap: 20px;
-    }
+      }
 
-    .form-group {
+      .form-group {
         margin-bottom: 20px;
-    }
+      }
 
-    .form-group.full {
+      .form-group.full {
         grid-column: 1 / -1;
-    }
+      }
 
-    label {
+      label {
         display: block;
         font-size: 13px;
         font-weight: 600;
         margin-bottom: 8px;
-    }
+      }
 
-    input,
-    textarea,
-    select {
+      input,
+      textarea,
+      select {
         width: 100%;
         padding: 14px;
         border-radius: 10px;
@@ -231,609 +232,447 @@
         outline: none;
         font-family: inherit;
         font-size: 13px;
-    }
+      }
 
-    input:focus,
-    textarea:focus,
-    select:focus {
+      input:focus,
+      textarea:focus,
+      select:focus {
         border-color: #258cff;
-    }
+      }
 
-    textarea {
+      textarea {
         min-height: 120px;
         resize: vertical;
-    }
+      }
 
-    /* FILE UPLOAD */
+      /* FILE UPLOAD */
 
-    .file-upload {
+      .file-upload {
         border: 1px dashed #33415b;
         background: #080c15;
         padding: 25px;
         border-radius: 12px;
         text-align: center;
-    }
+      }
 
-    .file-upload p {
+      .file-upload p {
         color: #7f899d;
         font-size: 12px;
         margin-bottom: 12px;
-    }
+      }
 
-    .file-label {
+      .file-label {
         display: inline-block;
         padding: 10px 18px;
-        background: rgba(37,140,255,0.1);
+        background: rgba(37, 140, 255, 0.1);
         color: #258cff;
         border-radius: 8px;
         font-size: 12px;
         cursor: pointer;
-    }
+      }
 
-    .file-label:hover {
-        background: rgba(37,140,255,0.18);
-    }
+      .file-label:hover {
+        background: rgba(37, 140, 255, 0.18);
+      }
 
-    input[type="file"] {
+      input[type="file"] {
         display: none;
-    }
+      }
 
-    .file-name {
+      .file-name {
         margin-top: 10px;
         color: #aab3c5;
         font-size: 12px;
-    }
+      }
 
-    /* TAGS */
+      /* TAGS */
 
-    .tag-input {
+      .tag-input {
         display: flex;
         gap: 10px;
-    }
+      }
 
-    .tag-input input {
+      .tag-input input {
         flex: 1;
-    }
+      }
 
-    .add-btn {
+      .add-btn {
         padding: 0 18px;
         border: 1px solid #258cff;
         background: transparent;
         color: #258cff;
         border-radius: 10px;
         cursor: pointer;
-    }
+      }
 
-    .add-btn:hover {
-        background: rgba(37,140,255,0.1);
-    }
+      .add-btn:hover {
+        background: rgba(37, 140, 255, 0.1);
+      }
 
-    .tags {
+      .tags {
         display: flex;
         flex-wrap: wrap;
         gap: 8px;
         margin-top: 15px;
-    }
+      }
 
-    .tag {
-        background: rgba(37,140,255,0.1);
+      .tag {
+        background: rgba(37, 140, 255, 0.1);
         color: #7dbbff;
-        border: 1px solid rgba(37,140,255,0.25);
+        border: 1px solid rgba(37, 140, 255, 0.25);
         padding: 7px 10px;
         border-radius: 20px;
         font-size: 11px;
-    }
+      }
 
-    /* BUTTONS */
+      /* BUTTONS */
 
-    .actions {
+      .actions {
         display: flex;
         justify-content: flex-end;
         gap: 15px;
         margin-top: 10px;
-    }
+      }
 
-    .btn {
+      .btn {
         padding: 14px 25px;
         border-radius: 10px;
         text-decoration: none;
         font-size: 13px;
         font-weight: 700;
         cursor: pointer;
-    }
+      }
 
-    .btn-secondary {
+      .btn-secondary {
         border: 1px solid #263044;
         color: #aab3c5;
         background: transparent;
-    }
+      }
 
-    .btn-primary {
+      .btn-primary {
         border: none;
         color: white;
         background: #258cff;
-    }
+      }
 
-    .btn-primary:hover {
+      .btn-primary:hover {
         background: #1478e8;
-    }
+      }
 
-    /* RESPONSIVE */
+      /* RESPONSIVE */
 
-    @media (max-width: 700px) {
-
+      @media (max-width: 700px) {
         .navbar {
-            padding: 0 5%;
+          padding: 0 5%;
         }
 
         .page {
-            width: 94%;
-            margin-top: 35px;
+          width: 94%;
+          margin-top: 35px;
         }
 
         .profile-header {
-            flex-direction: column;
-            text-align: center;
+          flex-direction: column;
+          text-align: center;
         }
 
         .form-grid {
-            grid-template-columns: 1fr;
+          grid-template-columns: 1fr;
         }
 
         .form-group.full {
-            grid-column: auto;
+          grid-column: auto;
         }
 
         .actions {
-            flex-direction: column;
+          flex-direction: column;
         }
 
         .btn {
-            text-align: center;
+          text-align: center;
         }
+      }
+    </style>
+    ```
+  </head>
 
-    }
+  <body>
+    ```
+    <!-- NAVIGATION -->
 
-</style>
-```
+    <nav class="navbar">
+      <a href="index.html" class="brand">
+        <img src="logo1.jpg" alt="Gradurat Logo" />
+      </a>
 
-</head>
+      <a href="index.html" class="home-link"> Back to Home </a>
+    </nav>
 
-<body>
+    <main class="page">
+      <!-- HEADING -->
 
-```
-<!-- NAVIGATION -->
-
-<nav class="navbar">
-
-    <a href="index.html" class="brand">
-        <img src="logo1.jpg" alt="Gradurat Logo">
-    </a>
-
-    <a href="index.html" class="home-link">
-        Back to Home
-    </a>
-
-</nav>
-
-
-<main class="page">
-
-    <!-- HEADING -->
-
-    <div class="page-heading">
-
+      <div class="page-heading">
         <h1>Complete Your Profile</h1>
 
         <p>
-            Tell Gradurat more about yourself so we can help
-            you discover the right career opportunities.
+          Tell Gradurat more about yourself so we can help you discover the
+          right career opportunities.
         </p>
+      </div>
 
-    </div>
+      <!-- PROFILE HEADER -->
 
-
-    <!-- PROFILE HEADER -->
-
-    <section class="profile-header">
-
+      <section class="profile-header">
         <div class="photo-section">
+          <img
+            id="profilePhoto"
+            class="profile-photo"
+            src=""
+            alt="Profile Photo"
+          />
 
-            <img
-                id="profilePhoto"
-                class="profile-photo"
-                src=""
-                alt="Profile Photo"
-            >
+          <label for="photoInput" class="photo-button"> Upload Photo </label>
 
-            <label
-                for="photoInput"
-                class="photo-button"
-            >
-                Upload Photo
-            </label>
-
-            <input
-                type="file"
-                id="photoInput"
-                accept="image/*"
-            >
-
+          <input type="file" id="photoInput" accept="image/*" />
         </div>
-
 
         <div class="user-info">
+          <h2 id="displayName">Your Name</h2>
 
-            <h2 id="displayName">
-                Your Name
-            </h2>
+          <p id="displayEmail">your@email.com</p>
 
-            <p id="displayEmail">
-                your@email.com
-            </p>
-
-            <span
-                id="displayRole"
-                class="role-badge"
-            >
-                Role
-            </span>
-
+          <span id="displayRole" class="role-badge"> Role </span>
         </div>
+      </section>
 
-    </section>
+      <!-- COMPLETION -->
 
-
-    <!-- COMPLETION -->
-
-    <section class="completion">
-
+      <section class="completion">
         <div class="completion-top">
+          <span> Profile Completion </span>
 
-            <span>
-                Profile Completion
-            </span>
-
-            <span id="completionText">
-                20%
-            </span>
-
+          <span id="completionText"> 20% </span>
         </div>
 
         <div class="progress-bar">
-
-            <div
-                class="progress"
-                id="progressBar"
-            ></div>
-
+          <div class="progress" id="progressBar"></div>
         </div>
+      </section>
 
-    </section>
+      <!-- PERSONAL / PROFESSIONAL -->
 
-
-    <!-- PERSONAL / PROFESSIONAL -->
-
-    <section class="section">
-
+      <section class="section">
         <h2>Professional Information</h2>
 
         <p class="section-description">
-            Add information that will help Gradurat understand
-            your professional background.
+          Add information that will help Gradurat understand your professional
+          background.
         </p>
 
-
         <div class="form-grid">
+          <div class="form-group">
+            <label for="qualification"> Qualification </label>
 
-            <div class="form-group">
+            <input
+              type="text"
+              id="qualification"
+              placeholder="Example: Bachelor of Information Technology"
+            />
+          </div>
 
-                <label for="qualification">
-                    Qualification
-                </label>
+          <div class="form-group">
+            <label for="institution"> Institution </label>
 
-                <input
-                    type="text"
-                    id="qualification"
-                    placeholder="Example: Bachelor of Information Technology"
-                >
+            <input
+              type="text"
+              id="institution"
+              placeholder="School, college or university"
+            />
+          </div>
 
-            </div>
+          <div class="form-group">
+            <label for="field"> Field of Study </label>
 
+            <input
+              type="text"
+              id="field"
+              placeholder="Example: Information Technology"
+            />
+          </div>
 
-            <div class="form-group">
+          <div class="form-group">
+            <label for="experience"> Experience </label>
 
-                <label for="institution">
-                    Institution
-                </label>
-
-                <input
-                    type="text"
-                    id="institution"
-                    placeholder="School, college or university"
-                >
-
-            </div>
-
-
-            <div class="form-group">
-
-                <label for="field">
-                    Field of Study
-                </label>
-
-                <input
-                    type="text"
-                    id="field"
-                    placeholder="Example: Information Technology"
-                >
-
-            </div>
-
-
-            <div class="form-group">
-
-                <label for="experience">
-                    Experience
-                </label>
-
-                <input
-                    type="text"
-                    id="experience"
-                    placeholder="Example: Internship, part-time work"
-                >
-
-            </div>
-
+            <input
+              type="text"
+              id="experience"
+              placeholder="Example: Internship, part-time work"
+            />
+          </div>
         </div>
+      </section>
 
-    </section>
+      <!-- CERTIFICATIONS -->
 
-
-    <!-- CERTIFICATIONS -->
-
-    <section class="section">
-
+      <section class="section">
         <h2>Certifications</h2>
 
         <p class="section-description">
-            Add any certifications you have. This section is optional.
+          Add any certifications you have. This section is optional.
         </p>
 
         <div class="tag-input">
+          <input
+            type="text"
+            id="certificationInput"
+            placeholder="Example: AWS Cloud Practitioner"
+          />
 
-            <input
-                type="text"
-                id="certificationInput"
-                placeholder="Example: AWS Cloud Practitioner"
-            >
-
-            <button
-                class="add-btn"
-                onclick="addCertification()"
-            >
-                Add
-            </button>
-
+          <button class="add-btn" onclick="addCertification()">Add</button>
         </div>
 
-        <div
-            class="tags"
-            id="certificationTags"
-        ></div>
+        <div class="tags" id="certificationTags"></div>
+      </section>
 
-    </section>
+      <!-- SKILLS -->
 
-
-    <!-- SKILLS -->
-
-    <section class="section">
-
+      <section class="section">
         <h2>Skills</h2>
 
-        <p class="section-description">
-            Add the skills you currently have.
-        </p>
+        <p class="section-description">Add the skills you currently have.</p>
 
         <div class="tag-input">
+          <input type="text" id="skillInput" placeholder="Example: Python" />
 
-            <input
-                type="text"
-                id="skillInput"
-                placeholder="Example: Python"
-            >
-
-            <button
-                class="add-btn"
-                onclick="addSkill()"
-            >
-                Add
-            </button>
-
+          <button class="add-btn" onclick="addSkill()">Add</button>
         </div>
 
-        <div
-            class="tags"
-            id="skillTags"
-        ></div>
+        <div class="tags" id="skillTags"></div>
+      </section>
 
-    </section>
+      <!-- INTERESTS -->
 
-
-    <!-- INTERESTS -->
-
-    <section class="section">
-
+      <section class="section">
         <h2>Interests</h2>
 
         <p class="section-description">
-            Tell us what areas or industries interest you.
+          Tell us what areas or industries interest you.
         </p>
 
         <div class="tag-input">
+          <input
+            type="text"
+            id="interestInput"
+            placeholder="Example: Software Development"
+          />
 
-            <input
-                type="text"
-                id="interestInput"
-                placeholder="Example: Software Development"
-            >
-
-            <button
-                class="add-btn"
-                onclick="addInterest()"
-            >
-                Add
-            </button>
-
+          <button class="add-btn" onclick="addInterest()">Add</button>
         </div>
 
-        <div
-            class="tags"
-            id="interestTags"
-        ></div>
+        <div class="tags" id="interestTags"></div>
+      </section>
 
-    </section>
+      <!-- CV -->
 
-
-    <!-- CV -->
-
-    <section class="section">
-
+      <section class="section">
         <h2>Your CV</h2>
 
         <p class="section-description">
-            Upload your CV so potential employers can view it
-            when you become a match.
+          Upload your CV so potential employers can view it when you become a
+          match.
         </p>
 
         <div class="file-upload">
+          <p>Upload your CV in PDF format.</p>
 
-            <p>
-                Upload your CV in PDF format.
-            </p>
+          <label for="cvInput" class="file-label"> Choose CV </label>
 
-            <label
-                for="cvInput"
-                class="file-label"
-            >
-                Choose CV
-            </label>
+          <input type="file" id="cvInput" accept=".pdf,.doc,.docx" />
 
-            <input
-                type="file"
-                id="cvInput"
-                accept=".pdf,.doc,.docx"
-            >
-
-            <div
-                class="file-name"
-                id="cvName"
-            ></div>
-
+          <div class="file-name" id="cvName"></div>
         </div>
+      </section>
 
-    </section>
+      <!-- CAREER GOALS -->
 
-
-    <!-- CAREER GOALS -->
-
-    <section class="section">
-
+      <section class="section">
         <h2>Career Goals</h2>
 
         <p class="section-description">
-            Tell Gradurat what you hope to achieve.
+          Tell Gradurat what you hope to achieve.
         </p>
 
         <div class="form-group">
-
-            <textarea
-                id="careerGoals"
-                placeholder="Example: I want to become a full-stack developer and work on technology that solves real-world problems."
-            ></textarea>
-
+          <textarea
+            id="careerGoals"
+            placeholder="Example: I want to become a full-stack developer and work on technology that solves real-world problems."
+          ></textarea>
         </div>
+      </section>
 
-    </section>
+      <!-- ACTIONS -->
 
+      <div class="actions">
+        <a href="index.html" class="btn btn-secondary"> Complete Later </a>
 
-    <!-- ACTIONS -->
-
-    <div class="actions">
-
-        <a
-            href="index.html"
-            class="btn btn-secondary"
-        >
-            Complete Later
-        </a>
-
-        <button
-            class="btn btn-primary"
-            onclick="saveProfile()"
-        >
-            Save Profile
+        <button class="btn btn-primary" onclick="saveProfile()">
+          Save Profile
         </button>
+      </div>
+    </main>
 
-    </div>
-
-</main>
-
-
-
-<script>
-document.addEventListener("DOMContentLoaded", function () {
-
-    /* =========================
+    <script src="auth-client.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        /* =========================
        LOAD REGISTRATION DETAILS
     ========================= */
 
-    const savedUser = localStorage.getItem("graduratUser");
+        const savedUser = localStorage.getItem("graduratUser");
 
-    if (!savedUser) {
-        alert("No registration information found. Please create an account first.");
-        window.location.href = "register.html";
-        return;
-    }
+        if (!savedUser) {
+          alert(
+            "No registration information found. Please create an account first.",
+          );
+          window.location.href = "register.html";
+          return;
+        }
 
-    const user = JSON.parse(savedUser);
+        const user = JSON.parse(savedUser);
 
-    // Display the information from registration
-    const profileName = document.getElementById("profileName");
-    const profileEmail = document.getElementById("profileEmail");
-    const profileRole = document.getElementById("profileRole");
+        // Display the information from registration
+        const profileName = document.getElementById("profileName");
+        const profileEmail = document.getElementById("profileEmail");
+        const profileRole = document.getElementById("profileRole");
 
-    if (profileName) {
-        profileName.textContent = user.fullName;
-    }
+        if (profileName) {
+          profileName.textContent = user.fullName;
+        }
 
-    if (profileEmail) {
-        profileEmail.textContent = user.email;
-    }
+        if (profileEmail) {
+          profileEmail.textContent = user.email;
+        }
 
-    if (profileRole) {
-        profileRole.textContent =
+        if (profileRole) {
+          profileRole.textContent =
             user.role.charAt(0).toUpperCase() + user.role.slice(1);
-    }
+        }
 
-
-    /* =========================
+        /* =========================
        PROFILE PHOTO
     ========================= */
 
-    const photoInput = document.getElementById("photoInput");
-    const profilePhoto = document.getElementById("profilePhoto");
+        const photoInput = document.getElementById("photoInput");
+        const profilePhoto = document.getElementById("profilePhoto");
 
-    let savedPhoto = localStorage.getItem("graduratPhoto");
+        let savedPhoto = localStorage.getItem("graduratPhoto");
 
-    if (savedPhoto && profilePhoto) {
-        profilePhoto.src = savedPhoto;
-    }
+        if (savedPhoto && profilePhoto) {
+          profilePhoto.src = savedPhoto;
+        }
 
-    if (photoInput) {
-
-        photoInput.addEventListener("change", function () {
-
+        if (photoInput) {
+          photoInput.addEventListener("change", function () {
             const file = this.files[0];
 
             if (!file) return;
@@ -841,334 +680,264 @@ document.addEventListener("DOMContentLoaded", function () {
             const reader = new FileReader();
 
             reader.onload = function (event) {
+              if (profilePhoto) {
+                profilePhoto.src = event.target.result;
+              }
 
-                if (profilePhoto) {
-                    profilePhoto.src = event.target.result;
-                }
+              localStorage.setItem("graduratPhoto", event.target.result);
 
-                localStorage.setItem(
-                    "graduratPhoto",
-                    event.target.result
-                );
-
-                updateProgress();
+              updateProgress();
             };
 
             reader.readAsDataURL(file);
-        });
-    }
+          });
+        }
 
-
-    /* =========================
+        /* =========================
        TAG SYSTEM
     ========================= */
 
-    function setupTags(inputId, containerId) {
+        function setupTags(inputId, containerId) {
+          const input = document.getElementById(inputId);
+          const container = document.getElementById(containerId);
 
-        const input = document.getElementById(inputId);
-        const container = document.getElementById(containerId);
+          if (!input || !container) return;
 
-        if (!input || !container) return;
-
-        input.addEventListener("keydown", function (event) {
-
+          input.addEventListener("keydown", function (event) {
             if (event.key === "Enter") {
+              event.preventDefault();
 
-                event.preventDefault();
+              const value = input.value.trim();
 
-                const value = input.value.trim();
+              if (value === "") return;
 
-                if (value === "") return;
+              const tag = document.createElement("span");
 
-                const tag = document.createElement("span");
+              tag.className = "tag";
+              tag.textContent = value;
 
-                tag.className = "tag";
-                tag.textContent = value;
-
-                // Click a tag to remove it
-                tag.addEventListener("click", function () {
-
-                    tag.remove();
-
-                    updateProgress();
-
-                });
-
-                container.appendChild(tag);
-
-                input.value = "";
+              // Click a tag to remove it
+              tag.addEventListener("click", function () {
+                tag.remove();
 
                 updateProgress();
+              });
+
+              container.appendChild(tag);
+
+              input.value = "";
+
+              updateProgress();
             }
-        });
-    }
+          });
+        }
 
-    setupTags("skillInput", "skillsContainer");
+        setupTags("skillInput", "skillsContainer");
 
-    setupTags("interestInput", "interestsContainer");
+        setupTags("interestInput", "interestsContainer");
 
-    setupTags("certificationInput", "certificationsContainer");
+        setupTags("certificationInput", "certificationsContainer");
 
-
-    /* =========================
+        /* =========================
        CV UPLOAD
     ========================= */
 
-    const cvInput = document.getElementById("cvInput");
-    const cvName = document.getElementById("cvName");
+        const cvInput = document.getElementById("cvInput");
+        const cvName = document.getElementById("cvName");
 
-    if (cvInput) {
-
-        cvInput.addEventListener("change", function () {
-
+        if (cvInput) {
+          cvInput.addEventListener("change", function () {
             const file = this.files[0];
 
             if (!file) return;
 
             if (cvName) {
-                cvName.textContent = file.name;
+              cvName.textContent = file.name;
             }
 
             updateProgress();
-        });
-    }
+          });
+        }
 
-
-    /* =========================
+        /* =========================
        PROFILE PROGRESS
     ========================= */
 
-    function updateProgress() {
+        function updateProgress() {
+          let completed = 0;
+          let total = 7;
 
-        let completed = 0;
-        let total = 7;
+          const qualification = document.getElementById("qualification");
 
-        const qualification =
-            document.getElementById("qualification");
+          const institution = document.getElementById("institution");
 
-        const institution =
-            document.getElementById("institution");
+          const field = document.getElementById("field");
 
-        const field =
-            document.getElementById("field");
+          const experience = document.getElementById("experience");
 
-        const experience =
-            document.getElementById("experience");
+          const careerGoals = document.getElementById("careerGoals");
 
-        const careerGoals =
-            document.getElementById("careerGoals");
-
-
-        if (
-            qualification &&
-            qualification.value.trim() !== ""
-        ) {
+          if (qualification && qualification.value.trim() !== "") {
             completed++;
-        }
+          }
 
-
-        if (
-            institution &&
-            institution.value.trim() !== ""
-        ) {
+          if (institution && institution.value.trim() !== "") {
             completed++;
-        }
+          }
 
-
-        if (
-            field &&
-            field.value.trim() !== ""
-        ) {
+          if (field && field.value.trim() !== "") {
             completed++;
-        }
+          }
 
-
-        if (
-            experience &&
-            experience.value.trim() !== ""
-        ) {
+          if (experience && experience.value.trim() !== "") {
             completed++;
-        }
+          }
 
-
-        if (
+          if (
             document.getElementById("skillsContainer") &&
             document.getElementById("skillsContainer").children.length > 0
-        ) {
+          ) {
             completed++;
-        }
+          }
 
-
-        if (
+          if (
             document.getElementById("interestsContainer") &&
             document.getElementById("interestsContainer").children.length > 0
-        ) {
+          ) {
             completed++;
-        }
+          }
 
-
-        if (
-            careerGoals &&
-            careerGoals.value.trim() !== ""
-        ) {
+          if (careerGoals && careerGoals.value.trim() !== "") {
             completed++;
-        }
+          }
 
+          const percentage = Math.round((completed / total) * 100);
 
-        const percentage =
-            Math.round((completed / total) * 100);
+          const progressBar = document.getElementById("progressBar");
 
+          const progressText = document.getElementById("progressText");
 
-        const progressBar =
-            document.getElementById("progressBar");
-
-        const progressText =
-            document.getElementById("progressText");
-
-
-        if (progressBar) {
+          if (progressBar) {
             progressBar.style.width = percentage + "%";
+          }
+
+          if (progressText) {
+            progressText.textContent = percentage + "% Complete";
+          }
         }
 
-
-        if (progressText) {
-            progressText.textContent =
-                percentage + "% Complete";
-        }
-    }
-
-
-    /* =========================
+        /* =========================
        WATCH FORM CHANGES
     ========================= */
 
-    document
-        .querySelectorAll("input, textarea")
-        .forEach(function (element) {
+        document
+          .querySelectorAll("input, textarea")
+          .forEach(function (element) {
+            element.addEventListener("input", updateProgress);
+          });
 
-            element.addEventListener(
-                "input",
-                updateProgress
-            );
-
-        });
-
-
-    /* =========================
+        /* =========================
        SAVE PROFILE
     ========================= */
 
-    const profileForm =
-        document.getElementById("profileForm");
+        const profileForm = document.getElementById("profileForm");
 
+        if (profileForm) {
+          profileForm.addEventListener("submit", async function (event) {
+            event.preventDefault();
 
-    if (profileForm) {
+            const profile = {
+              // Registration information
+              fullName: user.fullName,
 
-        profileForm.addEventListener(
-            "submit",
-            function (event) {
+              email: user.email,
 
-                event.preventDefault();
+              role: user.role,
 
+              // Professional information
+              qualification:
+                document.getElementById("qualification")?.value || "",
 
-                const profile = {
+              institution: document.getElementById("institution")?.value || "",
 
-                    // Registration information
-                    fullName: user.fullName,
+              field: document.getElementById("field")?.value || "",
 
+              experience: document.getElementById("experience")?.value || "",
+
+              // Career goals
+              careerGoals: document.getElementById("careerGoals")?.value || "",
+
+              // CV
+              cvName: cvInput?.files[0]?.name || "",
+
+              // Skills
+              skills: Array.from(
+                document.querySelectorAll("#skillsContainer .tag"),
+              ).map(function (tag) {
+                return tag.textContent;
+              }),
+
+              // Interests
+              interests: Array.from(
+                document.querySelectorAll("#interestsContainer .tag"),
+              ).map(function (tag) {
+                return tag.textContent;
+              }),
+
+              // Certifications
+              certifications: Array.from(
+                document.querySelectorAll("#certificationsContainer .tag"),
+              ).map(function (tag) {
+                return tag.textContent;
+              }),
+            };
+
+            try {
+              const studentId = localStorage.getItem("graduRatStudentId");
+              if (!studentId || user.role === "employer") {
+                throw new Error("Your authenticated profile is not ready yet.");
+              }
+              const response = await graduratAuth.apiFetch(
+                `/api/students/${encodeURIComponent(studentId)}`,
+                {
+                  method: "PATCH",
+                  body: JSON.stringify({
+                    firstName: user.fullName.split(/\s+/)[0],
+                    lastName: user.fullName.split(/\s+/).slice(1).join(" "),
                     email: user.email,
-
-                    role: user.role,
-
-
-                    // Professional information
-                    qualification:
-                        document.getElementById("qualification")?.value || "",
-
-                    institution:
-                        document.getElementById("institution")?.value || "",
-
-                    field:
-                        document.getElementById("field")?.value || "",
-
-                    experience:
-                        document.getElementById("experience")?.value || "",
-
-
-                    // Career goals
-                    careerGoals:
-                        document.getElementById("careerGoals")?.value || "",
-
-
-                    // CV
-                    cvName:
-                        cvInput?.files[0]?.name || "",
-
-
-                    // Skills
-                    skills:
-                        Array.from(
-                            document.querySelectorAll(
-                                "#skillsContainer .tag"
-                            )
-                        ).map(function (tag) {
-                            return tag.textContent;
-                        }),
-
-
-                    // Interests
-                    interests:
-                        Array.from(
-                            document.querySelectorAll(
-                                "#interestsContainer .tag"
-                            )
-                        ).map(function (tag) {
-                            return tag.textContent;
-                        }),
-
-
-                    // Certifications
-                    certifications:
-                        Array.from(
-                            document.querySelectorAll(
-                                "#certificationsContainer .tag"
-                            )
-                        ).map(function (tag) {
-                            return tag.textContent;
-                        })
-                };
-
-
-                // Save complete profile
-                localStorage.setItem(
-                    "graduratProfile",
-                    JSON.stringify(profile)
+                    qualification: profile.qualification,
+                    location: document.getElementById("location")?.value || "",
+                    workExperienceSummary: profile.experience,
+                    skills: profile.skills,
+                    certifications: profile.certifications,
+                    projects: profile.interests,
+                    preferredOpportunityType: profile.careerGoals,
+                  }),
+                },
+              );
+              const result = await graduratAuth.readJson(
+                response,
+                "The profile response was not valid JSON.",
+              );
+              if (!response.ok)
+                throw new Error(
+                  result.error || "Your profile could not be saved.",
                 );
-
-
-                alert("Your profile has been saved!");
-
-
-                // For now, go to dashboard
-                window.location.href =
-                    "dashboard.html";
-
+              localStorage.setItem("graduratProfile", JSON.stringify(profile));
+              alert("Your profile has been saved!");
+              window.location.href = "dashboard.html";
+            } catch (error) {
+              alert(error.message);
             }
-        );
-    }
+          });
+        }
 
-
-    /* =========================
+        /* =========================
        INITIAL PROGRESS
     ========================= */
 
-    updateProgress();
-
-});
-</script>
-
-
-
-
-</body>
+        updateProgress();
+      });
+    </script>
+  </body>
 </html>
