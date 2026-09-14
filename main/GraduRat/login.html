@@ -325,24 +325,21 @@
               );
             }
             if (profile.student)
-              localStorage.setItem("graduRatStudentId", profile.student.id);
+              sessionStorage.setItem("graduRatStudentId", profile.student.id);
             if (profile.employer)
-              localStorage.setItem("graduRatEmployerId", profile.employer.id);
-            localStorage.setItem(
-              "graduratUser",
-              JSON.stringify({
-                fullName:
-                  profile.student?.full_name ||
-                  profile.employer?.company_name ||
-                  email,
+              sessionStorage.setItem("graduRatEmployerId", profile.employer.id);
+            graduratAuth.saveUser({
+              fullName:
+                profile.student?.full_name ||
+                profile.employer?.company_name ||
                 email,
-                role: profile.employer ? "employer" : "student",
-                studentId:
-                  profile.student?.id || pendingResult?.student?.id || null,
-                employerId:
-                  profile.employer?.id || pendingResult?.employer?.id || null,
-              }),
-            );
+              email,
+              role: profile.employer ? "employer" : "student",
+              studentId:
+                profile.student?.id || pendingResult?.student?.id || null,
+              employerId:
+                profile.employer?.id || pendingResult?.employer?.id || null,
+            });
             message.textContent = "Login successful!";
             message.className = "message success";
             message.style.display = "block";

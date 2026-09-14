@@ -413,6 +413,65 @@
         cursor: pointer;
       }
 
+      .match-filters {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-bottom: 22px;
+      }
+
+      .match-filters select,
+      .match-filters input {
+        min-height: 42px;
+        border: 1px solid var(--input-border);
+        border-radius: 9px;
+        background: var(--card-alt);
+        color: var(--text);
+        padding: 0 12px;
+        font: inherit;
+      }
+
+      .match-filters input {
+        flex: 1 1 220px;
+      }
+
+      .danger-btn {
+        flex: 1;
+        background: var(--danger-bg);
+        color: var(--danger-text);
+        border: 1px solid var(--danger-border);
+        padding: 11px 15px;
+        border-radius: 9px;
+        cursor: pointer;
+      }
+
+      .disabled-btn {
+        opacity: 0.55;
+        cursor: not-allowed;
+      }
+
+      .connection-advice {
+        margin: 18px 0;
+        padding: 14px;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        background: var(--card-alt2);
+      }
+
+      .connection-advice h3 {
+        margin: 0 0 8px;
+        color: var(--blue);
+        font-size: 12px;
+      }
+
+      .connection-advice ul {
+        margin: 0 0 12px;
+        padding-left: 18px;
+        color: var(--secondary-text);
+        font-size: 12px;
+        line-height: 1.6;
+      }
+
       /* ================= EMPTY ================= */
 
       .empty-state {
@@ -497,6 +556,8 @@
 
   <body>
     <script src="theme.js"></script>
+    <script src="auth-client.js"></script>
+    <script src="navigation.js"></script>
 
     <!-- ================= NAVBAR ================= -->
 
@@ -518,13 +579,6 @@
 
         <a href="settings.html"> Settings </a>
       </div>
-
-      <button
-        class="account-btn"
-        onclick="window.location.href = 'settings.html'"
-      >
-        Account
-      </button>
     </nav>
 
     <!-- ================= MAIN ================= -->
@@ -570,6 +624,18 @@
           <h2>Mutual Connections</h2>
 
           <p>Your mutual interests appear here.</p>
+        </div>
+
+        <div class="match-filters" aria-label="Filter matches">
+          <select
+            id="matchTypeFilter"
+            aria-label="Filter matches by profile type"
+          >
+            <option value="all">All matches</option>
+            <option value="student">Students</option>
+            <option value="employer">Employers</option>
+          </select>
+          <input id="matchSearch" type="search" placeholder="Search matches" />
         </div>
 
         <div id="matchesContainer" class="matches-grid">
@@ -984,7 +1050,8 @@
       // INITIALIZE
       // =========================================================
 
-      loadMatches();
+      window.legacyLoadMatches = loadMatches;
     </script>
+    <script src="matches.js"></script>
   </body>
 </html>

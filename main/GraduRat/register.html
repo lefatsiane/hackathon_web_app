@@ -1204,10 +1204,10 @@
               studentId: result.student?.id || null,
             };
 
-            localStorage.setItem("graduratUser", JSON.stringify(user));
+            graduratAuth.saveUser(user);
 
             if (result.student?.id) {
-              localStorage.setItem("graduRatStudentId", result.student.id);
+              sessionStorage.setItem("graduRatStudentId", result.student.id);
             }
 
             showMessage(
@@ -1310,10 +1310,10 @@
               employerId: result.employer?.id || null,
             };
 
-            localStorage.setItem("graduratUser", JSON.stringify(user));
+            graduratAuth.saveUser(user);
 
             if (result.employer?.id) {
-              localStorage.setItem("graduRatEmployerId", result.employer.id);
+              sessionStorage.setItem("graduRatEmployerId", result.employer.id);
             }
 
             showMessage(
@@ -1359,7 +1359,7 @@
               department: department,
             };
 
-            localStorage.setItem("graduratUser", JSON.stringify(user));
+            graduratAuth.saveUser(user);
 
             showMessage("Lecturer account created. Redirecting...", "success");
 

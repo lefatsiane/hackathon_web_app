@@ -571,6 +571,16 @@
         color: var(--muted-text);
 
         font-size: 12px;
+
+        min-height: 16px;
+      }
+
+      .save-status.success {
+        color: #087443;
+      }
+
+      .save-status.error {
+        color: #b42318;
       }
 
       .account-status {
@@ -703,6 +713,8 @@
   <body>
     <script src="theme.js"></script>
     <script src="auth-client.js"></script>
+    <script src="navigation.js"></script>
+    <script src="auth-client.js"></script>
     <!-- =========================
      NAVBAR
 ========================= -->
@@ -712,10 +724,6 @@
         <img src="logo1.jpg" alt="Gradurat Logo" />
 
         Gradurat
-      </a>
-
-      <a href="dashboard.html" class="back" id="backLink">
-        ← Back to Dashboard
       </a>
     </nav>
 
@@ -1379,11 +1387,21 @@
           <!-- SAVE -->
 
           <div class="save-bar">
-            <span class="save-status" id="saveStatus">
+            <span
+              class="save-status"
+              id="saveStatus"
+              role="status"
+              aria-live="polite"
+            >
               Changes are not saved yet.
             </span>
 
-            <button class="save-btn" onclick="saveSettings()">
+            <button
+              class="save-btn"
+              id="saveButton"
+              type="button"
+              onclick="saveSettings()"
+            >
               Save Changes
             </button>
           </div>
@@ -1433,16 +1451,16 @@
     ========================================== */
 
       function loadCurrentUser() {
-        const storedUser = localStorage.getItem("graduratUser");
+        const storedUser = graduratAuth.getUser();
 
-        if (!storedUser) {
+        if (!graduratAuth.getSession()?.access_token || !storedUser) {
           window.location.href = "login.html";
 
           return;
         }
 
         try {
-          currentUser = JSON.parse(storedUser);
+          currentUser = storedUser;
         } catch (error) {
           window.location.href = "login.html";
 
@@ -1455,8 +1473,6 @@
 
         if (currentUser.role === "employer") {
           document.getElementById("employerSettings").style.display = "block";
-
-          document.getElementById("backLink").href = "employer-dashboard.html";
         }
       }
 
@@ -1638,6 +1654,11 @@
           return;
         }
 
+        const saveButton = document.getElementById("saveButton");
+        saveButton.disabled = true;
+        saveButton.textContent = "Saving...";
+        setStatus("saveStatus", "Saving your changes...");
+
         const selectedTheme = document.querySelector(
           'input[name="theme"]:checked',
         );
@@ -1716,6 +1737,9 @@
         } catch (error) {
           setStatus("saveStatus", `Unsuccessful: ${error.message}`, true);
           return;
+        } finally {
+          saveButton.disabled = false;
+          saveButton.textContent = "Save Changes";
         }
 
         await maybeUpdateEmail();
@@ -1856,13 +1880,9 @@
           setStatus("dataStatus", "Successful: your account was deleted.");
 
           setTimeout(function () {
-            localStorage.removeItem("graduratLoggedIn");
-            localStorage.removeItem("graduratUser");
+            graduratAuth.clearAuth();
             localStorage.removeItem("graduratProfile");
             localStorage.removeItem("graduratPhoto");
-            localStorage.removeItem("graduRatStudentId");
-            localStorage.removeItem("graduRatEmployerId");
-            graduratAuth.saveSession(null);
             window.location.href = "index.html";
           }, 1200);
         } catch (error) {
@@ -1875,15 +1895,11 @@
     ========================================== */
 
       function logout() {
-        localStorage.removeItem("graduratLoggedIn");
-
-        localStorage.removeItem("graduratUser");
-
         localStorage.removeItem("graduratProfile");
 
         localStorage.removeItem("graduratPhoto");
 
-        graduratAuth.saveSession(null);
+        graduratAuth.clearAuth();
 
         window.location.href = "login.html";
       }

@@ -320,6 +320,25 @@
         gap: 8px;
       }
 
+      .achievement-list {
+        display: grid;
+        gap: 10px;
+      }
+
+      .achievement-item {
+        padding: 14px 16px;
+        border-left: 3px solid var(--blue);
+        background: var(--card-alt);
+        color: var(--secondary-text);
+        font-size: 14px;
+        line-height: 1.6;
+      }
+
+      .empty-data {
+        color: var(--muted-text);
+        font-size: 13px;
+      }
+
       .tag {
         background: var(--blue-light);
         border: 1px solid var(--blue-border);
@@ -444,6 +463,50 @@
         display: none;
       }
 
+      .employer-review {
+        margin-top: 22px;
+      }
+
+      .review-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 14px;
+      }
+
+      .review-item {
+        background: var(--card-alt);
+        border: 1px solid var(--input-border);
+        border-radius: 12px;
+        padding: 14px;
+      }
+
+      .review-item h3 {
+        font-size: 13px;
+        margin-bottom: 8px;
+      }
+
+      .review-item p,
+      .review-item li {
+        color: var(--secondary-text);
+        font-size: 13px;
+        line-height: 1.6;
+      }
+
+      .review-item ul {
+        padding-left: 18px;
+      }
+
+      .review-item a {
+        color: var(--blue-tint);
+        overflow-wrap: anywhere;
+      }
+
+      .review-note {
+        color: var(--muted-text);
+        font-size: 12px;
+        margin-top: 12px;
+      }
+
       /* ================= RESPONSIVE ================= */
 
       @media (max-width: 850px) {
@@ -496,6 +559,8 @@
 
   <body>
     <script src="theme.js"></script>
+    <script src="auth-client.js"></script>
+    <script src="navigation.js"></script>
     <!-- ================= NAVBAR ================= -->
 
     <nav>
@@ -531,11 +596,7 @@
           Something went wrong while retrieving this profile.
         </p>
 
-        <button
-          class="btn secondary-btn"
-          onclick="loadCandidate()"
-          style="margin-top: 20px"
-        >
+        <button class="btn secondary-btn" onclick="loadCandidate()">
           Try Again
         </button>
       </div>
@@ -571,11 +632,9 @@
           </div>
 
           <div class="match-box">
-            <div class="match-label">AI Match</div>
-
-            <div id="matchScore" class="match-score">--</div>
-
-            <div id="matchStatus" class="match-status">Awaiting analysis</div>
+            <div class="match-label">Candidate spotlight</div>
+            <div class="match-score">✦</div>
+            <div class="match-status">Share, learn, grow</div>
           </div>
         </div>
 
@@ -583,10 +642,10 @@
 
         <div class="content-grid">
           <div>
-            <!-- PROFESSIONAL INFORMATION -->
+            <!-- PUBLIC PROFILE -->
 
             <div class="card">
-              <h2>Professional Information</h2>
+              <h2>Profile Snapshot</h2>
 
               <div class="info-grid">
                 <div class="info-item">
@@ -595,7 +654,7 @@
                 </div>
 
                 <div class="info-item">
-                  <span>Institution</span>
+                  <span>Focus Areas</span>
                   <strong id="institution"> -- </strong>
                 </div>
 
@@ -608,7 +667,17 @@
                   <span>Experience</span>
                   <strong id="experience"> -- </strong>
                 </div>
+
+                <div class="info-item">
+                  <span>Graduation Year</span>
+                  <strong id="graduationYear"> -- </strong>
+                </div>
               </div>
+            </div>
+
+            <div class="card">
+              <h2>About This Candidate</h2>
+              <p id="bio">No profile story provided yet.</p>
             </div>
 
             <!-- SKILLS -->
@@ -627,29 +696,16 @@
               <div id="interests" class="tags"></div>
             </div>
 
-            <!-- CAREER GOALS -->
+            <!-- PROJECTS -->
 
             <div class="card">
-              <h2>Career Goals</h2>
-
-              <p id="careerGoals">--</p>
+              <h2>Projects & Achievements</h2>
+              <div id="projects" class="achievement-list"></div>
             </div>
 
-            <!-- AI MATCH -->
-
             <div class="card">
-              <h2>Why This Candidate Matches</h2>
-
-              <div id="matchReasons">
-                <div class="match-reason">
-                  <span class="reason-icon"> ✦ </span>
-
-                  <span>
-                    Match analysis will appear here once the backend AI analysis
-                    is complete.
-                  </span>
-                </div>
-              </div>
+              <h2>Certifications</h2>
+              <div id="certifications" class="tags"></div>
             </div>
           </div>
 
@@ -659,66 +715,31 @@
             <!-- EXPERIENCE -->
 
             <div class="card">
-              <h2>Experience</h2>
+              <h2>Work Experience</h2>
 
               <p id="experienceDetails">--</p>
             </div>
 
-            <!-- CV -->
-
             <div class="card">
-              <h2>CV</h2>
-
-              <div class="cv-box">
-                <div class="cv-status">
-                  <div class="lock-icon" id="cvIcon">🔒</div>
-
-                  <div>
-                    <strong id="cvTitle"> CV Locked </strong>
-
-                    <span id="cvDescription">
-                      CV access becomes available when permitted by Gradurat.
-                    </span>
-                  </div>
-                </div>
-
-                <button id="cvButton" class="btn disabled-btn" disabled>
-                  CV Locked
-                </button>
-              </div>
-            </div>
-
-            <!-- ACTIONS -->
-
-            <div class="card">
-              <h2>Professional Connection</h2>
+              <h2>Keep Inspiring Others</h2>
 
               <p>
-                Show interest in this candidate to start the connection process.
+                Every project, skill, and lesson can help another graduate take
+                their next step.
               </p>
-
-              <div class="actions">
-                <button
-                  class="btn primary-btn"
-                  id="interestBtn"
-                  onclick="showInterest()"
-                >
-                  💙 Interested
-                </button>
-
-                <button class="btn secondary-btn" onclick="goBack()">
-                  ← Go Back
-                </button>
-              </div>
-
-              <div id="connectionStatus" class="connection-status"></div>
             </div>
           </div>
         </div>
+
+        <section id="employerReview" class="card employer-review hidden">
+          <h2>Employer review</h2>
+          <div id="contactDetails" class="review-grid"></div>
+          <div id="aiAssessment" class="review-grid"></div>
+          <p id="reviewNote" class="review-note"></p>
+        </section>
       </section>
     </main>
 
-    <script src="auth-client.js"></script>
     <script>
       /* =========================================
            GET CANDIDATE ID
@@ -760,7 +781,9 @@
                     GET /api/candidates/:id
                 */
 
-          const response = await fetch(`/api/candidates/${candidateId}`);
+          const response = await graduratAuth.apiFetch(
+            `/api/candidates/${encodeURIComponent(candidateId)}`,
+          );
 
           if (!response.ok) {
             if (response.status === 404) {
@@ -773,9 +796,18 @@
             throw new Error("Failed to load candidate");
           }
 
-          const candidate = await response.json();
+          const result = await graduratAuth.readJson(
+            response,
+            "The candidate response was not valid JSON.",
+          );
+          if (!response.ok)
+            throw new Error(result.error || "Failed to load candidate");
 
-          renderCandidate(candidate);
+          renderCandidate(result.candidate);
+
+          if (graduratAuth.getUser()?.role === "employer") {
+            await loadEmployerReview();
+          }
 
           loadingState.classList.add("hidden");
           candidateContent.classList.remove("hidden");
@@ -790,19 +822,66 @@
         }
       }
 
+      async function loadEmployerReview() {
+        const review = document.getElementById("employerReview");
+        try {
+          const response = await graduratAuth.apiFetch(
+            `/api/candidates/${encodeURIComponent(candidateId)}/employer-review`,
+          );
+          const result = await graduratAuth.readJson(
+            response,
+            "The employer review response was not valid JSON.",
+          );
+          if (!response.ok)
+            throw new Error(result.error || "Review unavailable.");
+
+          const contact = result.contact || {};
+          const cv = result.cv || {};
+          document.getElementById("contactDetails").innerHTML = `
+            <div class="review-item"><h3>Contact details</h3><p>${escapeHtml(contact.email || "Email not provided")}</p><p>${escapeHtml(contact.phone || "Phone not provided")}</p></div>
+            <div class="review-item"><h3>Professional links</h3><p>${contact.linkedin_url ? `<a href="${escapeAttribute(contact.linkedin_url)}" target="_blank" rel="noopener">LinkedIn profile</a>` : "LinkedIn not provided"}</p><p>${contact.portfolio_url ? `<a href="${escapeAttribute(contact.portfolio_url)}" target="_blank" rel="noopener">Portfolio</a>` : "Portfolio not provided"}</p></div>
+            <div class="review-item"><h3>CV</h3><p>${cv.downloadable ? `<a href="${escapeAttribute(cv.url)}" target="_blank" rel="noopener">Open candidate CV</a>` : cv.available ? "CV download is disabled by the candidate." : "No CV uploaded yet."}</p></div>`;
+
+          const assessment = result.assessment;
+          document.getElementById("aiAssessment").innerHTML = assessment
+            ? `
+            <div class="review-item"><h3>Groq fit summary</h3><p>${escapeHtml(assessment.summary)}</p><p><strong>Fit score: ${escapeHtml(assessment.fit_score)}%</strong></p></div>
+            <div class="review-item"><h3>Strengths</h3><ul>${assessment.strengths.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul></div>
+            <div class="review-item"><h3>Gaps and next steps</h3><ul>${[...assessment.gaps, ...assessment.next_steps].map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul></div>`
+            : '<div class="review-item"><h3>Groq fit summary</h3><p>AI review is temporarily unavailable. The candidate details above are still available.</p></div>';
+          document.getElementById("reviewNote").textContent =
+            "Sensitive details are shown only because your employer account is connected to this candidate.";
+          review.classList.remove("hidden");
+        } catch (error) {
+          console.error(error);
+        }
+      }
+
+      function escapeHtml(value) {
+        return String(value ?? "")
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#039;");
+      }
+
+      function escapeAttribute(value) {
+        return escapeHtml(value).replace(/`/g, "&#096;");
+      }
+
       /* =========================================
            RENDER CANDIDATE
         ========================================= */
 
       function renderCandidate(candidate) {
         document.getElementById("candidateName").textContent =
-          candidate.name || "Candidate";
+          candidate.full_name || "Candidate";
 
         document.getElementById("candidateRole").textContent =
-          candidate.role || "";
+          candidate.qualification || "Graduate profile";
 
         document.getElementById("candidateMeta").textContent = [
-          candidate.email,
           candidate.location,
         ]
           .filter(Boolean)
@@ -812,72 +891,52 @@
           candidate.qualification || "Not provided";
 
         document.getElementById("institution").textContent =
-          candidate.institution || "Not provided";
+          candidate.skills?.slice(0, 2).join(", ") || "Not provided";
 
         document.getElementById("field").textContent =
-          candidate.field || "Not provided";
+          candidate.skills?.slice(2, 4).join(", ") || "Not provided";
 
         document.getElementById("experience").textContent =
-          candidate.experience || "Not provided";
+          candidate.work_experience_summary || "Not provided";
 
         document.getElementById("experienceDetails").textContent =
-          candidate.experienceDetails ||
-          candidate.experience ||
+          candidate.work_experience_summary ||
           "No experience information available.";
 
-        document.getElementById("careerGoals").textContent =
-          candidate.careerGoals || "No career goals provided.";
+        document.getElementById("graduationYear").textContent =
+          candidate.graduation_year || "Not provided";
+
+        document.getElementById("bio").textContent =
+          candidate.bio || "No profile story provided yet.";
 
         /* PHOTO */
 
         const photo = document.getElementById("candidatePhoto");
 
-        if (candidate.photo) {
-          photo.src = candidate.photo;
-        } else {
-          photo.src = "https://via.placeholder.com/120?text=Profile";
-        }
-
-        /* MATCH SCORE */
-
-        const score = document.getElementById("matchScore");
-
-        if (
-          candidate.matchScore !== null &&
-          candidate.matchScore !== undefined
-        ) {
-          score.textContent = `${candidate.matchScore}%`;
-
-          document.getElementById("matchStatus").textContent =
-            "AI compatibility score";
-        } else {
-          score.textContent = "--";
-
-          document.getElementById("matchStatus").textContent =
-            "Awaiting analysis";
-        }
+        photo.src =
+          candidate.profile_picture_url ||
+          "https://via.placeholder.com/120?text=Profile";
 
         /* SKILLS */
 
         renderTags("skills", candidate.skills);
+        renderTags("certifications", candidate.certifications);
+        renderAchievements("projects", candidate.projects);
+      }
 
-        /* INTERESTS */
-
-        renderTags("interests", candidate.interests);
-
-        /* MATCH REASONS */
-
-        renderMatchReasons(candidate.matchReasons);
-
-        /* CV */
-
-        loadCvAccess(candidateId);
-
-        /* CONNECTION STATUS */
-
-        if (candidate.connectionStatus) {
-          updateConnectionStatus(candidate.connectionStatus);
+      function renderAchievements(elementId, items) {
+        const container = document.getElementById(elementId);
+        container.innerHTML = "";
+        if (!Array.isArray(items) || items.length === 0) {
+          container.innerHTML = `<span style="color:var(--muted-text);font-size:13px;">Not provided</span>`;
+          return;
         }
+        items.forEach((item) => {
+          const achievement = document.createElement("div");
+          achievement.className = "achievement-item";
+          achievement.textContent = item;
+          container.appendChild(achievement);
+        });
       }
 
       /* =========================================
@@ -890,9 +949,7 @@
         container.innerHTML = "";
 
         if (!Array.isArray(tags) || tags.length === 0) {
-          container.innerHTML = `<span style="color:#666;font-size:13px;">
-                        Not provided
-                    </span>`;
+          container.innerHTML = '<span class="empty-data">Not provided</span>';
 
           return;
         }
@@ -906,196 +963,6 @@
 
           container.appendChild(span);
         });
-      }
-
-      /* =========================================
-           MATCH REASONS
-        ========================================= */
-
-      function renderMatchReasons(reasons) {
-        const container = document.getElementById("matchReasons");
-
-        container.innerHTML = "";
-
-        if (!Array.isArray(reasons) || reasons.length === 0) {
-          container.innerHTML = `
-                    <div class="match-reason">
-
-                        <span class="reason-icon">
-                            ✦
-                        </span>
-
-                        <span>
-                            Match analysis will appear here once the backend AI analysis is complete.
-                        </span>
-
-                    </div>
-                `;
-
-          return;
-        }
-
-        reasons.forEach((reason) => {
-          const div = document.createElement("div");
-
-          div.className = "match-reason";
-
-          div.innerHTML = `
-                    <span class="reason-icon">
-                        ✓
-                    </span>
-
-                    <span>
-                        ${escapeHTML(reason)}
-                    </span>
-                `;
-
-          container.appendChild(div);
-        });
-      }
-
-      /* =========================================
-           CV ACCESS
-        ========================================= */
-
-      async function loadCvAccess(studentId) {
-        const button = document.getElementById("cvButton");
-
-        const title = document.getElementById("cvTitle");
-
-        const description = document.getElementById("cvDescription");
-
-        const icon = document.getElementById("cvIcon");
-
-        const lockCv = (message) => {
-          title.textContent = "CV Locked";
-          description.textContent = message;
-          icon.textContent = "🔒";
-          button.textContent = "CV Locked";
-          button.className = "btn disabled-btn";
-          button.disabled = true;
-          button.onclick = null;
-        };
-
-        if (!studentId) {
-          lockCv("CV access becomes available when permitted by Gradurat.");
-          return;
-        }
-
-        try {
-          const response = await graduratAuth.apiFetch(
-            `/api/students/${encodeURIComponent(studentId)}/cv`,
-          );
-          const result = await graduratAuth.readJson(
-            response,
-            "The CV response was not valid JSON.",
-          );
-          if (!response.ok) {
-            lockCv(
-              result.error ||
-                "CV access becomes available when permitted by Gradurat.",
-            );
-            return;
-          }
-
-          title.textContent = "CV Available";
-          description.textContent =
-            "You have permission to view this candidate's CV.";
-          icon.textContent = "📄";
-          button.textContent = "View CV";
-          button.className = "btn primary-btn";
-          button.disabled = false;
-          button.onclick = function () {
-            window.open(result.cv_url, "_blank", "noopener");
-          };
-        } catch (error) {
-          lockCv(error.message);
-        }
-      }
-
-      /* =========================================
-           SHOW INTEREST
-        ========================================= */
-
-      async function showInterest() {
-        const button = document.getElementById("interestBtn");
-
-        const status = document.getElementById("connectionStatus");
-
-        button.disabled = true;
-        button.textContent = "Sending...";
-
-        try {
-          /*
-                    Backend endpoint:
-
-                    POST /api/candidates/:id/interest
-                */
-
-          const response = await fetch(
-            `/api/candidates/${candidateId}/interest`,
-            {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-            },
-          );
-
-          const result = await response.json();
-
-          if (!response.ok) {
-            throw new Error(result.message || "Unable to send interest");
-          }
-
-          updateConnectionStatus(
-            result.status || "Interest sent successfully.",
-          );
-
-          button.textContent = "Interest Sent ✓";
-        } catch (error) {
-          console.error(error);
-
-          status.style.display = "block";
-
-          status.textContent = error.message || "Something went wrong.";
-
-          button.disabled = false;
-
-          button.textContent = "💙 Interested";
-        }
-      }
-
-      /* =========================================
-           CONNECTION STATUS
-        ========================================= */
-
-      function updateConnectionStatus(message) {
-        const status = document.getElementById("connectionStatus");
-
-        status.textContent = message;
-
-        status.style.display = "block";
-      }
-
-      /* =========================================
-           BACK
-        ========================================= */
-
-      function goBack() {
-        window.history.back();
-      }
-
-      /* =========================================
-           SECURITY
-        ========================================= */
-
-      function escapeHTML(value) {
-        const div = document.createElement("div");
-
-        div.textContent = value;
-
-        return div.innerHTML;
       }
 
       /* =========================================

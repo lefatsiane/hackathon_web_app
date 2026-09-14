@@ -43,6 +43,13 @@ The project uses Node.js with ES modules, Express for HTTP/static serving, Supab
    database/004_applications.sql
    database/005_auth_ownership.sql
    database/006_profile_media.sql
+   database/007_settings.sql
+   database/008_cv_storage.sql
+   database/009_swipes.sql
+   database/010_connection_advice.sql
+   database/011_peer_matching.sql
+   database/012_candidate_order.sql
+   database/013_student_education_fields.sql
    ```
 5. Set the required values in `.env`:
    - `SUPABASE_URL` (the project URL, for example `https://your-project.supabase.co`; do not append `/rest/v1`)
@@ -71,6 +78,13 @@ The project adds new schema in versioned migration files after the applied initi
 - `database/004_applications.sql` – internal student applications for public opportunities
 - `database/005_auth_ownership.sql` – links profiles to Supabase Auth users
 - `database/006_profile_media.sql` – private profile-photo storage and avatar paths
+- `database/007_settings.sql` – private user settings and student phone numbers
+- `database/008_cv_storage.sql` – private PDF CV storage and student CV paths
+- `database/009_swipes.sql` – private swipe decisions and mutual swipe matches
+- `database/010_connection_advice.sql` – persisted Groq networking advice for mutual matches
+- `database/011_peer_matching.sql` – private student-to-student swipes and connections
+- `database/012_candidate_order.sql` – employer-controlled application ordering
+- `database/013_student_education_fields.sql` – institution and field of study profile fields
 
 Do not edit the already-applied initial migration. Create fresh migrations instead.
 
@@ -120,12 +134,20 @@ The backend keeps the existing public API shape while extending it with validati
 - `POST /api/matches/refresh` – manual score refresh for a student/opportunity pair
 - `POST /api/ai/feedback` – Groq profile coaching and two-sided fit assessment
 - `POST /api/opportunities/:opportunityId/applications` – submit an internal student application
+- `GET /api/fyp/queue` – load a ranked, unswiped FYP batch for a student or employer opportunity
+- `POST /api/fyp/swipes` – record a like/pass decision and detect mutual likes
+- `GET /api/matches` – list the authenticated user's mutual swipe matches
+- `DELETE /api/matches/:matchId` – dismiss a match for the authenticated participant
 - `GET /api/students/:studentId/applications` – list a student's applications
 - `GET /api/employers/:employerId/applications` – list applications for an employer's opportunities
 - `PATCH /api/applications/:applicationId` – update an employer-owned application status
 - `GET /api/me` – return the authenticated user and owned profile
+- `GET /api/settings` and `PUT /api/settings` – load and save account preferences
+- `GET /api/account/export` – download the authenticated user's data as CSV
+- `DELETE /api/account` – permanently delete the authenticated account and profile data
 - `POST /api/students/:studentId/avatar/upload-url` and `POST /api/employers/:employerId/avatar/upload-url` – issue ownership-checked upload URLs
 - `POST` and `DELETE` on the corresponding `/avatar` paths – commit or remove a profile photo
+- `POST`, `DELETE`, and `GET` on `/api/students/:studentId/cv` – manage or access a private PDF CV
 
 Public opportunity listings and detail responses exclude archived, closed, draft,
 and expired opportunities. Listing filters use `keyword`, `skills`, `location`,
@@ -167,7 +189,6 @@ The following remain intentionally unimplemented in this backend foundation:
 - Social connections and activity feed
 - Events and event registration
 - In-app notifications
-- CV or file uploads
 - Company logo uploads
 - Messaging or notifications
 - Background worker pipelines for matching

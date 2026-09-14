@@ -125,15 +125,6 @@
         color: var(--blue);
       }
 
-      .profile-button {
-        border: 1px solid rgba(22, 140, 255, 0.4);
-        background: var(--blue-light);
-        color: var(--text);
-        padding: 10px 16px;
-        border-radius: 10px;
-        cursor: pointer;
-      }
-
       /* ================= MAIN ================= */
 
       main {
@@ -500,6 +491,8 @@
 
   <body>
     <script src="theme.js"></script>
+    <script src="auth-client.js"></script>
+    <script src="navigation.js"></script>
     <!-- ================= NAVBAR ================= -->
 
     <nav>
@@ -514,13 +507,6 @@
         <a href="matches.html">Matches</a>
         <a href="settings.html">Settings</a>
       </div>
-
-      <button
-        class="profile-button"
-        onclick="window.location.href = 'settings.html'"
-      >
-        Account
-      </button>
     </nav>
 
     <!-- ================= MAIN ================= -->
@@ -712,6 +698,7 @@
       </section>
     </main>
 
+    <script src="auth-client.js"></script>
     <script>
       /*
     ============================================================
@@ -737,6 +724,14 @@
 
       const API_BASE = "/api";
 
+      const activeUser = graduratAuth.getUser();
+      if (
+        !graduratAuth.getSession()?.access_token ||
+        activeUser?.role !== "employer"
+      ) {
+        window.location.href = "login.html";
+      }
+
       // =========================================================
       // ERROR HANDLING
       // =========================================================
@@ -759,7 +754,9 @@
 
       async function loadCompanyProfile() {
         try {
-          const response = await fetch(`${API_BASE}/employer/profile`);
+          const response = await graduratAuth.apiFetch(
+            `${API_BASE}/employer/profile`,
+          );
 
           if (!response.ok) {
             throw new Error("Unable to load company information.");
@@ -806,7 +803,9 @@
         `;
 
         try {
-          const response = await fetch(`${API_BASE}/employer/jobs`);
+          const response = await graduratAuth.apiFetch(
+            `${API_BASE}/employer/jobs`,
+          );
 
           if (!response.ok) {
             throw new Error("Unable to load opportunities.");
@@ -976,7 +975,7 @@
           };
 
           try {
-            const response = await fetch(`${API_BASE}/jobs`, {
+            const response = await graduratAuth.apiFetch(`${API_BASE}/jobs`, {
               method: "POST",
 
               headers: {
@@ -1018,7 +1017,9 @@
         `;
 
         try {
-          const response = await fetch(`${API_BASE}/jobs/${jobId}/candidates`);
+          const response = await graduratAuth.apiFetch(
+            `${API_BASE}/jobs/${jobId}/candidates`,
+          );
 
           if (!response.ok) {
             throw new Error("Unable to load candidates.");
@@ -1176,9 +1177,12 @@
         if (!confirmed) return;
 
         try {
-          const response = await fetch(`${API_BASE}/jobs/${jobId}`, {
-            method: "DELETE",
-          });
+          const response = await graduratAuth.apiFetch(
+            `${API_BASE}/jobs/${jobId}`,
+            {
+              method: "DELETE",
+            },
+          );
 
           if (!response.ok) {
             throw new Error("Unable to delete opportunity.");
@@ -1284,6 +1288,5 @@
       initializeDashboard();
     </script>
   </body>
-  <script src="auth-client.js"></script>
   <script src="app.js"></script>
 </html>
