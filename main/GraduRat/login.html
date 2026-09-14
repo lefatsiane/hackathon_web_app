@@ -319,7 +319,7 @@
             );
             if (!profileResponse.ok)
               throw new Error(profile.error || "Could not load your profile.");
-            if (!profile.student && !profile.employer) {
+            if (!profile.student && !profile.employer && !profile.lecturer) {
               throw new Error(
                 "Your email is confirmed, but your profile is incomplete. Please register again to finish setup.",
               );
@@ -328,25 +328,41 @@
               sessionStorage.setItem("graduRatStudentId", profile.student.id);
             if (profile.employer)
               sessionStorage.setItem("graduRatEmployerId", profile.employer.id);
+                        if (profile.lecturer) {
+              sessionStorage.setItem("graduRatLecturerId", profile.lecturer.id);
+              localStorage.setItem("graduRatLecturerId", profile.lecturer.id);
+            }
+
             graduratAuth.saveUser({
               fullName:
                 profile.student?.full_name ||
                 profile.employer?.company_name ||
+                profile.lecturer?.full_name ||
                 email,
               email,
-              role: profile.employer ? "employer" : "student",
+              role: profile.lecturer
+                ? "lecturer"
+                : profile.employer
+                  ? "employer"
+                  : "student",
               studentId:
                 profile.student?.id || pendingResult?.student?.id || null,
               employerId:
                 profile.employer?.id || pendingResult?.employer?.id || null,
+              lecturerId: profile.lecturer?.id || null,
             });
+            
             message.textContent = "Login successful!";
             message.className = "message success";
             message.style.display = "block";
             setTimeout(() => {
-              window.location.href = profile.employer
-                ? "employer-dashboard.html"
-                : "dashboard.html";
+              if (profile.lecturer) {
+                window.location.href = "lecturer-dashboard.html";
+              } else if (profile.employer) {
+                window.location.href = "employer-dashboard.html";
+              } else {
+                window.location.href = "dashboard.html";
+              }
             }, 500);
           } catch (error) {
             message.textContent = error.message;
