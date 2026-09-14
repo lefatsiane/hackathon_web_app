@@ -195,6 +195,10 @@ const graduratAuth = (() => {
       sessionStorage.setItem("graduRatStudentId", result.student.id);
     if (result.employer)
       sessionStorage.setItem("graduRatEmployerId", result.employer.id);
+    if (result.lecturer) {
+      sessionStorage.setItem("graduRatLecturerId", result.lecturer.id);
+      localStorage.setItem("graduRatLecturerId", result.lecturer.id);
+    }
     return result;
   };
 
