@@ -1211,12 +1211,12 @@
             }
 
             showMessage(
-              "Account created successfully! Redirecting...",
+              "Account created! Finish setting up your profile...",
               "success",
             );
 
             setTimeout(() => {
-              window.location.href = "dashboard.html";
+              window.location.href = "profile.html?onboarding=1";
             }, 800);
 
             return;
@@ -1317,12 +1317,12 @@
             }
 
             showMessage(
-              "Employer account created successfully! Redirecting...",
+              "Account created! Finish setting up your profile...",
               "success",
             );
 
             setTimeout(() => {
-              window.location.href = "employer-dashboard.html";
+              window.location.href = "profile.html?onboarding=1";
             }, 800);
 
             return;
@@ -1338,7 +1338,7 @@
            * database table/API is added.
            */
 
-          if (role === "lecturer") {
+                    if (role === "lecturer") {
             const institution = document
               .getElementById("lecturerInstitution")
               .value.trim();
@@ -1347,21 +1347,63 @@
               .getElementById("department")
               .value.trim();
 
+            const payload = {
+              fullName: `${firstName} ${lastName}`,
+              email: email,
+              institution: institution,
+              department: department,
+            };
+
+            const authResult = await graduratAuth.signUp(email, password);
+            if (!authResult.access_token) {
+              graduratAuth.setPendingProfile({
+                endpoint: "/api/lecturers",
+                payload,
+              });
+              showMessage(
+                "Account created. Check your email to confirm your account, then sign in to finish setting up.",
+                "success",
+              );
+              submitButton.disabled = false;
+              submitButton.textContent = "Create Account";
+              return;
+            }
+
+            graduratAuth.saveSession(authResult);
+
+            const response = await graduratAuth.apiFetch("/api/lecturers", {
+              method: "POST",
+              body: JSON.stringify(payload),
+            });
+
+            const result = await graduratAuth.readJson(
+              response,
+              "The lecturer profile response was not valid JSON.",
+            );
+
+            if (!response.ok) {
+              throw new Error(result.error || "Could not create lecturer account.");
+            }
+
             const user = {
               fullName: `${firstName} ${lastName}`,
-
               email: email,
-
               role: "lecturer",
-
               institution: institution,
-
               department: department,
             };
 
             graduratAuth.saveUser(user);
 
-            showMessage("Lecturer account created. Redirecting...", "success");
+            if (result.lecturer?.id) {
+              sessionStorage.setItem("graduRatLecturerId", result.lecturer.id);
+              localStorage.setItem("graduRatLecturerId", result.lecturer.id);
+            }
+
+            showMessage(
+              "Lecturer account created successfully! Redirecting...",
+              "success",
+            );
 
             setTimeout(() => {
               window.location.href = "lecturer-dashboard.html";
