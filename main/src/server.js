@@ -4074,6 +4074,7 @@ app.patch("/api/notifications/:notificationId/read", requireAuth, async (request
   }
   response.json({ ok: true });
 });
+
 app.use((request, response) => {
   // Never turn an unknown API request into an HTML page. This keeps frontend
   // JSON parsing errors actionable when a route is misspelled or unavailable.
