@@ -1,0 +1,1230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Gradurat | Admin Dashboard</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: #050914;
+            color: white;
+            min-height: 100vh;
+        }
+
+        /* ================= SIDEBAR ================= */
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 245px;
+            height: 100vh;
+            background: #081226;
+            border-right: 1px solid #172544;
+            padding: 25px 15px;
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: bold;
+            padding-left: 15px;
+            margin-bottom: 35px;
+        }
+
+        .logo span {
+            color: #2774ff;
+        }
+
+        .admin-label {
+            color: #71809d;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 0 15px;
+            margin-bottom: 10px;
+        }
+
+        .nav-item {
+            display: block;
+            text-decoration: none;
+            color: #9ba9c2;
+            padding: 13px 15px;
+            margin-bottom: 6px;
+            border-radius: 9px;
+            font-size: 14px;
+            transition: 0.2s;
+        }
+
+        .nav-item:hover,
+        .nav-item.active {
+            background: #102653;
+            color: white;
+        }
+
+        .logout {
+            position: absolute;
+            bottom: 25px;
+            left: 15px;
+            right: 15px;
+            color: #ff7777;
+        }
+
+        /* ================= MAIN ================= */
+
+        .main {
+            margin-left: 245px;
+            padding: 30px;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .topbar h1 {
+            font-size: 30px;
+            margin-bottom: 7px;
+        }
+
+        .topbar p {
+            color: #7f8da7;
+        }
+
+        .admin-profile {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .admin-avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: #2774ff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        /* ================= STATS ================= */
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 18px;
+            margin-bottom: 25px;
+        }
+
+        .stat-card {
+            background: #09152b;
+            border: 1px solid #172544;
+            border-radius: 14px;
+            padding: 22px;
+        }
+
+        .stat-title {
+            color: #8491aa;
+            font-size: 13px;
+            margin-bottom: 12px;
+        }
+
+        .stat-number {
+            font-size: 31px;
+            font-weight: bold;
+        }
+
+        /* ================= CONTENT ================= */
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+        }
+
+        .card {
+            background: #09152b;
+            border: 1px solid #172544;
+            border-radius: 14px;
+            padding: 22px;
+            margin-bottom: 20px;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .card-header h2 {
+            font-size: 19px;
+        }
+
+        .view-all {
+            color: #4d8cff;
+            text-decoration: none;
+            font-size: 13px;
+        }
+
+        /* ================= TABLE ================= */
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            text-align: left;
+            color: #71809d;
+            font-size: 12px;
+            text-transform: uppercase;
+            padding: 12px;
+            border-bottom: 1px solid #1b2a47;
+        }
+
+        td {
+            padding: 14px 12px;
+            border-bottom: 1px solid #14233d;
+            font-size: 13px;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        .user-name {
+            font-weight: bold;
+        }
+
+        .user-email {
+            color: #74839e;
+            font-size: 12px;
+            margin-top: 4px;
+        }
+
+        /* ================= BADGES ================= */
+
+        .badge {
+            display: inline-block;
+            padding: 5px 9px;
+            border-radius: 20px;
+            font-size: 11px;
+        }
+
+        .badge-student {
+            background: #102d57;
+            color: #70a9ff;
+        }
+
+        .badge-employer {
+            background: #243015;
+            color: #a8d85b;
+        }
+
+        .badge-published {
+            background: #123b2b;
+            color: #61dc9c;
+        }
+
+        .badge-draft {
+            background: #30280f;
+            color: #e0bb54;
+        }
+
+        .badge-closed {
+            background: #35171a;
+            color: #ff7777;
+        }
+
+        /* ================= QUICK ACTIONS ================= */
+
+        .action {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 13px;
+            background: #0c1930;
+            border: 1px solid #182844;
+            border-radius: 9px;
+            margin-bottom: 9px;
+            text-decoration: none;
+            color: white;
+            font-size: 13px;
+            transition: 0.2s;
+        }
+
+        .action:hover {
+            background: #102653;
+        }
+
+        .action-icon {
+            width: 34px;
+            height: 34px;
+            border-radius: 8px;
+            background: #172b50;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* ================= ACTIVITY ================= */
+
+        .activity {
+            display: flex;
+            gap: 12px;
+            padding: 13px 0;
+            border-bottom: 1px solid #16253f;
+        }
+
+        .activity:last-child {
+            border-bottom: none;
+        }
+
+        .activity-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #13284c;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .activity-text {
+            font-size: 13px;
+            color: #b4bfd1;
+        }
+
+        .activity-time {
+            font-size: 11px;
+            color: #697892;
+            margin-top: 4px;
+        }
+
+        /* ================= EMPTY / LOADING ================= */
+
+        .empty {
+            color: #71809d;
+            text-align: center;
+            padding: 25px;
+            font-size: 13px;
+        }
+
+        .error {
+            background: #35171a;
+            border: 1px solid #612328;
+            color: #ff9b9b;
+            padding: 14px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        /* ================= RESPONSIVE ================= */
+
+        @media (max-width: 1000px) {
+
+            .stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 700px) {
+
+            .sidebar {
+                position: relative;
+                width: 100%;
+                height: auto;
+            }
+
+            .logout {
+                position: relative;
+                left: auto;
+                bottom: auto;
+            }
+
+            .main {
+                margin-left: 0;
+            }
+
+            .stats {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+
+<body>
+
+    <!-- ================= SIDEBAR ================= -->
+
+    <aside class="sidebar">
+
+        <div class="logo">
+            Gradu<span>Rat</span>
+        </div>
+
+        <div class="admin-label">
+            Administration
+        </div>
+
+        <a href="admin-dashboard.html" class="nav-item active">
+            🏠 Dashboard
+        </a>
+
+        <a href="#" class="nav-item">
+            🎓 Students
+        </a>
+
+        <a href="#" class="nav-item">
+            🎓 Graduates
+        </a>
+
+        <a href="#" class="nav-item">
+            🏢 Employers
+        </a>
+
+        <a href="lecturer-dashboard.html" class="nav-item">
+            👨‍🏫 Lecturers
+        </a>
+
+        <a href="#" class="nav-item">
+            💼 Job Posts
+        </a>
+
+        <a href="#" class="nav-item">
+            🤝 Matches
+        </a>
+
+        <a href="#" class="nav-item">
+            🚀 Projects
+        </a>
+
+        <a href="#" class="nav-item">
+            ⚙️ Settings
+        </a>
+
+        <a href="#" class="nav-item logout" id="logoutBtn">
+            ↪ Log Out
+        </a>
+
+    </aside>
+
+
+    <!-- ================= MAIN ================= -->
+
+    <main class="main">
+
+        <!-- TOP BAR -->
+
+        <div class="topbar">
+
+            <div>
+                <h1>Admin Dashboard</h1>
+                <p>Monitor and manage the Gradurat platform.</p>
+            </div>
+
+            <div class="admin-profile">
+
+                <div>
+                    <strong id="adminEmail">
+                        Administrator
+                    </strong>
+                </div>
+
+                <div class="admin-avatar">
+                    A
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- ERROR -->
+
+        <div class="error" id="errorMessage"></div>
+
+
+        <!-- ================= STATISTICS ================= -->
+
+        <section class="stats">
+
+            <div class="stat-card">
+
+                <div class="stat-title">
+                    Total Students
+                </div>
+
+                <div
+                    class="stat-number"
+                    id="studentCount">
+                    —
+                </div>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <div class="stat-title">
+                    Employers
+                </div>
+
+                <div
+                    class="stat-number"
+                    id="employerCount">
+                    —
+                </div>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <div class="stat-title">
+                    Job Opportunities
+                </div>
+
+                <div
+                    class="stat-number"
+                    id="opportunityCount">
+                    —
+                </div>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <div class="stat-title">
+                    AI Matches
+                </div>
+
+                <div
+                    class="stat-number"
+                    id="matchCount">
+                    —
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================= CONTENT ================= -->
+
+        <div class="content-grid">
+
+
+            <!-- LEFT SIDE -->
+
+            <div>
+
+                <!-- RECENT USERS -->
+
+                <div class="card">
+
+                    <div class="card-header">
+
+                        <h2>
+                            Recent Students
+                        </h2>
+
+                        <a href="#" class="view-all">
+                            View all
+                        </a>
+
+                    </div>
+
+
+                    <div
+                        class="table-container"
+                        id="studentsContainer">
+
+                        <div class="empty">
+                            Loading students...
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- RECENT JOBS -->
+
+                <div class="card">
+
+                    <div class="card-header">
+
+                        <h2>
+                            Recent Job Opportunities
+                        </h2>
+
+                        <a href="#" class="view-all">
+                            View all
+                        </a>
+
+                    </div>
+
+
+                    <div
+                        class="table-container"
+                        id="jobsContainer">
+
+                        <div class="empty">
+                            Loading opportunities...
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- RIGHT SIDE -->
+
+            <div>
+
+
+                <!-- QUICK ACTIONS -->
+
+                <div class="card">
+
+                    <div class="card-header">
+
+                        <h2>
+                            Quick Actions
+                        </h2>
+
+                    </div>
+
+
+                    <a href="#" class="action">
+
+                        <div class="action-icon">
+                            🎓
+                        </div>
+
+                        <span>
+                            Manage Students
+                        </span>
+
+                    </a>
+
+
+                    <a href="#" class="action">
+
+                        <div class="action-icon">
+                            🏢
+                        </div>
+
+                        <span>
+                            Manage Employers
+                        </span>
+
+                    </a>
+
+
+                    <a href="#" class="action">
+
+                        <div class="action-icon">
+                            💼
+                        </div>
+
+                        <span>
+                            Review Job Posts
+                        </span>
+
+                    </a>
+
+
+                    <a href="#" class="action">
+
+                        <div class="action-icon">
+                            👨‍🏫
+                        </div>
+
+                        <span>
+                            Manage Lecturers
+                        </span>
+
+                    </a>
+
+                </div>
+
+
+                <!-- RECENT ACTIVITY -->
+
+                <div class="card">
+
+                    <div class="card-header">
+
+                        <h2>
+                            Platform Overview
+                        </h2>
+
+                    </div>
+
+
+                    <div class="activity">
+
+                        <div class="activity-icon">
+                            🎓
+                        </div>
+
+                        <div>
+
+                            <div class="activity-text">
+                                Students registered on Gradurat
+                            </div>
+
+                            <div class="activity-time">
+                                Total in database
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="activity">
+
+                        <div class="activity-icon">
+                            🏢
+                        </div>
+
+                        <div>
+
+                            <div class="activity-text">
+                                Employers connected
+                            </div>
+
+                            <div class="activity-time">
+                                Total in database
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="activity">
+
+                        <div class="activity-icon">
+                            🤖
+                        </div>
+
+                        <div>
+
+                            <div class="activity-text">
+                                AI matching activity
+                            </div>
+
+                            <div class="activity-time">
+                                Total matches generated
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </main>
+
+
+<script>
+
+    /* =====================================================
+       GRADURAT ADMIN DASHBOARD
+       ===================================================== */
+
+
+    async function apiRequest(url) {
+
+        const response = await fetch(url);
+
+        if (!response.ok) {
+
+            throw new Error(
+                `Request failed: ${response.status}`
+            );
+
+        }
+
+        return response.json();
+
+    }
+
+
+    function escapeHtml(value) {
+
+        return String(value ?? "")
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+
+    }
+
+
+    /* =====================================================
+       LOAD ADMIN STATS
+       ===================================================== */
+
+    async function loadStats() {
+
+        const data =
+            await apiRequest("/api/admin/stats");
+
+
+        document.getElementById("studentCount")
+            .textContent =
+            data.students ?? 0;
+
+
+        document.getElementById("employerCount")
+            .textContent =
+            data.employers ?? 0;
+
+
+        document.getElementById("opportunityCount")
+            .textContent =
+            data.opportunities ?? 0;
+
+
+        document.getElementById("matchCount")
+            .textContent =
+            data.matches ?? 0;
+
+    }
+
+
+    /* =====================================================
+       LOAD STUDENTS
+       ===================================================== */
+
+    async function loadStudents() {
+
+        const container =
+            document.getElementById(
+                "studentsContainer"
+            );
+
+
+        const data =
+            await apiRequest(
+                "/api/admin/students"
+            );
+
+
+        const students =
+            data.students || [];
+
+
+        if (!students.length) {
+
+            container.innerHTML = `
+                <div class="empty">
+                    No students registered yet.
+                </div>
+            `;
+
+            return;
+
+        }
+
+
+        container.innerHTML = `
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            Student
+                        </th>
+
+                        <th>
+                            Qualification
+                        </th>
+
+                        <th>
+                            Location
+                        </th>
+
+                        <th>
+                            Joined
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    ${students
+                        .slice(0, 8)
+                        .map(student => `
+
+                            <tr>
+
+                                <td>
+
+                                    <div class="user-name">
+
+                                        ${escapeHtml(
+                                            student.full_name ||
+                                            "Unknown"
+                                        )}
+
+                                    </div>
+
+                                    <div class="user-email">
+
+                                        ${escapeHtml(
+                                            student.email ||
+                                            ""
+                                        )}
+
+                                    </div>
+
+                                </td>
+
+
+                                <td>
+
+                                    ${escapeHtml(
+                                        student.qualification ||
+                                        "Not provided"
+                                    )}
+
+                                </td>
+
+
+                                <td>
+
+                                    ${escapeHtml(
+                                        student.location ||
+                                        "Not provided"
+                                    )}
+
+                                </td>
+
+
+                                <td>
+
+                                    ${student.created_at
+                                        ? new Date(
+                                            student.created_at
+                                          ).toLocaleDateString()
+                                        : "—"
+                                    }
+
+                                </td>
+
+                            </tr>
+
+                        `)
+                        .join("")}
+
+                </tbody>
+
+            </table>
+
+        `;
+
+    }
+
+
+    /* =====================================================
+       LOAD JOB OPPORTUNITIES
+       ===================================================== */
+
+    async function loadOpportunities() {
+
+        const container =
+            document.getElementById(
+                "jobsContainer"
+            );
+
+
+        const data =
+            await apiRequest(
+                "/api/admin/opportunities"
+            );
+
+
+        const opportunities =
+            data.opportunities || [];
+
+
+        if (!opportunities.length) {
+
+            container.innerHTML = `
+                <div class="empty">
+                    No opportunities have been posted yet.
+                </div>
+            `;
+
+            return;
+
+        }
+
+
+        container.innerHTML = `
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            Position
+                        </th>
+
+                        <th>
+                            Employer
+                        </th>
+
+                        <th>
+                            Type
+                        </th>
+
+                        <th>
+                            Status
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    ${opportunities
+                        .slice(0, 8)
+                        .map(job => {
+
+                            const employer =
+                                job.employers || {};
+
+
+                            const status =
+                                job.status ||
+                                "draft";
+
+
+                            return `
+
+                                <tr>
+
+                                    <td>
+
+                                        <div class="user-name">
+
+                                            ${escapeHtml(
+                                                job.title ||
+                                                "Untitled"
+                                            )}
+
+                                        </div>
+
+                                        <div class="user-email">
+
+                                            ${escapeHtml(
+                                                job.location ||
+                                                "Location not provided"
+                                            )}
+
+                                        </div>
+
+                                    </td>
+
+
+                                    <td>
+
+                                        ${escapeHtml(
+                                            employer.company_name ||
+                                            "Unknown employer"
+                                        )}
+
+                                    </td>
+
+
+                                    <td>
+
+                                        ${escapeHtml(
+                                            job.opportunity_type ||
+                                            job.type ||
+                                            "Not specified"
+                                        )}
+
+                                    </td>
+
+
+                                    <td>
+
+                                        <span class="badge ${
+                                            status === "published"
+                                                ? "badge-published"
+                                                : status === "closed"
+                                                    ? "badge-closed"
+                                                    : "badge-draft"
+                                        }">
+
+                                            ${escapeHtml(
+                                                status
+                                            )}
+
+                                        </span>
+
+                                    </td>
+
+                                </tr>
+
+                            `;
+
+                        })
+                        .join("")}
+
+                </tbody>
+
+            </table>
+
+        `;
+
+    }
+
+
+    /* =====================================================
+       LOAD ADMIN INFORMATION
+       ===================================================== */
+
+    function loadAdminInfo() {
+
+        const admin =
+            JSON.parse(
+                localStorage.getItem(
+                    "graduratAdmin"
+                ) || "null"
+            );
+
+
+        if (admin?.email) {
+
+            document.getElementById(
+                "adminEmail"
+            ).textContent =
+                admin.email;
+
+        }
+
+    }
+
+
+    /* =====================================================
+       LOGOUT
+       ===================================================== */
+
+    document
+        .getElementById("logoutBtn")
+        .addEventListener("click", function(event) {
+
+            event.preventDefault();
+
+
+            localStorage.removeItem(
+                "graduratAdminLoggedIn"
+            );
+
+            localStorage.removeItem(
+                "graduratAdmin"
+            );
+
+
+            window.location.href =
+                "admin-login.html";
+
+        });
+
+
+    /* =====================================================
+       LOAD EVERYTHING
+       ===================================================== */
+
+    async function loadDashboard() {
+
+        try {
+
+            await Promise.all([
+
+                loadStats(),
+
+                loadStudents(),
+
+                loadOpportunities()
+
+            ]);
+
+        } catch (error) {
+
+            console.error(error);
+
+
+            const errorBox =
+                document.getElementById(
+                    "errorMessage"
+                );
+
+
+            errorBox.textContent =
+                "Unable to load admin data. Make sure the Gradurat server is running and the admin API routes are connected.";
+
+
+            errorBox.style.display =
+                "block";
+
+        }
+
+    }
+
+
+    loadAdminInfo();
+
+    loadDashboard();
+
+</script>
+
+</body>
+</html>

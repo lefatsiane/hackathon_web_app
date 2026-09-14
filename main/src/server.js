@@ -7,7 +7,7 @@ import express from "express";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { supabaseServer } from "./lib/supabase-server.js";
-import { scoreSkillsWithGroq } from "./lib/groq.js";
+import { assessFitWithGroq, scoreSkillsWithGroq } from "./lib/groq.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
@@ -18,6 +18,82 @@ const port = Number(process.env.PORT) || 3000;
 app.use(express.json({ limit: "1mb" }));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, "../GraduRat")));
+
+const publicSupabaseKey =
+  process.env.SUPABASE_ANON_KEY ||
+  process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
+const avatarBucket = "avatars";
+const avatarUrlExpiresIn = 60 * 60;
+const avatarExtensions = {
+  "image/jpeg": "jpg",
+  "image/png": "png",
+  "image/webp": "webp",
+};
+const cvBucket = "cvs";
+const cvUrlExpiresIn = 60 * 60;
+const cvExtensions = {
+  "application/pdf": "pdf",
+};
+
+const requireAuth = async (request, response, next) => {
+  const authorization = request.headers.authorization || "";
+  const token = authorization.startsWith("Bearer ")
+    ? authorization.slice(7).trim()
+    : null;
+  if (!token)
+    return response.status(401).json({ error: "Authentication required." });
+
+  const { data, error } = await supabaseServer.auth.getUser(token);
+  if (error || !data.user)
+    return response.status(401).json({ error: "Invalid or expired session." });
+
+  request.authUser = data.user;
+  next();
+};
+
+app.get("/api/config", (_request, response) => {
+  if (!publicSupabaseKey || publicSupabaseKey.startsWith("sb_secret_")) {
+    return response
+      .status(503)
+      .json({ error: "Supabase publishable key is not configured." });
+  }
+  response.json({
+    supabaseUrl: (process.env.SUPABASE_URL || "").replace(/\/rest\/v1\/?$/, ""),
+    supabasePublishableKey: publicSupabaseKey,
+  });
+});
+
+app.get("/api/me", requireAuth, async (request, response) => {
+  const [studentResult, employerResult] = await Promise.all([
+    supabaseServer
+      .from("students")
+      .select("id, full_name, email")
+      .eq("auth_user_id", request.authUser.id)
+      .maybeSingle(),
+    supabaseServer
+      .from("employers")
+      .select("id, company_name, email")
+      .eq("auth_user_id", request.authUser.id)
+      .maybeSingle(),
+  ]);
+  if (studentResult.error)
+    return errorResponse(
+      response,
+      studentResult.error,
+      "Could not load account",
+    );
+  if (employerResult.error)
+    return errorResponse(
+      response,
+      employerResult.error,
+      "Could not load account",
+    );
+  response.json({
+    user: request.authUser,
+    student: studentResult.data,
+    employer: employerResult.data,
+  });
+});
 
 // Forms send either comma-separated strings or repeated checkbox values. Keeping
 // this conversion at the API boundary gives the database one predictable shape.
@@ -101,8 +177,196 @@ const coerceText = (value, fallback = null) => {
   return output || fallback;
 };
 
+const getAvatarExtension = (contentType) => {
+  const normalized = String(contentType || "")
+    .split(";", 1)[0]
+    .trim()
+    .toLowerCase();
+  const extension = avatarExtensions[normalized];
+  if (!extension) {
+    const error = new Error(
+      "Profile photos must be JPEG, PNG, or WebP images.",
+    );
+    error.statusCode = 422;
+    throw error;
+  }
+  return { contentType: normalized, extension };
+};
+
+const buildAvatarPath = (authUserId, profileId, extension) =>
+  `${authUserId}/${profileId}/avatar.${extension}`;
+
+const withProfilePictureUrl = async (profile) => {
+  if (!profile) return profile;
+  const { avatar_path: avatarPath, ...publicProfile } = profile;
+  if (!avatarPath) return { ...publicProfile, profile_picture_url: null };
+
+  const { data, error } = await supabaseServer.storage
+    .from(avatarBucket)
+    .createSignedUrl(avatarPath, avatarUrlExpiresIn);
+  if (error) throw error;
+  return { ...publicProfile, profile_picture_url: data.signedUrl };
+};
+
+const createAvatarUpload = async (
+  table,
+  profileId,
+  authUserId,
+  contentType,
+) => {
+  const profile =
+    table === "students"
+      ? await getOwnedStudent(profileId, authUserId)
+      : await getOwnedEmployer(profileId, authUserId);
+  const { contentType: normalizedContentType, extension } =
+    getAvatarExtension(contentType);
+  const path = buildAvatarPath(authUserId, profile.id, extension);
+  const { data, error } = await supabaseServer.storage
+    .from(avatarBucket)
+    .createSignedUploadUrl(path, { upsert: true });
+  if (error) throw error;
+  return {
+    upload_url: data.signedUrl,
+    avatar_path: path,
+    content_type: normalizedContentType,
+  };
+};
+
+const commitAvatarUpload = async (table, profileId, authUserId, avatarPath) => {
+  const profile =
+    table === "students"
+      ? await getOwnedStudent(profileId, authUserId)
+      : await getOwnedEmployer(profileId, authUserId);
+  const extension = String(avatarPath || "").match(/\.([a-z]+)$/i)?.[1];
+  const expectedPath = extension
+    ? buildAvatarPath(authUserId, profile.id, extension)
+    : null;
+  if (!expectedPath || avatarPath !== expectedPath) {
+    const error = new Error("The avatar upload path is invalid.");
+    error.statusCode = 422;
+    throw error;
+  }
+
+  const { data, error } = await supabaseServer
+    .from(table)
+    .update({ avatar_path: avatarPath })
+    .eq("id", profileId)
+    .select()
+    .single();
+  if (error) throw error;
+
+  if (profile.avatar_path && profile.avatar_path !== avatarPath) {
+    const { error: removeError } = await supabaseServer.storage
+      .from(avatarBucket)
+      .remove([profile.avatar_path]);
+    if (removeError) throw removeError;
+  }
+  return withProfilePictureUrl(data);
+};
+
+const removeAvatar = async (table, profileId, authUserId) => {
+  const profile =
+    table === "students"
+      ? await getOwnedStudent(profileId, authUserId)
+      : await getOwnedEmployer(profileId, authUserId);
+  if (profile.avatar_path) {
+    const { error } = await supabaseServer.storage
+      .from(avatarBucket)
+      .remove([profile.avatar_path]);
+    if (error) throw error;
+  }
+  const { data, error } = await supabaseServer
+    .from(table)
+    .update({ avatar_path: null })
+    .eq("id", profileId)
+    .select()
+    .single();
+  if (error) throw error;
+  return withProfilePictureUrl(data);
+};
+
+const getCvExtension = (contentType) => {
+  const normalized = String(contentType || "")
+    .split(";", 1)[0]
+    .trim()
+    .toLowerCase();
+  const extension = cvExtensions[normalized];
+  if (!extension) {
+    const error = new Error("CVs must be uploaded as PDF files.");
+    error.statusCode = 422;
+    throw error;
+  }
+  return { contentType: normalized, extension };
+};
+
+const buildCvPath = (authUserId, profileId, extension) =>
+  `${authUserId}/${profileId}/cv.${extension}`;
+
+const createCvUpload = async (studentId, authUserId, contentType) => {
+  const student = await getOwnedStudent(studentId, authUserId);
+  const { contentType: normalizedContentType, extension } =
+    getCvExtension(contentType);
+  const path = buildCvPath(authUserId, student.id, extension);
+  const { data, error } = await supabaseServer.storage
+    .from(cvBucket)
+    .createSignedUploadUrl(path, { upsert: true });
+  if (error) throw error;
+  return {
+    upload_url: data.signedUrl,
+    cv_path: path,
+    content_type: normalizedContentType,
+  };
+};
+
+const commitCvUpload = async (studentId, authUserId, cvPath) => {
+  const student = await getOwnedStudent(studentId, authUserId);
+  const extension = String(cvPath || "").match(/\.([a-z]+)$/i)?.[1];
+  const expectedPath = extension
+    ? buildCvPath(authUserId, student.id, extension)
+    : null;
+  if (!expectedPath || cvPath !== expectedPath) {
+    const error = new Error("The CV upload path is invalid.");
+    error.statusCode = 422;
+    throw error;
+  }
+
+  const { data, error } = await supabaseServer
+    .from("students")
+    .update({ cv_path: cvPath })
+    .eq("id", studentId)
+    .select()
+    .single();
+  if (error) throw error;
+
+  if (student.cv_path && student.cv_path !== cvPath) {
+    const { error: removeError } = await supabaseServer.storage
+      .from(cvBucket)
+      .remove([student.cv_path]);
+    if (removeError) throw removeError;
+  }
+  return data;
+};
+
+const removeCv = async (studentId, authUserId) => {
+  const student = await getOwnedStudent(studentId, authUserId);
+  if (student.cv_path) {
+    const { error } = await supabaseServer.storage
+      .from(cvBucket)
+      .remove([student.cv_path]);
+    if (error) throw error;
+  }
+  const { data, error } = await supabaseServer
+    .from("students")
+    .update({ cv_path: null })
+    .eq("id", studentId)
+    .select()
+    .single();
+  if (error) throw error;
+  return data;
+};
+
 const computeProfileCompleteness = (profile, type = "student") => {
-  // Profile completeness is a simple percentage of non-empty fields. 
+  // Profile completeness is a simple percentage of non-empty fields.
   // This is not a perfect measure of quality, but it gives students and employers a sense of how much information they have provided.
   const fields = {
     student: [
@@ -650,6 +914,30 @@ const getEmployer = async (employerId) => {
   return data;
 };
 
+const requireOwnedProfile = async (table, profileId, authUserId) => {
+  const { data, error } = await supabaseServer
+    .from(table)
+    .select("id")
+    .eq("id", profileId)
+    .eq("auth_user_id", authUserId)
+    .single();
+  if (error || !data) {
+    const ownershipError = new Error("You do not own this profile.");
+    ownershipError.statusCode = 403;
+    throw ownershipError;
+  }
+};
+
+const getOwnedStudent = async (studentId, authUserId) => {
+  await requireOwnedProfile("students", studentId, authUserId);
+  return getStudent(studentId);
+};
+
+const getOwnedEmployer = async (employerId, authUserId) => {
+  await requireOwnedProfile("employers", employerId, authUserId);
+  return getEmployer(employerId);
+};
+
 const isPublicOpportunity = (opportunity) => {
   if (
     !opportunity ||
@@ -677,11 +965,14 @@ app.get("/api/health", async (_request, response) => {
   response.json({ status: "ok", database: "connected" });
 });
 
-app.get("/api/students/:studentId", async (request, response) => {
+app.get("/api/students/:studentId", requireAuth, async (request, response) => {
   try {
-    const student = await getStudent(request.params.studentId);
+    const student = await getOwnedStudent(
+      request.params.studentId,
+      request.authUser.id,
+    );
     response.json({
-      student,
+      student: await withProfilePictureUrl(student),
       profile_completeness: computeProfileCompleteness(student, "student"),
     });
   } catch (error) {
@@ -689,57 +980,582 @@ app.get("/api/students/:studentId", async (request, response) => {
   }
 });
 
-app.patch("/api/students/:studentId", async (request, response) => {
+app.patch(
+  "/api/students/:studentId",
+  requireAuth,
+  async (request, response) => {
+    try {
+      await requireOwnedProfile(
+        "students",
+        request.params.studentId,
+        request.authUser.id,
+      );
+      const updates = buildStudentUpdate(request.body || {});
+      const { data, error } = await supabaseServer
+        .from("students")
+        .update(updates)
+        .eq("id", request.params.studentId)
+        .select()
+        .single();
+      if (error) throw error;
+      response.json({
+        student: await withProfilePictureUrl(data),
+        profile_completeness: computeProfileCompleteness(data, "student"),
+      });
+    } catch (error) {
+      errorResponse(response, error, "Could not update student profile");
+    }
+  },
+);
+
+app.get(
+  "/api/employers/:employerId",
+  requireAuth,
+  async (request, response) => {
+    try {
+      const employer = await getOwnedEmployer(
+        request.params.employerId,
+        request.authUser.id,
+      );
+      response.json({
+        employer: await withProfilePictureUrl(employer),
+        profile_completeness: computeProfileCompleteness(employer, "employer"),
+      });
+    } catch (error) {
+      errorResponse(response, error, "Could not load employer profile");
+    }
+  },
+);
+
+app.patch(
+  "/api/employers/:employerId",
+  requireAuth,
+  async (request, response) => {
+    try {
+      await requireOwnedProfile(
+        "employers",
+        request.params.employerId,
+        request.authUser.id,
+      );
+      const updates = buildEmployerUpdate(request.body || {});
+      const { data, error } = await supabaseServer
+        .from("employers")
+        .update(updates)
+        .eq("id", request.params.employerId)
+        .select()
+        .single();
+      if (error) throw error;
+      response.json({
+        employer: await withProfilePictureUrl(data),
+        profile_completeness: computeProfileCompleteness(data, "employer"),
+      });
+    } catch (error) {
+      errorResponse(response, error, "Could not update employer profile");
+    }
+  },
+);
+
+const addAvatarRoutes = (profileType, table, idParam, resultKey) => {
+  const basePath = `/api/${profileType}/:${idParam}/avatar`;
+
+  app.post(`${basePath}/upload-url`, requireAuth, async (request, response) => {
+    try {
+      const upload = await createAvatarUpload(
+        table,
+        request.params[idParam],
+        request.authUser.id,
+        request.body?.content_type ?? request.body?.contentType,
+      );
+      response.json(upload);
+    } catch (error) {
+      errorResponse(response, error, "Could not prepare profile photo upload");
+    }
+  });
+
+  app.post(basePath, requireAuth, async (request, response) => {
+    try {
+      const profile = await commitAvatarUpload(
+        table,
+        request.params[idParam],
+        request.authUser.id,
+        request.body?.avatar_path ?? request.body?.avatarPath,
+      );
+      response.json({ [resultKey]: profile });
+    } catch (error) {
+      errorResponse(response, error, "Could not save profile photo");
+    }
+  });
+
+  app.delete(basePath, requireAuth, async (request, response) => {
+    try {
+      const profile = await removeAvatar(
+        table,
+        request.params[idParam],
+        request.authUser.id,
+      );
+      response.json({ [resultKey]: profile });
+    } catch (error) {
+      errorResponse(response, error, "Could not remove profile photo");
+    }
+  });
+};
+
+addAvatarRoutes("students", "students", "studentId", "student");
+addAvatarRoutes("employers", "employers", "employerId", "employer");
+
+app.post(
+  "/api/students/:studentId/cv/upload-url",
+  requireAuth,
+  async (request, response) => {
+    try {
+      const upload = await createCvUpload(
+        request.params.studentId,
+        request.authUser.id,
+        request.body?.content_type ?? request.body?.contentType,
+      );
+      response.json(upload);
+    } catch (error) {
+      errorResponse(response, error, "Could not prepare CV upload");
+    }
+  },
+);
+
+app.post(
+  "/api/students/:studentId/cv",
+  requireAuth,
+  async (request, response) => {
+    try {
+      const student = await commitCvUpload(
+        request.params.studentId,
+        request.authUser.id,
+        request.body?.cv_path ?? request.body?.cvPath,
+      );
+      response.json({ student });
+    } catch (error) {
+      errorResponse(response, error, "Could not save CV");
+    }
+  },
+);
+
+app.delete(
+  "/api/students/:studentId/cv",
+  requireAuth,
+  async (request, response) => {
+    try {
+      const student = await removeCv(
+        request.params.studentId,
+        request.authUser.id,
+      );
+      response.json({ student });
+    } catch (error) {
+      errorResponse(response, error, "Could not remove CV");
+    }
+  },
+);
+
+app.get(
+  "/api/students/:studentId/cv",
+  requireAuth,
+  async (request, response) => {
+    try {
+      const student = await getStudent(request.params.studentId);
+      const isOwner = student.auth_user_id === request.authUser.id;
+      if (!isOwner) {
+        // Only an authenticated employer profile can request another
+        // student's CV; the candidate's own setting is the only gate.
+        const { data: employer, error: employerError } = await supabaseServer
+          .from("employers")
+          .select("id")
+          .eq("auth_user_id", request.authUser.id)
+          .maybeSingle();
+        if (employerError) throw employerError;
+        if (!employer) {
+          const error = new Error("You do not have access to this CV.");
+          error.statusCode = 403;
+          throw error;
+        }
+        const settings = await getOrCreateUserSettings(student.auth_user_id);
+        if (!settings.preferences?.allowCVDownload) {
+          const error = new Error(
+            "This candidate has not enabled CV downloads.",
+          );
+          error.statusCode = 403;
+          throw error;
+        }
+      }
+      if (!student.cv_path) {
+        return response
+          .status(404)
+          .json({ error: "This candidate has not uploaded a CV yet." });
+      }
+      const { data, error } = await supabaseServer.storage
+        .from(cvBucket)
+        .createSignedUrl(student.cv_path, cvUrlExpiresIn);
+      if (error) throw error;
+      response.json({ cv_url: data.signedUrl });
+    } catch (error) {
+      errorResponse(response, error, "Could not load CV");
+    }
+  },
+);
+
+const getOrCreateUserSettings = async (authUserId) => {
+  const { data, error } = await supabaseServer
+    .from("user_settings")
+    .select("*")
+    .eq("auth_user_id", authUserId)
+    .maybeSingle();
+  if (error) throw error;
+  if (data) return data;
+
+  const { data: created, error: createError } = await supabaseServer
+    .from("user_settings")
+    .insert({ auth_user_id: authUserId })
+    .select()
+    .single();
+  if (createError) throw createError;
+  return created;
+};
+
+app.get("/api/settings", requireAuth, async (request, response) => {
   try {
-    const updates = buildStudentUpdate(request.body || {});
-    const { data, error } = await supabaseServer
-      .from("students")
-      .update(updates)
-      .eq("id", request.params.studentId)
-      .select()
-      .single();
-    if (error) throw error;
+    const [settings, studentResult, employerResult] = await Promise.all([
+      getOrCreateUserSettings(request.authUser.id),
+      supabaseServer
+        .from("students")
+        .select("*")
+        .eq("auth_user_id", request.authUser.id)
+        .maybeSingle(),
+      supabaseServer
+        .from("employers")
+        .select("*")
+        .eq("auth_user_id", request.authUser.id)
+        .maybeSingle(),
+    ]);
+    if (studentResult.error) throw studentResult.error;
+    if (employerResult.error) throw employerResult.error;
     response.json({
-      student: data,
-      profile_completeness: computeProfileCompleteness(data, "student"),
+      theme: settings.theme,
+      preferences: settings.preferences,
+      student: studentResult.data,
+      employer: employerResult.data,
     });
   } catch (error) {
-    errorResponse(response, error, "Could not update student profile");
+    errorResponse(response, error, "Could not load settings");
   }
 });
 
-app.get("/api/employers/:employerId", async (request, response) => {
+app.put("/api/settings", requireAuth, async (request, response) => {
   try {
-    const employer = await getEmployer(request.params.employerId);
+    const body = request.body || {};
+    const existing = await getOrCreateUserSettings(request.authUser.id);
+    const theme = coerceText(body.theme, existing.theme);
+    if (theme && !["dark", "light", "system"].includes(theme)) {
+      return response
+        .status(422)
+        .json({ error: "Theme must be dark, light, or system." });
+    }
+    const preferenceKeys = [
+      "profileDiscoverable",
+      "showPhoto",
+      "showInterests",
+      "cvVisibility",
+      "allowCVDownload",
+      "workEnvironment",
+      "employmentPreference",
+      "appearInFYP",
+      "personalizedMatching",
+      "notifyMatches",
+      "notifyOpportunities",
+      "notifyConnections",
+      "aiMatching",
+      "candidateRecommendations",
+    ];
+    const nextPreferences = { ...(existing.preferences || {}) };
+    for (const key of preferenceKeys) {
+      if (body[key] !== undefined) nextPreferences[key] = body[key];
+    }
+
+    const { data: settings, error } = await supabaseServer
+      .from("user_settings")
+      .update({ theme, preferences: nextPreferences })
+      .eq("auth_user_id", request.authUser.id)
+      .select()
+      .single();
+    if (error) throw error;
+
+    let student = null;
+    let employer = null;
+    if (body.phone !== undefined) {
+      const { data: studentRow, error: studentLookupError } =
+        await supabaseServer
+          .from("students")
+          .select("id")
+          .eq("auth_user_id", request.authUser.id)
+          .maybeSingle();
+      if (studentLookupError) throw studentLookupError;
+      if (studentRow) {
+        const { data, error: updateError } = await supabaseServer
+          .from("students")
+          .update({
+            phone: coerceText(body.phone, null),
+            updated_at: new Date().toISOString(),
+          })
+          .eq("id", studentRow.id)
+          .select()
+          .single();
+        if (updateError) throw updateError;
+        student = data;
+      }
+    }
+    if (body.companyName !== undefined || body.companyIndustry !== undefined) {
+      const { data: employerRow, error: employerLookupError } =
+        await supabaseServer
+          .from("employers")
+          .select("id")
+          .eq("auth_user_id", request.authUser.id)
+          .maybeSingle();
+      if (employerLookupError) throw employerLookupError;
+      if (employerRow) {
+        const employerUpdates = { updated_at: new Date().toISOString() };
+        if (body.companyName !== undefined)
+          employerUpdates.company_name = coerceText(
+            body.companyName,
+            undefined,
+          );
+        if (body.companyIndustry !== undefined)
+          employerUpdates.industry = coerceText(body.companyIndustry, null);
+        const { data, error: updateError } = await supabaseServer
+          .from("employers")
+          .update(employerUpdates)
+          .eq("id", employerRow.id)
+          .select()
+          .single();
+        if (updateError) throw updateError;
+        employer = data;
+      }
+    }
+
     response.json({
+      theme: settings.theme,
+      preferences: settings.preferences,
+      student,
       employer,
-      profile_completeness: computeProfileCompleteness(employer, "employer"),
     });
   } catch (error) {
-    errorResponse(response, error, "Could not load employer profile");
+    errorResponse(response, error, "Could not save settings");
   }
 });
 
-app.patch("/api/employers/:employerId", async (request, response) => {
+const toCsvValue = (value) => {
+  const stringValue =
+    value === null || value === undefined
+      ? ""
+      : Array.isArray(value)
+        ? value.join("; ")
+        : typeof value === "object"
+          ? JSON.stringify(value)
+          : String(value);
+  return /[",\n]/.test(stringValue)
+    ? `"${stringValue.replace(/"/g, '""')}"`
+    : stringValue;
+};
+
+const rowsToCsvSection = (title, rows) => {
+  if (!rows.length) return `${title}\n(no records)\n`;
+  const headers = Object.keys(rows[0]);
+  return [
+    title,
+    headers.join(","),
+    ...rows.map((row) =>
+      headers.map((header) => toCsvValue(row[header])).join(","),
+    ),
+  ].join("\n");
+};
+
+app.get("/api/account/export", requireAuth, async (request, response) => {
   try {
-    const updates = buildEmployerUpdate(request.body || {});
-    const { data, error } = await supabaseServer
-      .from("employers")
-      .update(updates)
-      .eq("id", request.params.employerId)
-      .select()
-      .single();
-    if (error) throw error;
-    response.json({
-      employer: data,
-      profile_completeness: computeProfileCompleteness(data, "employer"),
-    });
+    const [settings, studentResult, employerResult] = await Promise.all([
+      getOrCreateUserSettings(request.authUser.id),
+      supabaseServer
+        .from("students")
+        .select("*")
+        .eq("auth_user_id", request.authUser.id)
+        .maybeSingle(),
+      supabaseServer
+        .from("employers")
+        .select("*")
+        .eq("auth_user_id", request.authUser.id)
+        .maybeSingle(),
+    ]);
+    if (studentResult.error) throw studentResult.error;
+    if (employerResult.error) throw employerResult.error;
+
+    const sections = [
+      rowsToCsvSection("ACCOUNT SETTINGS", [
+        { theme: settings.theme, ...settings.preferences },
+      ]),
+    ];
+
+    if (studentResult.data) {
+      const { avatar_path, cv_path, ...studentRow } = studentResult.data;
+      sections.push(rowsToCsvSection("STUDENT PROFILE", [studentRow]));
+      const { data: applications, error: applicationsError } =
+        await supabaseServer
+          .from("applications")
+          .select("*, opportunities(title)")
+          .eq("student_id", studentResult.data.id);
+      if (applicationsError) throw applicationsError;
+      sections.push(rowsToCsvSection("APPLICATIONS", applications || []));
+    }
+    if (employerResult.data) {
+      const { avatar_path, ...employerRow } = employerResult.data;
+      sections.push(rowsToCsvSection("EMPLOYER PROFILE", [employerRow]));
+      const { data: opportunities, error: opportunitiesError } =
+        await supabaseServer
+          .from("opportunities")
+          .select("*")
+          .eq("employer_id", employerResult.data.id);
+      if (opportunitiesError) throw opportunitiesError;
+      sections.push(rowsToCsvSection("OPPORTUNITIES", opportunities || []));
+    }
+
+    const csv = sections.join("\n\n");
+    const filename = `gradurat-data-${new Date().toISOString().slice(0, 10)}.csv`;
+    response.setHeader("Content-Type", "text/csv");
+    response.setHeader(
+      "Content-Disposition",
+      `attachment; filename="${filename}"`,
+    );
+    response.send(csv);
   } catch (error) {
-    errorResponse(response, error, "Could not update employer profile");
+    errorResponse(response, error, "Could not export account data");
   }
 });
 
-app.post("/api/students", async (request, response) => {
+app.delete("/api/account", requireAuth, async (request, response) => {
+  try {
+    const [studentResult, employerResult] = await Promise.all([
+      supabaseServer
+        .from("students")
+        .select("id, avatar_path, cv_path")
+        .eq("auth_user_id", request.authUser.id)
+        .maybeSingle(),
+      supabaseServer
+        .from("employers")
+        .select("id, avatar_path")
+        .eq("auth_user_id", request.authUser.id)
+        .maybeSingle(),
+    ]);
+    if (studentResult.error) throw studentResult.error;
+    if (employerResult.error) throw employerResult.error;
+
+    const filesToRemove = [];
+    if (studentResult.data?.avatar_path)
+      filesToRemove.push({
+        bucket: avatarBucket,
+        path: studentResult.data.avatar_path,
+      });
+    if (studentResult.data?.cv_path)
+      filesToRemove.push({
+        bucket: cvBucket,
+        path: studentResult.data.cv_path,
+      });
+    if (employerResult.data?.avatar_path)
+      filesToRemove.push({
+        bucket: avatarBucket,
+        path: employerResult.data.avatar_path,
+      });
+
+    for (const file of filesToRemove) {
+      const { error } = await supabaseServer.storage
+        .from(file.bucket)
+        .remove([file.path]);
+      if (error) throw error;
+    }
+
+    if (studentResult.data) {
+      const { error } = await supabaseServer
+        .from("students")
+        .delete()
+        .eq("id", studentResult.data.id);
+      if (error) throw error;
+    }
+    if (employerResult.data) {
+      const { error } = await supabaseServer
+        .from("employers")
+        .delete()
+        .eq("id", employerResult.data.id);
+      if (error) throw error;
+    }
+
+    const { error: settingsError } = await supabaseServer
+      .from("user_settings")
+      .delete()
+      .eq("auth_user_id", request.authUser.id);
+    if (settingsError) throw settingsError;
+
+    const { error: authError } = await supabaseServer.auth.admin.deleteUser(
+      request.authUser.id,
+    );
+    if (authError) throw authError;
+
+    response.json({ success: true });
+  } catch (error) {
+    errorResponse(response, error, "Could not delete account");
+  }
+});
+
+app.post("/api/ai/feedback", async (request, response) => {
+  try {
+    const body = request.body || {};
+    const subjectType = coerceText(
+      body.subject_type ?? body.subjectType,
+      "profile",
+    );
+    const targetType = coerceText(
+      body.target_type ?? body.targetType,
+      "opportunity",
+    );
+    let subject = body.subject || {};
+    let target = body.target || null;
+
+    if (body.subject_id || body.subjectId) {
+      const subjectId = body.subject_id || body.subjectId;
+      subject =
+        subjectType === "employer"
+          ? await getEmployer(subjectId)
+          : await getStudent(subjectId);
+    }
+    if (body.target_id || body.targetId) {
+      const targetId = body.target_id || body.targetId;
+      target =
+        targetType === "opportunity"
+          ? await getOpportunity(targetId)
+          : targetType === "employer"
+            ? await getEmployer(targetId)
+            : await getStudent(targetId);
+    }
+
+    if (!subject || typeof subject !== "object") {
+      return response
+        .status(422)
+        .json({ error: "A profile is required for feedback." });
+    }
+
+    const assessment = await assessFitWithGroq({
+      subjectType,
+      subject,
+      targetType,
+      target,
+    });
+    response.json({ assessment });
+  } catch (error) {
+    errorResponse(response, error, "Could not generate AI feedback");
+  }
+});
+
+app.post("/api/students", requireAuth, async (request, response) => {
   const body = request.body;
   if (
     !body.email ||
@@ -840,6 +1656,7 @@ app.post("/api/students", async (request, response) => {
           body.workMode,
         null,
       ),
+      auth_user_id: request.authUser.id,
     })
     .select()
     .single();
@@ -852,9 +1669,18 @@ app.post("/api/students", async (request, response) => {
   });
 });
 
-app.post("/api/employers", async (request, response) => {
+app.post("/api/employers", requireAuth, async (request, response) => {
   const body = request.body;
-  if (!body.email || !body.companyName || !body.firstName || !body.lastName) {
+  const contactName = coerceText(
+    body.contactPersonName ?? body.contact_person_name,
+  );
+  const contactParts = contactName?.split(/\s+/) || [];
+  const firstName =
+    coerceText(body.firstName || body.first_name) || contactParts[0];
+  const lastName =
+    coerceText(body.lastName || body.last_name) ||
+    contactParts.slice(1).join(" ");
+  if (!body.email || !body.companyName || !firstName || !lastName) {
     return response
       .status(422)
       .json({ error: "Company name, contact name and email are required." });
@@ -876,10 +1702,10 @@ app.post("/api/employers", async (request, response) => {
   const bio = [
     // Employer-specific form fields use the same compatibility approach as
     // student metadata because the initial schema is intentionally compact.
-    body.description,
+    body.description ?? body.companyDescription ?? body.company_description,
     body.industry && `Industry: ${body.industry}`,
     body.companySize && `Company size: ${body.companySize}`,
-    `Contact: ${body.firstName.trim()} ${body.lastName.trim()}`,
+    `Contact: ${firstName} ${lastName}`,
     body.position && `Position: ${body.position}`,
     body.phone && `Phone: ${body.phone}`,
     body.location && `Location: ${body.location}`,
@@ -899,12 +1725,15 @@ app.post("/api/employers", async (request, response) => {
       bio: bio || null,
       industry: coerceText(body.industry, null),
       location: coerceText(body.location, null),
-      contact_person_name:
-        `${String(body.firstName).trim()} ${String(body.lastName).trim()}`.trim(),
+      contact_person_name: `${firstName} ${lastName}`.trim(),
+      auth_user_id: request.authUser.id,
       contact_email: contactEmail,
       contact_phone: coerceText(body.phone, null),
       company_size: coerceText(body.companySize, null),
-      company_description: coerceText(body.description, null),
+      company_description: coerceText(
+        body.description ?? body.companyDescription ?? body.company_description,
+        null,
+      ),
       benefits: normalizeSkills(body.benefits),
       verification_status: "unverified",
     })
@@ -1053,26 +1882,177 @@ app.get("/api/opportunities/:opportunityId", async (request, response) => {
   }
 });
 
-app.patch("/api/opportunities/:opportunityId", async (request, response) => {
-  try {
-    const updates = buildOpportunityUpdate(request.body || {});
-    const { data, error } = await supabaseServer
-      .from("opportunities")
-      .update(updates)
-      .eq("id", request.params.opportunityId)
-      .select()
-      .single();
-    if (error) throw error;
-    response.json({ opportunity: data });
-  } catch (error) {
-    errorResponse(response, error, "Could not update opportunity");
-  }
-});
+app.post(
+  "/api/opportunities/:opportunityId/applications",
+  requireAuth,
+  async (request, response) => {
+    try {
+      const studentId = request.body?.student_id || request.body?.studentId;
+      if (!studentId) {
+        return response
+          .status(422)
+          .json({ error: "A student profile is required to apply." });
+      }
+      const opportunity = await getOpportunity(request.params.opportunityId);
+      if (!isPublicOpportunity(opportunity)) {
+        return response
+          .status(404)
+          .json({ error: "Opportunity is not accepting applications." });
+      }
+      await getOwnedStudent(studentId, request.authUser.id);
+      const { data, error } = await supabaseServer
+        .from("applications")
+        .insert({
+          student_id: studentId,
+          opportunity_id: request.params.opportunityId,
+          cover_note: coerceText(
+            request.body?.cover_note ?? request.body?.coverNote,
+            null,
+          ),
+          status: "submitted",
+          updated_at: new Date().toISOString(),
+        })
+        .select("*, opportunities(title, employer_id)")
+        .single();
+      if (error) throw error;
+      response.status(201).json({ application: data });
+    } catch (error) {
+      errorResponse(response, error, "Could not submit application");
+    }
+  },
+);
+
+app.get(
+  "/api/students/:studentId/applications",
+  requireAuth,
+  async (request, response) => {
+    try {
+      await requireOwnedProfile(
+        "students",
+        request.params.studentId,
+        request.authUser.id,
+      );
+      const { data, error } = await supabaseServer
+        .from("applications")
+        .select(
+          "*, opportunities(title, description, location, type, employers(company_name))",
+        )
+        .eq("student_id", request.params.studentId)
+        .order("created_at", { ascending: false });
+      if (error) throw error;
+      response.json({ applications: data });
+    } catch (error) {
+      errorResponse(response, error, "Could not load applications");
+    }
+  },
+);
+
+app.get(
+  "/api/employers/:employerId/applications",
+  requireAuth,
+  async (request, response) => {
+    try {
+      await requireOwnedProfile(
+        "employers",
+        request.params.employerId,
+        request.authUser.id,
+      );
+      const { data, error } = await supabaseServer
+        .from("applications")
+        .select(
+          "*, students(id, full_name, email, skills, qualification, location), opportunities!inner(id, title, employer_id)",
+        )
+        .eq("opportunities.employer_id", request.params.employerId)
+        .order("created_at", { ascending: false });
+      if (error) throw error;
+      response.json({ applications: data });
+    } catch (error) {
+      errorResponse(response, error, "Could not load employer applications");
+    }
+  },
+);
+
+app.patch(
+  "/api/applications/:applicationId",
+  requireAuth,
+  async (request, response) => {
+    try {
+      const { data: application, error: lookupError } = await supabaseServer
+        .from("applications")
+        .select("id, status, opportunities!inner(employer_id)")
+        .eq("id", request.params.applicationId)
+        .single();
+      if (lookupError) throw lookupError;
+      await requireOwnedProfile(
+        "employers",
+        application.opportunities.employer_id,
+        request.authUser.id,
+      );
+      const status = coerceText(request.body?.status, null);
+      if (
+        ![
+          "submitted",
+          "reviewing",
+          "shortlisted",
+          "rejected",
+          "withdrawn",
+        ].includes(status)
+      ) {
+        return response
+          .status(422)
+          .json({ error: "Invalid application status." });
+      }
+      const { data, error } = await supabaseServer
+        .from("applications")
+        .update({ status, updated_at: new Date().toISOString() })
+        .eq("id", request.params.applicationId)
+        .select()
+        .single();
+      if (error) throw error;
+      response.json({ application: data });
+    } catch (error) {
+      errorResponse(response, error, "Could not update application");
+    }
+  },
+);
+
+app.patch(
+  "/api/opportunities/:opportunityId",
+  requireAuth,
+  async (request, response) => {
+    try {
+      const current = await getOpportunity(request.params.opportunityId);
+      await requireOwnedProfile(
+        "employers",
+        current.employer_id,
+        request.authUser.id,
+      );
+      const updates = buildOpportunityUpdate(request.body || {});
+      const { data, error } = await supabaseServer
+        .from("opportunities")
+        .update(updates)
+        .eq("id", request.params.opportunityId)
+        .select()
+        .single();
+      if (error) throw error;
+      response.json({ opportunity: data });
+    } catch (error) {
+      errorResponse(response, error, "Could not update opportunity");
+    }
+  },
+);
 
 app.post(
   "/api/opportunities/:opportunityId/close",
+  requireAuth,
   async (request, response) => {
     try {
+      const current = await getOpportunity(request.params.opportunityId);
+      await requireOwnedProfile(
+        "employers",
+        current.employer_id,
+        request.authUser.id,
+      );
       const { data, error } = await supabaseServer
         .from("opportunities")
         .update({
@@ -1096,8 +2076,15 @@ app.post(
 
 app.post(
   "/api/opportunities/:opportunityId/archive",
+  requireAuth,
   async (request, response) => {
     try {
+      const current = await getOpportunity(request.params.opportunityId);
+      await requireOwnedProfile(
+        "employers",
+        current.employer_id,
+        request.authUser.id,
+      );
       const { data, error } = await supabaseServer
         .from("opportunities")
         .update({
@@ -1118,8 +2105,15 @@ app.post(
 
 app.post(
   "/api/opportunities/:opportunityId/reopen",
+  requireAuth,
   async (request, response) => {
     try {
+      const owner = await getOpportunity(request.params.opportunityId);
+      await requireOwnedProfile(
+        "employers",
+        owner.employer_id,
+        request.authUser.id,
+      );
       const { data: current, error: lookupError } = await supabaseServer
         .from("opportunities")
         .select("application_deadline")
@@ -1156,7 +2150,7 @@ app.post(
   },
 );
 
-app.post("/api/matches/refresh", async (request, response) => {
+app.post("/api/matches/refresh", requireAuth, async (request, response) => {
   try {
     const studentId = request.body?.student_id || request.body?.studentId;
     const opportunityId =
@@ -1169,7 +2163,7 @@ app.post("/api/matches/refresh", async (request, response) => {
     }
 
     const [student, opportunityResponse] = await Promise.all([
-      getStudent(studentId),
+      getOwnedStudent(studentId, request.authUser.id),
       supabaseServer
         .from("opportunities")
         .select("*, employers(company_name, website)")
@@ -1185,101 +2179,116 @@ app.post("/api/matches/refresh", async (request, response) => {
   }
 });
 
-app.get("/api/students/:studentId/dashboard", async (request, response) => {
-  try {
-    // Load the profile and public opportunities concurrently; neither query
-    // depends on the other, which reduces dashboard response time.
-    const [student, opportunitiesResponse] = await Promise.all([
-      getStudent(request.params.studentId),
-      supabaseServer
-        .from("opportunities")
-        .select("*, employers(company_name, website)")
-        .order("created_at", { ascending: false }),
-    ]);
-    if (opportunitiesResponse.error) throw opportunitiesResponse.error;
-
-    // Groq is called for each student/opportunity pair, then the completed
-    // scores are sorted before they are returned to the browser.
-    const opportunities = (
-      await Promise.all(
-        opportunitiesResponse.data
-          .filter(isPublicOpportunity)
-          .map((opportunity) => getMatch(student, opportunity)),
-      )
-    ).sort((left, right) => right.match_score - left.match_score);
-
-    response.json({
-      student,
-      opportunities,
-      stats: {
-        matches: opportunities.filter(
-          (opportunity) => opportunity.match_score >= 50,
-        ).length,
-        opportunities: opportunities.length,
-      },
-    });
-  } catch (error) {
-    errorResponse(response, error, "Could not load graduate dashboard");
-  }
-});
-
-app.get("/api/employers/:employerId/dashboard", async (request, response) => {
-  try {
-    // Employer dashboards only use that employer's jobs, while candidate
-    // profiles are compared against those jobs to produce ranked matches.
-    const [employer, opportunitiesResponse, studentsResponse] =
-      await Promise.all([
-        getEmployer(request.params.employerId),
+app.get(
+  "/api/students/:studentId/dashboard",
+  requireAuth,
+  async (request, response) => {
+    try {
+      // Load the profile and public opportunities concurrently; neither query
+      // depends on the other, which reduces dashboard response time.
+      const [student, opportunitiesResponse] = await Promise.all([
+        getOwnedStudent(request.params.studentId, request.authUser.id),
         supabaseServer
           .from("opportunities")
-          .select("*")
-          .eq("employer_id", request.params.employerId)
+          .select("*, employers(company_name, website)")
           .order("created_at", { ascending: false }),
-        supabaseServer.from("students").select("*"),
       ]);
-    if (opportunitiesResponse.error) throw opportunitiesResponse.error;
-    if (studentsResponse.error) throw studentsResponse.error;
+      if (opportunitiesResponse.error) throw opportunitiesResponse.error;
 
-    const dashboardOpportunities =
-      opportunitiesResponse.data.filter(isPublicOpportunity);
-    const candidates = (
-      await Promise.all(
-        studentsResponse.data.map(async (student) => {
-          const matches = dashboardOpportunities.map((opportunity) =>
-            getMatch(student, opportunity),
-          );
-          const resolvedMatches = await Promise.all(matches);
-          const bestMatch = resolvedMatches.sort(
-            (left, right) => right.match_score - left.match_score,
-          )[0];
-          return {
-            ...student,
-            match_score: bestMatch?.match_score || 0,
-            matching_skills: bestMatch?.matching_skills || [],
-            missing_skills: bestMatch?.missing_skills || [],
-            reasoning: bestMatch?.reasoning || "",
-          };
-        }),
-      )
-    ).sort((left, right) => right.match_score - left.match_score);
+      // Groq is called for each student/opportunity pair, then the completed
+      // scores are sorted before they are returned to the browser.
+      const opportunities = (
+        await Promise.all(
+          opportunitiesResponse.data
+            .filter(isPublicOpportunity)
+            .map((opportunity) => getMatch(student, opportunity)),
+        )
+      ).sort((left, right) => right.match_score - left.match_score);
+      const studentWithPicture = await withProfilePictureUrl(student);
 
-    response.json({
-      employer,
-      opportunities: opportunitiesResponse.data,
-      candidates,
-      stats: {
-        active_jobs: opportunitiesResponse.data.length,
-        candidates: candidates.filter(
-          (candidate) => candidate.match_score >= 50,
-        ).length,
-      },
-    });
-  } catch (error) {
-    errorResponse(response, error, "Could not load employer dashboard");
-  }
-});
+      response.json({
+        student: studentWithPicture,
+        opportunities,
+        stats: {
+          matches: opportunities.filter(
+            (opportunity) => opportunity.match_score >= 50,
+          ).length,
+          opportunities: opportunities.length,
+        },
+      });
+    } catch (error) {
+      errorResponse(response, error, "Could not load graduate dashboard");
+    }
+  },
+);
 
-app.post("/api/opportunities", async (request, response) => {
+app.get(
+  "/api/employers/:employerId/dashboard",
+  requireAuth,
+  async (request, response) => {
+    try {
+      // Employer dashboards only use that employer's jobs, while candidate
+      // profiles are compared against those jobs to produce ranked matches.
+      const [employer, opportunitiesResponse, studentsResponse] =
+        await Promise.all([
+          getOwnedEmployer(request.params.employerId, request.authUser.id),
+          supabaseServer
+            .from("opportunities")
+            .select("*")
+            .eq("employer_id", request.params.employerId)
+            .order("created_at", { ascending: false }),
+          supabaseServer.from("students").select("*"),
+        ]);
+      if (opportunitiesResponse.error) throw opportunitiesResponse.error;
+      if (studentsResponse.error) throw studentsResponse.error;
+
+      const dashboardOpportunities =
+        opportunitiesResponse.data.filter(isPublicOpportunity);
+      const candidates = (
+        await Promise.all(
+          studentsResponse.data.map(async (student) => {
+            const matches = dashboardOpportunities.map((opportunity) =>
+              getMatch(student, opportunity),
+            );
+            const resolvedMatches = await Promise.all(matches);
+            const bestMatch = resolvedMatches.sort(
+              (left, right) => right.match_score - left.match_score,
+            )[0];
+            return {
+              ...student,
+              match_score: bestMatch?.match_score || 0,
+              matching_skills: bestMatch?.matching_skills || [],
+              missing_skills: bestMatch?.missing_skills || [],
+              reasoning: bestMatch?.reasoning || "",
+            };
+          }),
+        )
+      ).sort((left, right) => right.match_score - left.match_score);
+      const [employerWithPicture, candidatesWithPictures] = await Promise.all([
+        withProfilePictureUrl(employer),
+        Promise.all(
+          candidates.map((candidate) => withProfilePictureUrl(candidate)),
+        ),
+      ]);
+
+      response.json({
+        employer: employerWithPicture,
+        opportunities: opportunitiesResponse.data,
+        candidates: candidatesWithPictures,
+        stats: {
+          active_jobs: opportunitiesResponse.data.length,
+          candidates: candidates.filter(
+            (candidate) => candidate.match_score >= 50,
+          ).length,
+        },
+      });
+    } catch (error) {
+      errorResponse(response, error, "Could not load employer dashboard");
+    }
+  },
+);
+
+app.post("/api/opportunities", requireAuth, async (request, response) => {
   const body = request.body || {};
   if (!body.jobTitle && !body.title) {
     return response.status(422).json({ error: "Job title is required." });
@@ -1289,11 +2298,13 @@ app.post("/api/opportunities", async (request, response) => {
       .status(422)
       .json({ error: "Opportunity description is required." });
   }
-  if (!body.employer_id) {
+  const employerId = body.employer_id ?? body.employerId;
+  if (!employerId) {
     return response.status(422).json({
       error: "An employer profile is required to publish an opportunity.",
     });
   }
+  await requireOwnedProfile("employers", employerId, request.authUser.id);
 
   const applicationUrl = coerceText(
     body.externalApplicationUrl ?? body.external_application_url,
@@ -1415,7 +2426,7 @@ app.post("/api/opportunities", async (request, response) => {
 
   const payload = {
     title: String(body.jobTitle ?? body.title).trim(),
-    employer_id: body.employer_id,
+    employer_id: employerId,
     description,
     required_skills: normalizeSkills(
       body.required_skills ?? body.skills ?? body.requiredSkills,
@@ -1464,12 +2475,19 @@ app.post("/api/opportunities", async (request, response) => {
   });
 });
 
-app.use((_request, response) =>
-  // Unknown browser paths return the landing page; API paths are declared above
-  // and therefore never get mistaken for frontend navigation.
-  response.sendFile(path.join(__dirname, "../GraduRat/home.html")),
-);
+app.use((request, response) => {
+  // Never turn an unknown API request into an HTML page. This keeps frontend
+  // JSON parsing errors actionable when a route is misspelled or unavailable.
+  if (request.path.startsWith("/api/")) {
+    return response.status(404).json({ error: "API route not found." });
+  }
+  return response.sendFile(path.join(__dirname, "../GraduRat/index.html"));
+});
 
-app.listen(port, () =>
-  console.log(`GraduRat running at http://localhost:${port}`),
-);
+export { app };
+
+if (!process.env.VERCEL) {
+  app.listen(port, () =>
+    console.log(`GraduRat running at http://localhost:${port}`),
+  );
+}

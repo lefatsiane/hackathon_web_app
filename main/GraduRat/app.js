@@ -62,12 +62,15 @@ const submitForm = async (form) => {
   }
 
   // Send one consistent JSON contract to all three backend form endpoints.
-  const response = await fetch(formEndpoints[formType], {
+  const response = await graduratAuth.apiFetch(formEndpoints[formType], {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),
   });
-  const result = await response.json();
+  const result = await graduratAuth.readJson(
+    response,
+    "The server returned an invalid form response.",
+  );
   if (!response.ok)
     throw new Error(result.error || "The request could not be completed.");
   return result;
@@ -101,8 +104,11 @@ document.querySelectorAll("form[data-api-form]").forEach((form) => {
 
 const apiJson = async (url) => {
   // Keep response parsing and HTTP error handling in one place for dashboards.
-  const response = await fetch(url);
-  const result = await response.json();
+  const response = await graduratAuth.apiFetch(url);
+  const result = await graduratAuth.readJson(
+    response,
+    "The dashboard response was not valid JSON.",
+  );
   if (!response.ok) throw new Error(result.error || "Could not load data.");
   return result;
 };
@@ -114,6 +120,29 @@ const initials = (name, fallback = "GR") =>
     .map((part) => part[0])
     .join("")
     .toUpperCase();
+
+const renderAvatar = (element, name, profilePictureUrl, fallback = "GR") => {
+  if (!element) return;
+  element.replaceChildren();
+  if (!profilePictureUrl) {
+    element.textContent = initials(name, fallback);
+    return;
+  }
+  const image = document.createElement("img");
+  image.src = profilePictureUrl;
+  image.alt = `${name || "Profile"} profile picture`;
+  image.width = element.clientWidth || 52;
+  image.height = element.clientHeight || 52;
+  image.style.width = "100%";
+  image.style.height = "100%";
+  image.style.objectFit = "cover";
+  image.style.borderRadius = "inherit";
+  image.addEventListener("error", () => {
+    image.remove();
+    element.textContent = initials(name, fallback);
+  });
+  element.append(image);
+};
 
 const renderJobCard = (opportunity) => {
   // Build cards from API data instead of trusting the page's placeholder jobs.
@@ -131,7 +160,7 @@ const renderJobCard = (opportunity) => {
         ?.split("\n")
         .find((line) => line.startsWith("Location:"))
         ?.replace("Location: ", "") || "Location flexible",
-    )}</span><strong>${score === null ? "New" : `${score}% Match`}</strong></div></div>`;
+    )}</span><strong>${score === null ? "New" : `${score}% Match`}</strong><button class="apply-opportunity" type="button" data-opportunity-id="${escapeHtml(opportunity.id)}">Apply</button></div></div>`;
   return card;
 };
 
@@ -146,18 +175,51 @@ const setStat = (label, value) => {
 
 const renderGraduateDashboard = async () => {
   const matches = document.querySelector(".matches");
-  if (!matches) return;
   const studentId = localStorage.getItem("graduRatStudentId");
   // A dashboard without a registered profile has no server identity to query.
   if (!studentId) return;
   const { student, opportunities, stats } = await apiJson(
     `/api/students/${encodeURIComponent(studentId)}/dashboard`,
   );
-  matches.querySelectorAll(".job-card").forEach((card) => card.remove());
+  matches?.querySelectorAll(".job-card").forEach((card) => card.remove());
   // The backend returns opportunities ranked by deterministic skill overlap.
-  opportunities.forEach((opportunity) =>
-    matches.append(renderJobCard(opportunity)),
-  );
+  if (matches) {
+    if (!opportunities.length) {
+      matches.insertAdjacentHTML(
+        "beforeend",
+        '<p class="empty-dashboard-state">No job opportunities are available at this time. Please check back soon.</p>',
+      );
+    } else {
+      opportunities.forEach((opportunity) =>
+        matches.append(renderJobCard(opportunity)),
+      );
+    }
+  }
+  matches?.addEventListener("click", async (event) => {
+    const button = event.target.closest(".apply-opportunity");
+    if (!button || button.disabled) return;
+    button.disabled = true;
+    try {
+      const result = await graduratAuth.apiFetch(
+        `/api/opportunities/${encodeURIComponent(button.dataset.opportunityId)}/applications`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ student_id: studentId }),
+        },
+      );
+      const payload = await graduratAuth.readJson(
+        result,
+        "The application response was not valid JSON.",
+      );
+      if (!result.ok)
+        throw new Error(payload.error || "Could not submit application.");
+      button.textContent = "Applied";
+    } catch (error) {
+      button.disabled = false;
+      button.textContent = error.message;
+    }
+  });
   setStat("AI MATCHES", stats.matches);
 
   const fullName = student.full_name || "Graduate";
@@ -167,7 +229,7 @@ const renderGraduateDashboard = async () => {
       element.textContent = fullName;
     });
   document.querySelectorAll(".avatar, .large-avatar").forEach((element) => {
-    element.textContent = initials(fullName);
+    renderAvatar(element, fullName, student.profile_picture_url);
   });
   const skills = document.querySelector(".profile-skills div");
   if (skills) {
@@ -175,6 +237,12 @@ const renderGraduateDashboard = async () => {
       .map((skill) => `<span>${escapeHtml(skill)}</span>`)
       .join("");
   }
+  renderAiFeedback({
+    profile: student,
+    subjectType: "student",
+    target: opportunities[0] || null,
+    targetType: "opportunity",
+  });
 };
 
 const renderCandidateCard = (candidate) => {
@@ -187,11 +255,64 @@ const renderCandidateCard = (candidate) => {
     <div class="candidate-skills">${(candidate.skills || []).map((skill) => `<span>${escapeHtml(skill)}</span>`).join("")}</div>
     <p class="match-reasoning">${escapeHtml(candidate.reasoning || "")}</p>
     <div class="candidate-bottom"><span>${escapeHtml(candidate.matching_skills?.join(", ") || "Skills developing")}</span><span>Open to work</span><button type="button">View Profile →</button></div></div>`;
+  renderAvatar(
+    card.querySelector(".candidate-avatar"),
+    candidate.full_name,
+    candidate.profile_picture_url,
+  );
   return card;
 };
 
+const renderAiFeedback = async ({
+  profile,
+  subjectType,
+  target,
+  targetType,
+}) => {
+  const main = document.querySelector("main");
+  if (!main || !profile) return;
+
+  const panel = document.createElement("section");
+  panel.className = "card ai-feedback-panel";
+  panel.innerHTML = `<div class="section-title"><div><h2>AI career feedback</h2><p>Personal guidance based on the information in this profile.</p></div><span class="ai-feedback-status">Reviewing...</span></div><div class="ai-feedback-content" aria-live="polite">Groq is assessing strengths, gaps, and next steps.</div>`;
+  main.insertBefore(
+    panel,
+    main.firstElementChild?.nextElementSibling || main.firstChild,
+  );
+
+  try {
+    const result = await graduratAuth.apiFetch("/api/ai/feedback", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        subjectType,
+        subject: profile,
+        targetType,
+        target,
+      }),
+    });
+    const payload = await graduratAuth.readJson(
+      result,
+      "The AI feedback response was not valid JSON.",
+    );
+    if (!result.ok)
+      throw new Error(payload.error || "Feedback is unavailable.");
+    const assessment = payload.assessment;
+    panel.querySelector(".ai-feedback-status").textContent = "Profile guidance";
+    panel.querySelector(".ai-feedback-content").innerHTML =
+      `<p>${escapeHtml(assessment.summary)}</p>
+      <div class="ai-feedback-columns"><div><strong>Strengths</strong><ul>${assessment.strengths.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul></div>
+      <div><strong>Focus next</strong><ul>${[...assessment.gaps, ...assessment.next_steps].map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul></div></div>`;
+  } catch (error) {
+    panel.querySelector(".ai-feedback-status").textContent = "Unavailable";
+    panel.querySelector(".ai-feedback-content").textContent = error.message;
+  }
+};
+
 const renderEmployerDashboard = async () => {
-  const candidatesSection = document.querySelector(".candidates");
+  const candidatesSection = document.querySelector(
+    ".candidates, #candidateContainer",
+  );
   if (!candidatesSection) return;
   const employerId = localStorage.getItem("graduRatEmployerId");
   // Employer-scoped data must use the ID saved during employer registration.
@@ -218,8 +339,51 @@ const renderEmployerDashboard = async () => {
   document
     .querySelectorAll(".company-avatar, .large-company-avatar")
     .forEach((element) => {
-      element.textContent = initials(companyName, "CO");
+      renderAvatar(element, companyName, employer.profile_picture_url, "CO");
     });
+  renderAiFeedback({
+    profile: employer,
+    subjectType: "employer",
+    target: candidates[0] || null,
+    targetType: "student",
+  });
+
+  const applicationsResult = await apiJson(
+    `/api/employers/${encodeURIComponent(employerId)}/applications`,
+  );
+  const existingApplications = document.querySelector(
+    ".application-review-panel",
+  );
+  existingApplications?.remove();
+  const applicationPanel = document.createElement("section");
+  applicationPanel.className = "card application-review-panel";
+  applicationPanel.innerHTML = `<div class="section-title"><div><h2>Applications</h2><p>Review applicants for your opportunities.</p></div></div>`;
+  const list = document.createElement("div");
+  if (!applicationsResult.applications.length) {
+    list.textContent = "No applications yet.";
+  } else {
+    applicationsResult.applications.forEach((application) => {
+      const row = document.createElement("div");
+      row.className = "application-row";
+      row.innerHTML = `<strong>${escapeHtml(application.students?.full_name || "Applicant")}</strong><span>${escapeHtml(application.opportunities?.title || "Opportunity")}</span><select aria-label="Application status"><option value="submitted">Submitted</option><option value="reviewing">Reviewing</option><option value="shortlisted">Shortlisted</option><option value="rejected">Rejected</option></select>`;
+      const select = row.querySelector("select");
+      select.value = application.status;
+      select.addEventListener("change", async () => {
+        const response = await graduratAuth.apiFetch(
+          `/api/applications/${encodeURIComponent(application.id)}`,
+          {
+            method: "PATCH",
+            body: JSON.stringify({ status: select.value }),
+          },
+        );
+        if (!response.ok) select.value = application.status;
+        else application.status = select.value;
+      });
+      list.append(row);
+    });
+  }
+  applicationPanel.append(list);
+  document.querySelector("main")?.append(applicationPanel);
 };
 
 const setupSearch = () => {
@@ -237,6 +401,10 @@ const setupSearch = () => {
 
 // Both functions safely no-op on pages where their dashboard markup is absent;
 // running them together lets the shared script load on every frontend page.
+const feedbackStyles = document.createElement("style");
+feedbackStyles.textContent = `.ai-feedback-panel{margin:24px 0}.ai-feedback-status{color:#8ec7ff;font-weight:700}.ai-feedback-content{color:#aeb6c7;line-height:1.6}.ai-feedback-content p{color:#fff}.ai-feedback-columns{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px;margin-top:16px}.ai-feedback-columns strong{color:#fff}.ai-feedback-columns ul{margin:8px 0 0;padding-left:20px}.empty-dashboard-state{padding:28px 0;color:#aeb6c7}@media(max-width:700px){.ai-feedback-columns{grid-template-columns:1fr}}`;
+document.head.append(feedbackStyles);
+
 Promise.all([renderGraduateDashboard(), renderEmployerDashboard()])
   .catch((error) => console.error(error))
   .finally(setupSearch);

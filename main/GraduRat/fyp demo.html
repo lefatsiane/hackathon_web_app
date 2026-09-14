@@ -1,0 +1,1783 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>FYP | Gradurat</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet"
+    >
+
+    <style>
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Inter", sans-serif;
+            background: #05070d;
+            color: white;
+            min-height: 100vh;
+        }
+
+        /* ================= NAVBAR ================= */
+
+        nav {
+            height: 75px;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            padding: 0 6%;
+
+            background: rgba(5, 7, 13, 0.97);
+
+            border-bottom: 1px solid rgba(22, 140, 255, 0.15);
+
+            position: sticky;
+            top: 0;
+
+            z-index: 100;
+        }
+
+        .logo img {
+            width: 145px;
+            height: auto;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+        }
+
+        .nav-links a {
+            color: #9ca6b5;
+            text-decoration: none;
+            font-size: 14px;
+            transition: 0.3s;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: #168cff;
+        }
+
+        .profile-btn {
+            border: 1px solid #168cff;
+            padding: 10px 18px;
+            border-radius: 8px;
+            color: white !important;
+        }
+
+        .profile-btn:hover {
+            background: #168cff;
+        }
+
+
+        /* ================= PAGE ================= */
+
+        .page {
+            width: 90%;
+            max-width: 1050px;
+
+            margin: auto;
+
+            padding: 45px 0 80px;
+        }
+
+
+        .page-header {
+            text-align: center;
+
+            margin-bottom: 35px;
+        }
+
+
+        .badge {
+            display: inline-block;
+
+            padding: 8px 15px;
+
+            border-radius: 30px;
+
+            background: rgba(22, 140, 255, 0.1);
+
+            border: 1px solid rgba(22, 140, 255, 0.3);
+
+            color: #168cff;
+
+            font-size: 12px;
+            font-weight: 700;
+
+            margin-bottom: 15px;
+        }
+
+
+        .page-header h1 {
+            font-size: clamp(35px, 6vw, 55px);
+
+            margin-bottom: 12px;
+        }
+
+
+        .page-header h1 span {
+            color: #168cff;
+        }
+
+
+        .page-header p {
+            color: #8994a4;
+
+            max-width: 650px;
+
+            margin: auto;
+
+            font-size: 14px;
+
+            line-height: 1.7;
+        }
+
+
+        /* ================= DEMO NOTICE ================= */
+
+        .demo-notice {
+
+            max-width: 600px;
+
+            margin: 0 auto 30px;
+
+            padding: 12px 18px;
+
+            border-radius: 9px;
+
+            background: rgba(234, 179, 8, 0.07);
+
+            border: 1px solid rgba(234, 179, 8, 0.25);
+
+            color: #d5bd69;
+
+            text-align: center;
+
+            font-size: 12px;
+        }
+
+
+        /* ================= CARD AREA ================= */
+
+        .fyp-container {
+
+            width: 100%;
+
+            max-width: 500px;
+
+            margin: auto;
+        }
+
+
+        /* ================= CARD ================= */
+
+        .profile-card {
+
+            background: #0b1019;
+
+            border: 1px solid #1d2938;
+
+            border-radius: 20px;
+
+            overflow: hidden;
+
+            box-shadow:
+                0 25px 70px rgba(0, 0, 0, 0.45);
+
+            transition:
+                transform 0.3s ease,
+                opacity 0.3s ease;
+        }
+
+
+        .profile-card.swipe-left {
+
+            transform:
+                translateX(-130%)
+                rotate(-18deg);
+
+            opacity: 0;
+        }
+
+
+        .profile-card.swipe-right {
+
+            transform:
+                translateX(130%)
+                rotate(18deg);
+
+            opacity: 0;
+        }
+
+
+        /* ================= PHOTO ================= */
+
+        .photo {
+
+            height: 330px;
+
+            position: relative;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #0d1a29,
+                    #07101b
+                );
+
+            overflow: hidden;
+        }
+
+
+        .photo img {
+
+            width: 100%;
+            height: 100%;
+
+            object-fit: cover;
+        }
+
+
+        .photo-placeholder {
+
+            width: 125px;
+            height: 125px;
+
+            border-radius: 50%;
+
+            background:
+                rgba(22, 140, 255, 0.1);
+
+            border:
+                2px solid
+                rgba(22, 140, 255, 0.3);
+
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+
+            font-size: 52px;
+
+            color: #168cff;
+        }
+
+
+        /* ================= MATCH ================= */
+
+        .match-score {
+
+            position: absolute;
+
+            top: 18px;
+            right: 18px;
+
+            padding: 10px 14px;
+
+            border-radius: 10px;
+
+            background:
+                rgba(5, 7, 13, 0.88);
+
+            border:
+                1px solid
+                rgba(22, 140, 255, 0.45);
+
+            color: #168cff;
+
+            font-size: 13px;
+
+            font-weight: 800;
+
+            backdrop-filter: blur(8px);
+        }
+
+
+        /* ================= CARD CONTENT ================= */
+
+        .card-content {
+
+            padding: 25px;
+        }
+
+
+        .card-content h2 {
+
+            font-size: 25px;
+
+            margin-bottom: 7px;
+        }
+
+
+        .type {
+
+            color: #168cff;
+
+            font-size: 12px;
+
+            font-weight: 700;
+
+            letter-spacing: 0.5px;
+
+            margin-bottom: 18px;
+        }
+
+
+        .description {
+
+            color: #919baa;
+
+            font-size: 14px;
+
+            line-height: 1.7;
+
+            margin-bottom: 23px;
+        }
+
+
+        /* ================= INFO ================= */
+
+        .info {
+
+            margin-bottom: 20px;
+        }
+
+
+        .info h4 {
+
+            color: #667385;
+
+            font-size: 10px;
+
+            text-transform: uppercase;
+
+            letter-spacing: 0.9px;
+
+            margin-bottom: 8px;
+        }
+
+
+        .info p {
+
+            color: #c4cbd5;
+
+            font-size: 13px;
+
+            line-height: 1.6;
+        }
+
+
+        /* ================= TAGS ================= */
+
+        .tags {
+
+            display: flex;
+
+            flex-wrap: wrap;
+
+            gap: 7px;
+        }
+
+
+        .tag {
+
+            padding: 7px 10px;
+
+            background:
+                rgba(22, 140, 255, 0.08);
+
+            border:
+                1px solid
+                rgba(22, 140, 255, 0.18);
+
+            border-radius: 7px;
+
+            color: #9fcfff;
+
+            font-size: 11px;
+        }
+
+
+        /* ================= CV ================= */
+
+        .cv-box {
+
+            padding: 13px;
+
+            background: #080d15;
+
+            border:
+                1px solid #1d2938;
+
+            border-radius: 9px;
+
+            color: #667385;
+
+            font-size: 12px;
+
+            display: flex;
+
+            gap: 10px;
+
+            align-items: center;
+        }
+
+
+        /* ================= ACTIONS ================= */
+
+        .actions {
+
+            display: flex;
+
+            justify-content: center;
+
+            align-items: center;
+
+            gap: 25px;
+
+            margin-top: 25px;
+        }
+
+
+        .action {
+
+            width: 64px;
+            height: 64px;
+
+            border-radius: 50%;
+
+            background: #0b1019;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            font-size: 24px;
+
+            cursor: pointer;
+
+            transition: 0.25s;
+
+            font-family: inherit;
+        }
+
+
+        .pass {
+
+            color: #a4adba;
+
+            border:
+                1px solid #374151;
+        }
+
+
+        .pass:hover {
+
+            color: #ef4444;
+
+            border-color: #ef4444;
+
+            transform: scale(1.1);
+        }
+
+
+        .like {
+
+            width: 72px;
+            height: 72px;
+
+            color: #168cff;
+
+            border:
+                1px solid #168cff;
+        }
+
+
+        .like:hover {
+
+            background: #168cff;
+
+            color: white;
+
+            transform: scale(1.1);
+
+            box-shadow:
+                0 0 30px
+                rgba(22, 140, 255, 0.25);
+        }
+
+
+        /* ================= EMPTY ================= */
+
+        .empty {
+
+            display: none;
+
+            text-align: center;
+
+            padding: 65px 25px;
+
+            background: #0b1019;
+
+            border:
+                1px dashed #263446;
+
+            border-radius: 18px;
+        }
+
+
+        .empty-icon {
+
+            font-size: 48px;
+
+            margin-bottom: 15px;
+        }
+
+
+        .empty h2 {
+
+            margin-bottom: 10px;
+        }
+
+
+        .empty p {
+
+            color: #778292;
+
+            font-size: 13px;
+
+            line-height: 1.7;
+        }
+
+
+        /* ================= STATUS ================= */
+
+        .status {
+
+            min-height: 25px;
+
+            text-align: center;
+
+            margin-top: 18px;
+
+            color: #168cff;
+
+            font-size: 13px;
+
+            font-weight: 600;
+        }
+
+
+        /* ================= MATCH MODAL ================= */
+
+        .match-modal {
+
+            position: fixed;
+
+            inset: 0;
+
+            background:
+                rgba(0, 0, 0, 0.82);
+
+            display: none;
+
+            align-items: center;
+
+            justify-content: center;
+
+            padding: 20px;
+
+            z-index: 500;
+        }
+
+
+        .match-modal.show {
+
+            display: flex;
+        }
+
+
+        .match-box {
+
+            width: 100%;
+
+            max-width: 450px;
+
+            background: #0b1019;
+
+            border:
+                1px solid
+                rgba(22, 140, 255, 0.45);
+
+            border-radius: 20px;
+
+            padding: 40px 30px;
+
+            text-align: center;
+
+            box-shadow:
+                0 30px 100px
+                rgba(0, 0, 0, 0.6);
+        }
+
+
+        .match-icon {
+
+            font-size: 55px;
+
+            margin-bottom: 15px;
+        }
+
+
+        .match-box h2 {
+
+            font-size: 30px;
+
+            margin-bottom: 10px;
+        }
+
+
+        .match-box h2 span {
+
+            color: #168cff;
+        }
+
+
+        .match-box p {
+
+            color: #8994a4;
+
+            font-size: 14px;
+
+            line-height: 1.7;
+
+            margin-bottom: 25px;
+        }
+
+
+        .match-button {
+
+            width: 100%;
+
+            padding: 14px;
+
+            border: none;
+
+            border-radius: 9px;
+
+            background: #168cff;
+
+            color: white;
+
+            font-weight: 700;
+
+            cursor: pointer;
+
+            font-family: inherit;
+        }
+
+
+        .match-button:hover {
+
+            background: #0878df;
+        }
+
+
+        /* ================= FOOTER ================= */
+
+        footer {
+
+            border-top:
+                1px solid #121d29;
+
+            padding: 30px;
+
+            text-align: center;
+
+            color: #596575;
+
+            font-size: 12px;
+        }
+
+
+        /* ================= MOBILE ================= */
+
+        @media (max-width: 650px) {
+
+            nav {
+
+                padding: 0 4%;
+            }
+
+            .nav-links {
+
+                gap: 12px;
+            }
+
+            .nav-links a:not(.profile-btn) {
+
+                display: none;
+            }
+
+            .photo {
+
+                height: 290px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<!-- ================= NAVBAR ================= -->
+
+<nav>
+
+    <div class="logo">
+
+        <img
+            src="logo1.jpg"
+            alt="Gradurat Logo"
+        >
+
+    </div>
+
+
+    <div class="nav-links">
+
+        <a href="dashboard.html">
+            Dashboard
+        </a>
+
+        <a href="careers.html">
+            Career Explorer
+        </a>
+
+        <a href="fyp.html" class="active">
+            FYP
+        </a>
+
+        <a href="profile.html" class="profile-btn">
+            Profile
+        </a>
+
+    </div>
+
+</nav>
+
+
+
+<!-- ================= PAGE ================= -->
+
+<main class="page">
+
+
+    <section class="page-header">
+
+        <div class="badge">
+            FIND YOUR PEOPLE
+        </div>
+
+
+        <h1>
+            Find Your <span>Match.</span>
+        </h1>
+
+
+        <p>
+
+            Discover employers and opportunities that
+            match your skills, interests and career goals.
+
+            Show interest when you find the right fit.
+
+        </p>
+
+    </section>
+
+
+
+    <!-- DEMO NOTICE -->
+
+    <div class="demo-notice">
+
+        ⚠️ Demo Mode — The profiles below are sample
+        data. They will be replaced by real database
+        profiles later.
+
+    </div>
+
+
+
+    <!-- ================= FYP ================= -->
+
+    <section class="fyp-container">
+
+
+        <!-- CARD -->
+
+        <div
+            class="profile-card"
+            id="profileCard"
+        >
+
+
+            <div class="photo">
+
+
+                <div
+                    class="photo-placeholder"
+                    id="photoPlaceholder"
+                >
+                    👤
+                </div>
+
+
+                <img
+                    id="profileImage"
+                    src=""
+                    alt="Profile"
+                    style="display:none;"
+                >
+
+
+                <div
+                    class="match-score"
+                    id="matchScore"
+                >
+                    92% Match
+                </div>
+
+            </div>
+
+
+
+            <div class="card-content">
+
+
+                <h2 id="profileName">
+                    Company Name
+                </h2>
+
+
+                <div
+                    class="type"
+                    id="profileType"
+                >
+                    EMPLOYER
+                </div>
+
+
+                <p
+                    class="description"
+                    id="profileDescription"
+                >
+                    Profile description
+                </p>
+
+
+
+                <div class="info">
+
+                    <h4>
+                        Looking For
+                    </h4>
+
+                    <p id="lookingFor">
+                        Information
+                    </p>
+
+                </div>
+
+
+
+                <div class="info">
+
+                    <h4>
+                        Skills
+                    </h4>
+
+                    <div
+                        class="tags"
+                        id="skills"
+                    ></div>
+
+                </div>
+
+
+
+                <div class="info">
+
+                    <h4>
+                        Interests
+                    </h4>
+
+                    <div
+                        class="tags"
+                        id="interests"
+                    ></div>
+
+                </div>
+
+
+
+                <div class="info">
+
+                    <h4>
+                        Experience
+                    </h4>
+
+                    <p id="experience">
+                        Information
+                    </p>
+
+                </div>
+
+
+
+                <div class="info">
+
+                    <h4>
+                        Career Goals
+                    </h4>
+
+                    <p id="careerGoals">
+                        Information
+                    </p>
+
+                </div>
+
+
+
+                <div class="info">
+
+                    <h4>
+                        CV
+                    </h4>
+
+
+                    <div class="cv-box">
+
+                        🔒
+
+                        <span>
+                            CV available after a mutual match
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+            </div>
+
+        </div>
+
+
+
+        <!-- ACTIONS -->
+
+        <div
+            class="actions"
+            id="actions"
+        >
+
+            <button
+                class="action pass"
+                id="passButton"
+                title="Pass"
+            >
+                ✕
+            </button>
+
+
+            <button
+                class="action like"
+                id="likeButton"
+                title="Interested"
+            >
+                ♥
+            </button>
+
+        </div>
+
+
+
+        <!-- STATUS -->
+
+        <div
+            class="status"
+            id="status"
+        ></div>
+
+
+
+        <!-- EMPTY -->
+
+        <div
+            class="empty"
+            id="empty"
+        >
+
+            <div class="empty-icon">
+                🎉
+            </div>
+
+
+            <h2>
+                You've reached the end!
+            </h2>
+
+
+            <p>
+                You've gone through all the available
+                profiles in this demo.
+
+                New profiles will appear here when
+                Gradurat is connected to the database.
+            </p>
+
+        </div>
+
+
+    </section>
+
+</main>
+
+
+
+<!-- ================= MATCH MODAL ================= -->
+
+<div
+    class="match-modal"
+    id="matchModal"
+>
+
+    <div class="match-box">
+
+
+        <div class="match-icon">
+            🎉
+        </div>
+
+
+        <h2>
+            It's a <span>Match!</span>
+        </h2>
+
+
+        <p id="matchMessage">
+
+            You and this profile have shown mutual
+            interest.
+
+            You can now connect and continue the
+            conversation.
+
+        </p>
+
+
+        <button
+            class="match-button"
+            id="continueButton"
+        >
+            Continue Exploring
+        </button>
+
+    </div>
+
+</div>
+
+
+
+<footer>
+
+    © 2026 Gradurat.
+    Discover yourself. Discover your future.
+
+</footer>
+
+
+
+<script>
+
+/*
+============================================================
+GRADURAT FYP — DEMO VERSION
+============================================================
+
+IMPORTANT:
+
+This is intentionally HARD-CODED so you can see exactly
+how the FYP will look and behave.
+
+These profiles are NOT connected to the database.
+
+Later, this:
+
+    const profiles = [...]
+
+will be replaced with:
+
+    fetch("/api/fyp")
+
+The rest of the page can remain almost exactly the same.
+
+============================================================
+*/
+
+
+/* =========================================================
+DEMO PROFILES
+========================================================= */
+
+
+const profiles = [
+
+
+    /*
+    =========================================================
+    EMPLOYER 1
+    =========================================================
+    */
+
+    {
+
+        id: 1,
+
+        type: "Employer",
+
+        name: "NovaTech Solutions",
+
+        photo: "",
+
+        matchScore: 94,
+
+        description:
+            "A technology company focused on building digital solutions, software products and innovative platforms.",
+
+        lookingFor:
+            "Students and graduates interested in software development, data and technology.",
+
+        skills: [
+            "JavaScript",
+            "Python",
+            "SQL",
+            "Problem Solving",
+            "Teamwork"
+        ],
+
+        interests: [
+            "Technology",
+            "AI",
+            "Innovation",
+            "Software"
+        ],
+
+        experience:
+            "Entry-level opportunities available.",
+
+        careerGoals:
+            "Building a strong technology team and developing future software professionals.",
+
+        employerInterested: true
+
+    },
+
+
+    /*
+    =========================================================
+    EMPLOYER 2
+    =========================================================
+    */
+
+    {
+
+        id: 2,
+
+        type: "Employer",
+
+        name: "FinEdge Group",
+
+        photo: "",
+
+        matchScore: 86,
+
+        description:
+            "A financial services organisation looking for ambitious young professionals who enjoy solving real-world problems.",
+
+        lookingFor:
+            "Graduates interested in finance, business analysis, information systems and technology.",
+
+        skills: [
+            "Data Analysis",
+            "Excel",
+            "Communication",
+            "SQL",
+            "Problem Solving"
+        ],
+
+        interests: [
+            "Finance",
+            "Business",
+            "Analytics",
+            "Technology"
+        ],
+
+        experience:
+            "Graduate programmes and junior positions.",
+
+        careerGoals:
+            "Developing young professionals into future business and technology leaders.",
+
+        employerInterested: false
+
+    },
+
+
+    /*
+    =========================================================
+    EMPLOYER 3
+    =========================================================
+    */
+
+    {
+
+        id: 3,
+
+        type: "Employer",
+
+        name: "Creative Pulse Studio",
+
+        photo: "",
+
+        matchScore: 78,
+
+        description:
+            "A creative digital studio working on branding, websites, social media and digital experiences.",
+
+        lookingFor:
+            "Creative students and graduates interested in design, digital media and web development.",
+
+        skills: [
+            "UI/UX",
+            "HTML",
+            "CSS",
+            "Graphic Design",
+            "Creativity"
+        ],
+
+        interests: [
+            "Design",
+            "Branding",
+            "Digital Media",
+            "Art"
+        ],
+
+        experience:
+            "Internships and junior creative roles.",
+
+        careerGoals:
+            "Creating meaningful digital experiences while developing young creative talent.",
+
+        employerInterested: true
+
+    },
+
+
+    /*
+    =========================================================
+    EMPLOYER 4
+    =========================================================
+    */
+
+    {
+
+        id: 4,
+
+        type: "Employer",
+
+        name: "HealthCore Systems",
+
+        photo: "",
+
+        matchScore: 71,
+
+        description:
+            "A digital health organisation developing technology to improve healthcare services.",
+
+        lookingFor:
+            "Technology graduates interested in software, data and healthcare technology.",
+
+        skills: [
+            "Python",
+            "Data",
+            "Software Development",
+            "Research"
+        ],
+
+        interests: [
+            "Healthcare",
+            "Technology",
+            "Research"
+        ],
+
+        experience:
+            "Graduate technology positions.",
+
+        careerGoals:
+            "Using technology to improve healthcare outcomes.",
+
+        employerInterested: false
+
+    }
+
+];
+
+
+
+/* =========================================================
+VARIABLES
+========================================================= */
+
+let currentIndex = 0;
+
+
+/* =========================================================
+ELEMENTS
+========================================================= */
+
+const card =
+    document.getElementById(
+        "profileCard"
+    );
+
+const actions =
+    document.getElementById(
+        "actions"
+    );
+
+const empty =
+    document.getElementById(
+        "empty"
+    );
+
+const status =
+    document.getElementById(
+        "status"
+    );
+
+const passButton =
+    document.getElementById(
+        "passButton"
+    );
+
+const likeButton =
+    document.getElementById(
+        "likeButton"
+    );
+
+const matchModal =
+    document.getElementById(
+        "matchModal"
+    );
+
+const continueButton =
+    document.getElementById(
+        "continueButton"
+    );
+
+
+
+/* =========================================================
+SHOW PROFILE
+========================================================= */
+
+function showProfile() {
+
+
+    if (
+        currentIndex >= profiles.length
+    ) {
+
+        card.style.display =
+            "none";
+
+        actions.style.display =
+            "none";
+
+        empty.style.display =
+            "block";
+
+        return;
+
+    }
+
+
+    card.style.display =
+        "block";
+
+    actions.style.display =
+        "flex";
+
+    empty.style.display =
+        "none";
+
+
+    const profile =
+        profiles[currentIndex];
+
+
+    document.getElementById(
+        "profileName"
+    ).textContent =
+        profile.name;
+
+
+    document.getElementById(
+        "profileType"
+    ).textContent =
+        profile.type.toUpperCase();
+
+
+    document.getElementById(
+        "profileDescription"
+    ).textContent =
+        profile.description;
+
+
+    document.getElementById(
+        "lookingFor"
+    ).textContent =
+        profile.lookingFor;
+
+
+    document.getElementById(
+        "experience"
+    ).textContent =
+        profile.experience;
+
+
+    document.getElementById(
+        "careerGoals"
+    ).textContent =
+        profile.careerGoals;
+
+
+    document.getElementById(
+        "matchScore"
+    ).textContent =
+        `${profile.matchScore}% Match`;
+
+
+    /* ================= SKILLS ================= */
+
+    renderTags(
+        "skills",
+        profile.skills
+    );
+
+
+    /* ================= INTERESTS ================= */
+
+    renderTags(
+        "interests",
+        profile.interests
+    );
+
+
+    /* ================= PHOTO ================= */
+
+    const image =
+        document.getElementById(
+            "profileImage"
+        );
+
+    const placeholder =
+        document.getElementById(
+            "photoPlaceholder"
+        );
+
+
+    if (profile.photo) {
+
+        image.src =
+            profile.photo;
+
+        image.style.display =
+            "block";
+
+        placeholder.style.display =
+            "none";
+
+    }
+
+    else {
+
+        image.style.display =
+            "none";
+
+        placeholder.style.display =
+            "flex";
+
+    }
+
+
+    status.textContent = "";
+
+}
+
+
+
+/* =========================================================
+RENDER TAGS
+========================================================= */
+
+function renderTags(
+    elementId,
+    items
+) {
+
+    const container =
+        document.getElementById(
+            elementId
+        );
+
+
+    container.innerHTML = "";
+
+
+    items.forEach(item => {
+
+        const tag =
+            document.createElement(
+                "span"
+            );
+
+        tag.className =
+            "tag";
+
+        tag.textContent =
+            item;
+
+        container.appendChild(
+            tag
+        );
+
+    });
+
+}
+
+
+
+/* =========================================================
+PASS
+========================================================= */
+
+passButton.addEventListener(
+    "click",
+    function() {
+
+        swipeProfile(
+            "left"
+        );
+
+    }
+);
+
+
+
+/* =========================================================
+LIKE
+========================================================= */
+
+likeButton.addEventListener(
+    "click",
+    function() {
+
+        const profile =
+            profiles[currentIndex];
+
+
+        /*
+        -----------------------------------------------
+        DEMO MUTUAL MATCH
+
+        Some employers are configured as interested
+        in the current user.
+
+        If the user clicks LIKE and the employer is
+        also interested → MATCH.
+        -----------------------------------------------
+        */
+
+
+        if (
+            profile.employerInterested === true
+        ) {
+
+            showMatch(
+                profile
+            );
+
+        }
+
+        else {
+
+            status.textContent =
+                `Interest sent to ${profile.name} 💙`;
+
+        }
+
+
+        swipeProfile(
+            "right"
+        );
+
+    }
+);
+
+
+
+/* =========================================================
+SWIPE PROFILE
+========================================================= */
+
+function swipeProfile(
+    direction
+) {
+
+
+    if (
+        direction === "left"
+    ) {
+
+        card.classList.add(
+            "swipe-left"
+        );
+
+    }
+
+    else {
+
+        card.classList.add(
+            "swipe-right"
+        );
+
+    }
+
+
+    setTimeout(
+        function() {
+
+            card.classList.remove(
+                "swipe-left"
+            );
+
+            card.classList.remove(
+                "swipe-right"
+            );
+
+
+            currentIndex++;
+
+
+            showProfile();
+
+
+        },
+        300
+    );
+
+}
+
+
+
+/* =========================================================
+MATCH
+========================================================= */
+
+function showMatch(
+    profile
+) {
+
+    document.getElementById(
+        "matchMessage"
+    ).textContent =
+
+        `You and ${profile.name}
+        have both shown interest.
+
+        You can now connect with them
+        and continue the conversation.`;
+
+
+    matchModal.classList.add(
+        "show"
+    );
+
+}
+
+
+
+/* =========================================================
+CONTINUE
+========================================================= */
+
+continueButton.addEventListener(
+    "click",
+    function() {
+
+        matchModal.classList.remove(
+            "show"
+        );
+
+    }
+);
+
+
+
+/* =========================================================
+START
+========================================================= */
+
+showProfile();
+
+</script>
+
+</body>
+
+</html>
+```
