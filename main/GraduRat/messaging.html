@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Messages | Gradurat</title>
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      :root {
+        --background: #05070d; --card: #0b0f1a; --border: #1b2435; --input-border: #202a3d;
+        --text: #ffffff; --secondary-text: #8d98ad; --muted-text: #7f899d;
+        --blue: #258cff; --blue-hover: #1478e8; --blue-light: rgba(37, 140, 255, 0.1); --blue-border: rgba(37, 140, 255, 0.3);
+      }
+      body.light-theme {
+        --background: #f4f7fb; --card: #ffffff; --border: #dce3ee; --input-border: #c8d2e2;
+        --text: #111827; --secondary-text: #5c677a; --muted-text: #697586;
+        --blue: #1266e3; --blue-hover: #0958c9; --blue-light: #eaf2ff; --blue-border: #b9d3ff;
+      }
+      body { font-family: Arial, sans-serif; background: var(--background); color: var(--text); height: 100vh; display: flex; flex-direction: column; }
+      .navbar { height: 70px; display: flex; align-items: center; justify-content: space-between; padding: 0 4%; background: var(--card); border-bottom: 1px solid var(--border); flex-shrink: 0; }
+      .navbar a { color: var(--secondary-text); text-decoration: none; font-size: 13px; margin-left: 20px; }
+      .navbar .logo { font-size: 20px; font-weight: 800; color: var(--text); margin-left: 0; }
+      .navbar .logo span { color: var(--blue); }
+      .app { flex: 1; display: grid; grid-template-columns: 320px 1fr; min-height: 0; }
+      .sidebar { border-right: 1px solid var(--border); background: var(--card); display: flex; flex-direction: column; }
+      .sidebar-header { padding: 16px; border-bottom: 1px solid var(--border); }
+      .btn { padding: 10px 15px; border-radius: 9px; background: var(--blue); color: #fff; border: none; font-weight: 700; cursor: pointer; font-size: 13px; }
+      .btn:hover { background: var(--blue-hover); }
+      .convo-list { overflow-y: auto; flex: 1; }
+      .convo { display: block; width: 100%; text-align: left; padding: 14px 16px; border: none; border-bottom: 1px solid var(--border); background: transparent; color: var(--text); cursor: pointer; }
+      .convo:hover, .convo.active { background: var(--blue-light); }
+      .convo h4 { font-size: 14px; margin-bottom: 4px; }
+      .convo p { color: var(--muted-text); font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+      .convo .unread { float: right; background: var(--blue); color: #fff; border-radius: 10px; padding: 2px 8px; font-size: 11px; }
+      .main-pane { display: flex; flex-direction: column; min-height: 0; }
+      .chat-header { padding: 16px 20px; border-bottom: 1px solid var(--border); }
+      .chat-header h3 { font-size: 16px; }
+      .chat-header p { color: var(--muted-text); font-size: 12px; }
+      .messages { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 10px; }
+      .bubble { max-width: 70%; padding: 11px 14px; border-radius: 12px; font-size: 13px; line-height: 1.5; }
+      .bubble.mine { align-self: flex-end; background: var(--blue); color: #fff; }
+      .bubble.theirs { align-self: flex-start; background: var(--card); border: 1px solid var(--border); }
+      .bubble .time { display: block; font-size: 10px; margin-top: 4px; opacity: 0.7; }
+      .composer { display: flex; gap: 10px; padding: 14px 20px; border-top: 1px solid var(--border); }
+      .composer input { flex: 1; padding: 11px 14px; border-radius: 9px; border: 1px solid var(--input-border); background: var(--background); color: var(--text); outline: none; }
+      .placeholder { display: grid; place-items: center; color: var(--muted-text); font-size: 14px; }
+      .message { padding: 12px 15px; border-radius: 9px; margin: 12px 20px 0; font-size: 13px; display: none; }
+      .message.error { display: block; background: rgba(255, 70, 70, 0.1); border: 1px solid rgba(255, 70, 70, 0.3); color: #ff8d8d; }
+      @media (max-width: 700px) { .app { grid-template-columns: 1fr; } .sidebar { display: none; } }
+    </style>
+  </head>
+  <body>
+    <script src="theme.js"></script>
+    <nav class="navbar">
+      <a href="index.html" class="logo">Gradu<span>Rat</span></a>
+      <div>
+        <a href="dashboard.html">Dashboard</a>
+        <a href="events.html">Events</a>
+        <a href="messaging.html">Messages</a>
+      </div>
+    </nav>
+
+    <div class="app">
+      <aside class="sidebar">
+        <div class="sidebar-header">
+          <button class="btn" id="newMessageButton">＋ New Message</button>
+        </div>
+        <div class="convo-list" id="convoList"><div class="placeholder" style="padding: 20px">Loading conversations...</div></div>
+      </aside>
+
+      <main class="main-pane">
+        <div class="chat-header" id="chatHeader">
+          <h3>Select a conversation</h3>
+          <p>Message employers, students and lecturers on Gradurat.</p>
+        </div>
+        <div id="message" class="message"></div>
+        <div class="messages placeholder" id="messagesPane">
+          <span>Choose a conversation to start chatting.</span>
+        </div>
+        <div class="composer" id="composer" style="display: none">
+          <input type="text" id="messageInput" placeholder="Write a message..." maxlength="2000" />
+          <button class="btn" id="sendButton">Send</button>
+        </div>
+      </main>
+    </div>
+
+    <input type="hidden" id="activeConversationId" />
+
+    <script src="auth-client.js"></script>
+    <script>
+      const user = graduratAuth.getUser();
+      let conversations = [];
+
+      const escapeHtml = (value) =>
+        String(value ?? "").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+
+      function showMessage(text) {
+        const box = document.getElementById("message");
+        box.textContent = text;
+        box.className = "message error";
+        setTimeout(() => (box.className = "message"), 4000);
+      }
+
+      async function loadConversations() {
+        const result = await graduratAuth.readJson(
+          await graduratAuth.apiFetch("/api/messages/conversations"),
+          "Invalid conversations response.",
+        );
+        conversations = result.conversations || [];
+        const list = document.getElementById("convoList");
+        if (!conversations.length) {
+          list.innerHTML = '<div class="placeholder" style="padding: 20px">No conversations yet.</div>';
+          return;
+        }
+        list.innerHTML = conversations
+          .map(
+            (convo) => `
+              <button class="convo" data-id="${convo.id}">
+                <h4>${escapeHtml(convo.other_name)}${convo.unread ? `<span class="unread">${convo.unread}</span>` : ""}</h4>
+                <p>${convo.other_role} · ${escapeHtml(convo.last_message?.body || "No messages yet")}</p>
+              </button>`,
+          )
+          .join("");
+        list.querySelectorAll(".convo").forEach((button) => {
+          button.addEventListener("click", () => openConversation(button.dataset.id));
+        });
+      }
+
+      async function openConversation(conversationId) {
+        document.getElementById("activeConversationId").value = conversationId;
+        const result = await graduratAuth.readJson(
+          await graduratAuth.apiFetch(`/api/messages/${conversationId}`),
+          "Invalid conversation response.",
+        );
+        document.getElementById("chatHeader").innerHTML =
+          `<h3>${escapeHtml(result.other?.name || "Chat")}</h3><p>${escapeHtml(result.other?.email || "")}</p>`;
+
+        const pane = document.getElementById("messagesPane");
+        pane.classList.remove("placeholder");
+        pane.innerHTML =
+          (result.messages || [])
+            .map((message) => {
+              const mine = message.sender_id === (user?.studentId || user?.employerId || user?.lecturerId);
+              return `<div class="bubble ${mine ? "mine" : "theirs"}">${escapeHtml(message.body)}
+                <span class="time">${new Date(message.created_at).toLocaleString()}</span></div>`;
+            })
+            .join("") || "<span class='placeholder'>No messages yet. Say hello!</span>";
+        pane.scrollTop = pane.scrollHeight;
+        document.getElementById("composer").style.display = "flex";
+        document.querySelectorAll(".convo").forEach((c) => c.classList.toggle("active", c.dataset.id === conversationId));
+        loadConversations();
+      }
+
+      async function sendMessage() {
+        const conversationId = document.getElementById("activeConversationId").value;
+        const input = document.getElementById("messageInput");
+        const body = input.value.trim();
+        if (!conversationId || !body) return;
+        const response = await graduratAuth.apiFetch(`/api/messages/${conversationId}`, {
+          method: "POST",
+          body: JSON.stringify({ body }),
+        });
+        const result = await graduratAuth.readJson(response, "Invalid message response.");
+        if (!response.ok) return showMessage(result.error || "Could not send message.");
+        input.value = "";
+        openConversation(conversationId);
+      }
+
+      document.getElementById("sendButton").addEventListener("click", sendMessage);
+      document.getElementById("messageInput").addEventListener("keydown", (event) => {
+        if (event.key === "Enter") sendMessage();
+      });
+
+      document.getElementById("newMessageButton").addEventListener("click", async () => {
+        const contactsResult = await graduratAuth.readJson(
+          await graduratAuth.apiFetch("/api/messages/contacts"),
+          "Invalid contacts response.",
+        );
+        const contacts = contactsResult.contacts || [];
+        if (!contacts.length) return showMessage("No contacts available yet.");
+        const target = prompt(
+          "Choose a person to message:\n\n" +
+            contacts.map((contact, index) => `${index + 1}. ${contact.name} (${contact.role} - ${contact.subtitle || ""})`).join("\n"),
+        );
+        const index = parseInt(target, 10) - 1;
+        if (isNaN(index) || !contacts[index]) return;
+        const response = await graduratAuth.apiFetch("/api/messages/new", {
+          method: "POST",
+          body: JSON.stringify({ target_role: contacts[index].role, target_id: contacts[index].id }),
+        });
+        const result = await graduratAuth.readJson(response, "Invalid conversation response.");
+        if (!response.ok) return showMessage(result.error || "Could not start conversation.");
+        loadConversations();
+        openConversation(result.conversation.id);
+      });
+
+      if (!graduratAuth.getSession()?.access_token || !user) {
+        alert("Please sign in first.");
+        window.location.href = "login.html";
+      } else {
+        loadConversations();
+        setInterval(loadConversations, 20000);
+      }
+    </script>
+  </body>
+</html>
