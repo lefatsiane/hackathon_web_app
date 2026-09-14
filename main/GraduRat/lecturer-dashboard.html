@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Lecturer Dashboard | Gradurat</title>
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      :root {
+        --background: #05070d; --card: #0b0f1a; --border: #1b2435;
+        --text: #ffffff; --secondary-text: #8d98ad; --muted-text: #7f899d;
+        --blue: #258cff; --blue-hover: #1478e8; --blue-light: rgba(37, 140, 255, 0.1);
+        --blue-border: rgba(37, 140, 255, 0.3);
+      }
+      body.light-theme {
+        --background: #f4f7fb; --card: #ffffff; --border: #dce3ee;
+        --text: #111827; --secondary-text: #5c677a; --muted-text: #697586;
+        --blue: #1266e3; --blue-hover: #0958c9; --blue-light: #eaf2ff; --blue-border: #b9d3ff;
+      }
+      body { font-family: Arial, sans-serif; background: var(--background); color: var(--text); min-height: 100vh; }
+      .navbar { height: 78px; display: flex; align-items: center; justify-content: space-between; padding: 0 6%; background: var(--card); border-bottom: 1px solid var(--border); }
+      .navbar a { color: var(--secondary-text); text-decoration: none; font-size: 13px; margin-left: 22px; }
+      .navbar .logo { font-size: 20px; font-weight: 800; color: var(--text); margin-left: 0; }
+      .navbar .logo span { color: var(--blue); }
+      .container { width: 90%; max-width: 1100px; margin: 40px auto 60px; }
+      h1 { font-size: 30px; margin-bottom: 8px; }
+      .subtitle { color: var(--muted-text); margin-bottom: 30px; }
+      .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-bottom: 30px; }
+      .stat-card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 25px; }
+      .stat-card .num { font-size: 34px; font-weight: 800; color: var(--blue); margin-bottom: 6px; }
+      .stat-card .label { color: var(--muted-text); font-size: 13px; }
+      .card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 25px; margin-bottom: 22px; }
+      .card h2 { font-size: 19px; margin-bottom: 14px; }
+      .actions { display: flex; gap: 12px; flex-wrap: wrap; }
+      .btn { display: inline-block; padding: 12px 20px; border-radius: 9px; background: var(--blue); color: #fff; text-decoration: none; font-weight: 700; font-size: 13px; border: none; cursor: pointer; }
+      .btn:hover { background: var(--blue-hover); }
+      .btn.ghost { background: transparent; border: 1px solid var(--border); color: var(--text); }
+      .event-row { display: flex; justify-content: space-between; gap: 15px; padding: 14px 0; border-bottom: 1px solid var(--border); font-size: 14px; }
+      .event-row:last-child { border-bottom: none; }
+      .event-date { color: var(--muted-text); font-size: 12px; }
+      .empty { color: var(--muted-text); padding: 20px; text-align: center; }
+      @media (max-width: 700px) { .stats { grid-template-columns: 1fr; } }
+    </style>
+  </head>
+  <body>
+    <script src="theme.js"></script>
+    <nav class="navbar">
+      <a href="index.html" class="logo">Gradu<span>Rat</span></a>
+      <div>
+        <a href="dashboard.html">Dashboard</a>
+        <a href="events.html">Events</a>
+        <a href="messaging.html">Messages</a>
+        <a href="#" id="logoutLink">Log Out</a>
+      </div>
+    </nav>
+
+    <main class="container">
+      <h1 id="welcome">Lecturer Dashboard</h1>
+      <p class="subtitle">
+        Create events for your students and graduates, and keep an eye on their progress.
+      </p>
+
+      <section class="stats">
+        <div class="stat-card"><div class="num" id="statStudents">—</div><div class="label">Students &amp; Graduates</div></div>
+        <div class="stat-card"><div class="num" id="statMatches">—</div><div class="label">Career Matches</div></div>
+        <div class="stat-card"><div class="num" id="statEvents">—</div><div class="label">My Events</div></div>
+      </section>
+
+      <section class="card">
+        <h2>Support your students</h2>
+        <div class="actions">
+          <a href="events.html" class="btn">＋ Add an Event</a>
+          <a href="messaging.html" class="btn ghost">💬 Message a Student</a>
+          <a href="dashboard.html" class="btn ghost">View Platform</a>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>My Events</h2>
+        <div id="eventsList"><div class="empty">Loading your events...</div></div>
+      </section>
+    </main>
+
+    <script src="auth-client.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", async () => {
+        const user = graduratAuth.getUser();
+        if (!graduratAuth.getSession()?.access_token || !user) {
+          alert("Please create a Gradurat account first.");
+          window.location.href = "register.html";
+          return;
+        }
+        if (!user.lecturerId) {
+          const me = await graduratAuth
+            .readJson(await graduratAuth.apiFetch("/api/me"), "Invalid auth response.");
+          if (me.lecturer?.id) {
+            user.lecturerId = me.lecturer.id;
+            sessionStorage.setItem("graduRatLecturerId", me.lecturer.id);
+            localStorage.setItem("graduRatLecturerId", me.lecturer.id);
+          }
+        }
+        if (!user.lecturerId) {
+          alert("Your lecturer profile is still being set up. Please sign in again.");
+          window.location.href = "login.html";
+          return;
+        }
+        document.getElementById("welcome").textContent = `Welcome back, ${user.fullName || "Lecturer"}`;
+
+        const response = await graduratAuth.apiFetch(
+          `/api/lecturers/${user.lecturerId}/dashboard`,
+        );
+        const result = await graduratAuth.readJson(response, "Invalid dashboard response.");
+        if (!response.ok) {
+          alert(result.error || "Could not load dashboard.");
+          return;
+        }
+        document.getElementById("statStudents").textContent = result.stats.students;
+        document.getElementById("statMatches").textContent = result.stats.matches;
+        document.getElementById("statEvents").textContent = result.stats.events;
+
+        const list = document.getElementById("eventsList");
+        const events = result.events || [];
+        if (!events.length) {
+          list.innerHTML = '<div class="empty">You haven\'t created any events yet. Use "Add an Event" above.</div>';
+          return;
+        }
+        list.innerHTML = events
+          .map(
+            (event) => `
+              <div class="event-row">
+                <div>
+                  <strong>${String(event.title).replace(/</g, "&lt;")}</strong>
+                  <div class="event-date">${new Date(event.start_time).toLocaleString()} · ${event.event_type || "Other"} · ${event.mode || "onsite"}${event.location ? " · " + String(event.location).replace(/</g, "&lt;") : ""}</div>
+                </div>
+                <button class="btn ghost delete-event" data-id="${event.id}">Delete</button>
+              </div>`,
+          )
+          .join("");
+
+        list.querySelectorAll(".delete-event").forEach((button) => {
+          button.addEventListener("click", async () => {
+            if (!confirm("Delete this event?")) return;
+            await graduratAuth.apiFetch(`/api/events/${button.dataset.id}`, { method: "DELETE" });
+            location.reload();
+          });
+        });
+      });
+
+      document.getElementById("logoutLink")?.addEventListener("click", (event) => {
+        event.preventDefault();
+        graduratAuth.clearAuth();
+        window.location.href = "index.html";
+      });
+    </script>
+  </body>
+</html>
