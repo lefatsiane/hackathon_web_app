@@ -69,19 +69,29 @@ app.get("/api/config", (_request, response) => {
 });
 
 app.get("/api/me", requireAuth, async (request, response) => {
-  const [studentResult, employerResult] = await Promise.all([
-    supabaseServer
-      .from("students")
-      .select("id, full_name, email")
-      .eq("auth_user_id", request.authUser.id)
-      .maybeSingle(),
-    supabaseServer
-      .from("employers")
-      .select("id, company_name, email")
-      .eq("auth_user_id", request.authUser.id)
-      .maybeSingle(),
-  ]);
-  if (studentResult.error)
+  const studentRow = await supabaseServer
+    .from("students").select("*").eq("auth_user_id", request.authUser.id).maybeSingle();
+  const employerRow = await supabaseServer
+    .from("employers").select("*").eq("auth_user_id", request.authUser.id).maybeSingle();
+  const lecturerRow = await supabaseServer
+    .from("lecturers").select("*").eq("auth_user_id", request.authUser.id).maybeSingle();
+
+  const student = studentRow.data;
+  const employer = employerRow.data;
+  const lecturer = lecturerRow.data;
+
+  response.json({
+    user: request.authUser,
+    student: student
+      ? { ...student, profile_completeness: computeProfileCompleteness(student, "student") }
+      : null,
+    employer: employer
+      ? { ...employer, profile_completeness: computeProfileCompleteness(employer, "employer") }
+      : null,
+    lecturer: lecturer || null,
+  });
+});
+if (studentResult.error)
     return errorResponse(
       response,
       studentResult.error,
@@ -3580,7 +3590,490 @@ app.post("/api/opportunities", requireAuth, async (request, response) => {
     profile_completeness: computeProfileCompleteness(data, "employer"),
   });
 });
+/* ================= SOCIAL FEATURES ================= */
 
+const ADMIN_EMAIL = process.env.ADMIN_EMAIL || "admin@gradurat.com";
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "Admin123";
+const ADMIN_API_KEY = process.env.ADMIN_API_KEY || "gradurat-admin-dev-key";
+
+const requireAdmin = (request, response, next) => {
+  const header = request.headers.authorization || "";
+  const token = header.startsWith("Bearer ") ? header.slice(7) : "";
+  if (token !== ADMIN_API_KEY) {
+    return response.status(401).json({ error: "Administrator access required." });
+  }
+  next();
+};
+
+const getAuthContext = async (authUserId) => {
+  const { data: student } = await supabaseServer
+    .from("students").select("id, full_name, email").eq("auth_user_id", authUserId).maybeSingle();
+  if (student) return { role: "student", profileId: student.id, name: student.full_name, email: student.email };
+  const { data: employer } = await supabaseServer
+    .from("employers").select("id, company_name, email").eq("auth_user_id", authUserId).maybeSingle();
+  if (employer) return { role: "employer", profileId: employer.id, name: employer.company_name, email: employer.email };
+  const { data: lecturer } = await supabaseServer
+    .from("lecturers").select("id, full_name, email").eq("auth_user_id", authUserId).maybeSingle();
+  if (lecturer) return { role: "lecturer", profileId: lecturer.id, name: lecturer.full_name, email: lecturer.email };
+  return null;
+};
+
+const createNotification = async (role, profileId, type, title, body, link) => {
+  if (!role || !profileId) return;
+  await supabaseServer.from("notifications").insert({
+    user_role: role, user_id: profileId, type: type || "general",
+    title, body: body || "", link: link || null,
+  });
+};
+
+const notifyAllStudents = async (type, title, body, link) => {
+  const { data: rows } = await supabaseServer.from("students").select("id").limit(1000);
+  if (!rows?.length) return;
+  await supabaseServer.from("notifications").insert(rows.map((row) => ({
+    user_role: "student", user_id: row.id, type,
+    title, body: body || "", link: link || null,
+  })));
+};
+
+/* ---- ADMIN ---- */
+
+app.post("/api/admin/login", async (request, response) => {
+  const { email, password } = request.body || {};
+  if (!email || !password) return response.status(400).json({ error: "Email and password are required." });
+  if (email.trim().toLowerCase() !== ADMIN_EMAIL.toLowerCase() || password !== ADMIN_PASSWORD)
+    return response.status(401).json({ error: "Incorrect admin email or password." });
+  response.json({ token: ADMIN_API_KEY, email: email.trim().toLowerCase() });
+});
+
+app.get("/api/admin/stats", requireAdmin, async (_request, response) => {
+  const count = async (table, apply = null) => {
+    let query = supabaseServer.from(table).select("id", { count: "exact", head: true });
+    if (apply) query = apply(query);
+    const { count: value, error } = await query;
+    return error ? 0 : value || 0;
+  };
+  const currentYear = new Date().getFullYear();
+  const [students, graduates, employers, lecturers, opportunities, matches, swipeMatches, peerMatches, events, applications, messages] = await Promise.all([
+    count("students"),
+    count("students", (q) => q.lte("graduation_year", currentYear)),
+    count("employers"),
+    count("lecturers"),
+    count("opportunities"),
+    count("matches"),
+    count("swipe_matches"),
+    count("student_matches"),
+    count("events"),
+    count("applications"),
+    count("messages"),
+  ]);
+  response.json({
+    students, graduates, employers, lecturers, opportunities,
+    matches: matches + swipeMatches, peer_matches: peerMatches,
+    events, applications, messages, users: students + employers + lecturers,
+  });
+});
+
+app.get("/api/admin/activity", requireAdmin, async (_request, response) => {
+  const pull = async (table, limit, labeler) => {
+    const { data } = await supabaseServer
+      .from(table).select("*").order("created_at", { ascending: false }).limit(limit);
+    return (data || []).map((row) => ({ type: table, text: labeler(row), time: row.created_at }));
+  };
+  const rows = [
+    ...(await pull("students", 6, (r) => `${r.full_name} joined as a student/graduate`)),
+    ...(await pull("employers", 5, (r) => `${r.company_name} registered as an employer`)),
+    ...(await pull("lecturers", 5, (r) => `${r.full_name} registered as a lecturer`)),
+    ...(await pull("events", 5, (r) => `Event created: ${r.title}`)),
+    ...(await pull("opportunities", 5, (r) => `Opportunity: ${r.title}`)),
+  ];
+  rows.sort((a, b) => new Date(b.time) - new Date(a.time));
+  response.json({ activity: rows.slice(0, 20) });
+});
+
+app.get("/api/admin/students", requireAdmin, async (_request, response) => {
+  const { data, error } = await supabaseServer.from("students").select("*").order("created_at", { ascending: false }).limit(200);
+  if (error) return response.status(500).json({ error: error.message });
+  response.json({ students: data || [] });
+});
+
+app.get("/api/admin/graduates", requireAdmin, async (_request, response) => {
+  const { data, error } = await supabaseServer.from("students").select("*")
+    .lte("graduation_year", new Date().getFullYear()).order("created_at", { ascending: false }).limit(200);
+  if (error) return response.status(500).json({ error: error.message });
+  response.json({ graduates: data || [] });
+});
+
+app.get("/api/admin/employers", requireAdmin, async (_request, response) => {
+  const { data, error } = await supabaseServer.from("employers").select("*").order("created_at", { ascending: false }).limit(200);
+  if (error) return response.status(500).json({ error: error.message });
+  response.json({ employers: data || [] });
+});
+
+app.get("/api/admin/lecturers", requireAdmin, async (_request, response) => {
+  const { data, error } = await supabaseServer.from("lecturers").select("*").order("created_at", { ascending: false }).limit(200);
+  if (error) return response.status(500).json({ error: error.message });
+  response.json({ lecturers: data || [] });
+});
+
+app.get("/api/admin/opportunities", requireAdmin, async (_request, response) => {
+  const { data, error } = await supabaseServer.from("opportunities").select("*").order("created_at", { ascending: false }).limit(200);
+  if (error) return response.status(500).json({ error: error.message });
+  response.json({ opportunities: data || [] });
+});
+
+app.get("/api/admin/matches", requireAdmin, async (_request, response) => {
+  const [ai, swipes, peers] = await Promise.all([
+    supabaseServer.from("matches").select("*, students(full_name), opportunities(title)").order("created_at", { ascending: false }).limit(100),
+    supabaseServer.from("swipe_matches").select("*, students(full_name), opportunities(title)").order("matched_at", { ascending: false }).limit(100),
+    supabaseServer.from("student_matches").select("*, sa:students!student_a_id(full_name), sb:students!student_b_id(full_name)").order("matched_at", { ascending: false }).limit(100),
+  ]);
+  response.json({ matches: ai.data || [], swipes: swipes.data || [], peers: peers.data || [] });
+});
+
+app.get("/api/admin/applications", requireAdmin, async (_request, response) => {
+  const { data, error } = await supabaseServer.from("applications").select("*, students(full_name, email), opportunities(title)").order("created_at", { ascending: false }).limit(100);
+  if (error) return response.status(500).json({ error: error.message });
+  response.json({ applications: data || [] });
+});
+
+app.get("/api/admin/events", requireAdmin, async (_request, response) => {
+  const { data, error } = await supabaseServer.from("events").select("*").order("start_time", { ascending: false }).limit(200);
+  if (error) return response.status(500).json({ error: error.message });
+  response.json({ events: data || [] });
+});
+
+app.delete("/api/admin/events/:eventId", requireAdmin, async (request, response) => {
+  const { error } = await supabaseServer.from("events").delete().eq("id", request.params.eventId);
+  if (error) return response.status(500).json({ error: error.message });
+  response.json({ deleted: true });
+});
+
+app.patch("/api/admin/employers/:employerId", requireAdmin, async (request, response) => {
+  const { verification_status } = request.body || {};
+  if (!verification_status) return response.status(400).json({ error: "verification_status is required." });
+  const { data, error } = await supabaseServer.from("employers")
+    .update({ verification_status, verification_timestamp: new Date().toISOString() })
+    .eq("id", request.params.employerId).select().single();
+  if (error) return response.status(500).json({ error: error.message });
+  response.json({ employer: data });
+});
+
+app.patch("/api/admin/opportunities/:opportunityId", requireAdmin, async (request, response) => {
+  const { status, featured } = request.body || {};
+  const updates = {};
+  if (status) updates.status = status;
+  if (typeof featured === "boolean") updates.featured = featured;
+  const { data, error } = await supabaseServer.from("opportunities").update(updates).eq("id", request.params.opportunityId).select().single();
+  if (error) return response.status(500).json({ error: error.message });
+  response.json({ opportunity: data });
+});
+
+const getOrCreatePlatformSettings = async () => {
+  const { data } = await supabaseServer.from("platform_settings").select("*").limit(1).maybeSingle();
+  if (data) return data;
+  const { data: created } = await supabaseServer.from("platform_settings").insert({ data: {} }).select().single();
+  return created;
+};
+
+app.get("/api/admin/settings", requireAdmin, async (_request, response) => {
+  const settings = await getOrCreatePlatformSettings();
+  response.json({ settings: settings.data });
+});
+
+app.put("/api/admin/settings", requireAdmin, async (request, response) => {
+  const settings = await getOrCreatePlatformSettings();
+  const { data, error } = await supabaseServer.from("platform_settings")
+    .update({ data: request.body || {}, updated_at: new Date().toISOString() }).eq("id", settings.id).select().single();
+  if (error) return response.status(500).json({ error: error.message });
+  response.json({ settings: data.data });
+});
+
+app.post("/api/admin/announcement", requireAdmin, async (request, response) => {
+  const { title, body } = request.body || {};
+  if (!title) return response.status(400).json({ error: "Title is required." });
+  await notifyAllStudents("announcement", title, body || "", "/index.html");
+  response.json({ ok: true, sent: true });
+});
+
+/* ---- EVENTS ---- */
+
+app.get("/api/events", async (request, response) => {
+  const { type } = request.query;
+  let query = supabaseServer.from("events").select("*")
+    .gte("start_time", new Date().toISOString()).order("start_time", { ascending: true }).limit(100);
+  if (type) query = query.eq("event_type", type);
+  const { data, error } = await query;
+  if (error) return response.status(500).json({ error: "Could not load events." });
+  response.json({ events: data || [] });
+});
+
+app.post("/api/events", requireAuth, async (request, response) => {
+  const context = await getAuthContext(request.authUser.id);
+  if (!context) return response.status(404).json({ error: "Your profile is not set up yet." });
+  if (!["lecturer", "employer"].includes(context.role))
+    return response.status(403).json({ error: "Only lecturers and employers can add events." });
+
+  const { title, description, event_type, location, mode, start_time, end_time, external_link } = request.body || {};
+  if (!title || !start_time) return response.status(400).json({ error: "Title and start time are required." });
+
+  const { data, error } = await supabaseServer.from("events").insert({
+    title, description: description || null, event_type: event_type || "Other",
+    location: location || null, mode: mode || "onsite", start_time,
+    end_time: end_time || null, external_link: external_link || null,
+    created_by_role: context.role, created_by_id: context.profileId, created_by_name: context.name,
+  }).select().single();
+
+  if (error) return response.status(500).json({ error: error.message });
+  await notifyAllStudents("event", `New event: ${data.title}`, data.description || null, "/events.html");
+  response.status(201).json({ event: data });
+});
+
+app.post("/api/events/admin", requireAdmin, async (request, response) => {
+  const { title, description, event_type, location, mode, start_time, end_time, external_link } = request.body || {};
+  if (!title || !start_time) return response.status(400).json({ error: "Title and start time are required." });
+  const { data, error } = await supabaseServer.from("events").insert({
+    title, description: description || null, event_type: event_type || "Other",
+    location: location || null, mode: mode || "onsite", start_time,
+    end_time: end_time || null, external_link: external_link || null,
+    created_by_role: "admin", created_by_id: null, created_by_name: "Administrator",
+  }).select().single();
+  if (error) return response.status(500).json({ error: error.message });
+  await notifyAllStudents("event", `New event: ${data.title}`, data.description || null, "/events.html");
+  response.status(201).json({ event: data });
+});
+
+app.delete("/api/events/:eventId", requireAuth, async (request, response) => {
+  const context = await getAuthContext(request.authUser.id);
+  const { data: event } = await supabaseServer.from("events").select("*").eq("id", request.params.eventId).maybeSingle();
+  if (!event) return response.status(404).json({ error: "Event not found." });
+  const isOwner = event.created_by_role === context?.role && event.created_by_id === context?.profileId;
+  if (!isOwner) return response.status(403).json({ error: "You can only delete events you created." });
+  await supabaseServer.from("events").delete().eq("id", event.id);
+  response.json({ deleted: true });
+});
+
+/* ---- LECTURERS ---- */
+
+app.post("/api/lecturers", requireAuth, async (request, response) => {
+  const existing = await supabaseServer.from("lecturers").select("id").eq("auth_user_id", request.authUser.id).maybeSingle();
+  if (existing.data) return response.status(200).json({ lecturer: existing.data });
+
+  const { fullName, email, institution, department } = request.body || {};
+  if (!fullName || !email) return response.status(400).json({ error: "Full name and email are required." });
+
+  const { data, error } = await supabaseServer.from("lecturers").insert({
+    auth_user_id: request.authUser.id, full_name: fullName,
+    email: String(email).toLowerCase(), institution: institution || null, department: department || null,
+  }).select().single();
+  if (error) return response.status(500).json({ error: error.message });
+  response.status(201).json({ lecturer: data });
+});
+
+app.get("/api/lecturers/:lecturerId", requireAuth, async (request, response) => {
+  const owner = await supabaseServer.from("lecturers").select("*").eq("id", request.params.lecturerId).maybeSingle();
+  if (!owner.data) return response.status(404).json({ error: "Lecturer profile not found." });
+  if (owner.data.auth_user_id !== request.authUser.id)
+    return response.status(403).json({ error: "You can only view your own lecturer profile." });
+  response.json({ lecturer: owner.data });
+});
+
+app.patch("/api/lecturers/:lecturerId", requireAuth, async (request, response) => {
+  const owner = await supabaseServer.from("lecturers").select("id, auth_user_id").eq("id", request.params.lecturerId).maybeSingle();
+  if (!owner.data) return response.status(404).json({ error: "Lecturer profile not found." });
+  if (owner.data.auth_user_id !== request.authUser.id)
+    return response.status(403).json({ error: "You can only edit your own lecturer profile." });
+  const { fullName, institution, department } = request.body || {};
+  const updates = {};
+  if (fullName) updates.full_name = fullName;
+  if (institution !== undefined) updates.institution = institution;
+  if (department !== undefined) updates.department = department;
+  const { data, error } = await supabaseServer.from("lecturers")
+    .update({ ...updates, updated_at: new Date().toISOString() }).eq("id", request.params.lecturerId).select().single();
+  if (error) return response.status(500).json({ error: error.message });
+  response.json({ lecturer: data });
+});
+
+app.get("/api/lecturers/:lecturerId/dashboard", requireAuth, async (request, response) => {
+  const owner = await supabaseServer.from("lecturers").select("*").eq("id", request.params.lecturerId).maybeSingle();
+  if (!owner.data) return response.status(404).json({ error: "Lecturer profile not found." });
+  if (owner.data.auth_user_id !== request.authUser.id)
+    return response.status(403).json({ error: "Access denied." });
+
+  const [eventsResult, studentsCount, matchesCount] = await Promise.all([
+    supabaseServer.from("events").select("*").eq("created_by_role", "lecturer").eq("created_by_id", owner.data.id).order("start_time", { ascending: true }),
+    supabaseServer.from("students").select("id", { count: "exact", head: true }),
+    supabaseServer.from("matches").select("id", { count: "exact", head: true }),
+  ]);
+  response.json({
+    lecturer: owner.data,
+    events: eventsResult.data || [],
+    stats: {
+      students: studentsCount.count || 0,
+      matches: matchesCount.count || 0,
+      events: eventsResult.data?.length || 0,
+    },
+  });
+});
+
+/* ---- MESSAGING ---- */
+
+const getConversation = async (conversationId) => {
+  const { data } = await supabaseServer.from("conversations").select("*").eq("id", conversationId).maybeSingle();
+  return data;
+};
+
+const isParticipant = (conversation, context) =>
+  (conversation.participant_a_role === context.role && conversation.participant_a_id === context.profileId) ||
+  (conversation.participant_b_role === context.role && conversation.participant_b_id === context.profileId);
+
+const otherParticipant = (conversation, context) =>
+  conversation.participant_a_role === context.role && conversation.participant_a_id === context.profileId
+    ? { role: conversation.participant_b_role, id: conversation.participant_b_id }
+    : { role: conversation.participant_a_role, id: conversation.participant_a_id };
+
+const resolveParticipant = async (role, id) => {
+  const table = role === "student" ? "students" : role === "employer" ? "employers" : "lecturers";
+  const nameColumn = role === "employer" ? "company_name" : "full_name";
+  const { data } = await supabaseServer.from(table).select(`${nameColumn}, email`).eq("id", id).maybeSingle();
+  return data ? { name: data[nameColumn], email: data.email } : { name: "Unknown", email: "" };
+};
+
+const findOrCreateConversation = async (aRole, aId, bRole, bId) => {
+  const existing = await supabaseServer.from("conversations").select("*")
+    .or(`and(participant_a_role.eq.${aRole},participant_a_id.eq.${aId},participant_b_role.eq.${bRole},participant_b_id.eq.${bId}),and(participant_a_role.eq.${bRole},participant_a_id.eq.${bId},participant_b_role.eq.${aRole},participant_b_id.eq.${aId})`)
+    .maybeSingle();
+  if (existing.data) return existing.data;
+  const { data, error } = await supabaseServer.from("conversations").insert({
+    participant_a_role: aRole, participant_a_id: aId,
+    participant_b_role: bRole, participant_b_id: bId,
+  }).select().single();
+  return error ? null : data;
+};
+
+app.get("/api/messages/contacts", requireAuth, async (request, response) => {
+  const context = await getAuthContext(request.authUser.id);
+  if (!context) return response.json({ contacts: [] });
+
+  let contacts = [];
+  if (context.role === "student") {
+    const [employers, lecturers] = await Promise.all([
+      supabaseServer.from("employers").select("id, company_name, industry").limit(100),
+      supabaseServer.from("lecturers").select("id, full_name, department").limit(100),
+    ]);
+    contacts = [
+      ...(employers.data || []).map((r) => ({ role: "employer", id: r.id, name: r.company_name, subtitle: r.industry || "Employer" })),
+      ...(lecturers.data || []).map((r) => ({ role: "lecturer", id: r.id, name: r.full_name, subtitle: r.department || "Lecturer" })),
+    ];
+  } else {
+    const { data } = await supabaseServer.from("students").select("id, full_name, institution").order("created_at", { ascending: false }).limit(200);
+    contacts = (data || []).map((r) => ({ role: "student", id: r.id, name: r.full_name, subtitle: r.institution || "Student" }));
+  }
+  response.json({ contacts });
+});
+
+app.get("/api/messages/conversations", requireAuth, async (request, response) => {
+  const context = await getAuthContext(request.authUser.id);
+  if (!context) return response.json({ conversations: [] });
+
+  const { data } = await supabaseServer.from("conversations").select("*")
+    .or(`and(participant_a_role.eq.${context.role},participant_a_id.eq.${context.profileId}),and(participant_b_role.eq.${context.role},participant_b_id.eq.${context.profileId})`)
+    .order("created_at", { ascending: false }).limit(100);
+
+  const conversations = [];
+  for (const conversation of data || []) {
+    const other = otherParticipant(conversation, context);
+    const resolved = await resolveParticipant(other.role, other.id);
+    const lastMessage = await supabaseServer.from("messages").select("*").eq("conversation_id", conversation.id).order("created_at", { ascending: false }).limit(1).maybeSingle();
+    const unreadResult = await supabaseServer.from("messages").select("id", { count: "exact", head: true })
+      .eq("conversation_id", conversation.id).eq("read", false).neq("sender_id", context.profileId);
+    conversations.push({
+      ...conversation, other_role: other.role, other_id: other.id,
+      other_name: resolved.name, other_email: resolved.email,
+      last_message: lastMessage.data || null, unread: unreadResult.count || 0,
+    });
+  }
+  response.json({ conversations });
+});
+
+app.post("/api/messages/new", requireAuth, async (request, response) => {
+  const context = await getAuthContext(request.authUser.id);
+  if (!context) return response.status(403).json({ error: "Create a profile first." });
+  const { target_role, target_id, body } = request.body || {};
+  if (!target_role || !target_id) return response.status(400).json({ error: "A recipient is required." });
+
+  const conversation = await findOrCreateConversation(context.role, context.profileId, target_role, target_id);
+  if (!conversation) return response.status(500).json({ error: "Could not create the conversation." });
+  response.status(201).json({ conversation });
+});
+
+app.get("/api/messages/:conversationId", requireAuth, async (request, response) => {
+  const context = await getAuthContext(request.authUser.id);
+  const conversation = await getConversation(request.params.conversationId);
+  if (!conversation) return response.status(404).json({ error: "Conversation not found." });
+  if (!context || !isParticipant(conversation, context))
+    return response.status(403).json({ error: "You are not part of this conversation." });
+
+  const { data, error } = await supabaseServer.from("messages").select("*").eq("conversation_id", conversation.id).order("created_at", { ascending: true });
+  if (error) return response.status(500).json({ error: error.message });
+
+  await supabaseServer.from("messages").update({ read: true })
+    .eq("conversation_id", conversation.id).neq("sender_id", context.profileId).eq("read", false);
+
+  const other = otherParticipant(conversation, context);
+  const resolved = await resolveParticipant(other.role, other.id);
+  response.json({ conversation, messages: data || [], other: { ...other, ...resolved }, me_id: context.profileId });
+});
+
+app.post("/api/messages/:conversationId", requireAuth, async (request, response) => {
+  const context = await getAuthContext(request.authUser.id);
+  const conversation = await getConversation(request.params.conversationId);
+  if (!conversation) return response.status(404).json({ error: "Conversation not found." });
+  if (!context || !isParticipant(conversation, context))
+    return response.status(403).json({ error: "You are not part of this conversation." });
+
+  const { body } = request.body || {};
+  if (!body || !String(body).trim()) return response.status(400).json({ error: "Message cannot be empty." });
+
+  const { data, error } = await supabaseServer.from("messages").insert({
+    conversation_id: conversation.id, sender_role: context.role,
+    sender_id: context.profileId, body: String(body).trim(),
+  }).select().single();
+  if (error) return response.status(500).json({ error: error.message });
+
+  const other = otherParticipant(conversation, context);
+  await createNotification(other.role, other.id, "message",
+    `New message from ${context.name}`, String(body).trim().slice(0, 120), "/messaging.html");
+  response.status(201).json({ message: data });
+});
+
+/* ---- NOTIFICATIONS ---- */
+
+app.get("/api/notifications", requireAuth, async (request, response) => {
+  const context = await getAuthContext(request.authUser.id);
+  if (!context) return response.json({ notifications: [], unread: 0 });
+  const [listResult, unreadResult] = await Promise.all([
+    supabaseServer.from("notifications").select("*").eq("user_role", context.role).eq("user_id", context.profileId).order("created_at", { ascending: false }).limit(30),
+    supabaseServer.from("notifications").select("id", { count: "exact", head: true }).eq("user_role", context.role).eq("user_id", context.profileId).eq("read", false),
+  ]);
+  response.json({ notifications: listResult.data || [], unread: unreadResult.count || 0 });
+});
+
+app.post("/api/notifications/read-all", requireAuth, async (request, response) => {
+  const context = await getAuthContext(request.authUser.id);
+  if (context) {
+    await supabaseServer.from("notifications").update({ read: true }).eq("user_role", context.role).eq("user_id", context.profileId);
+  }
+  response.json({ ok: true });
+});
+
+app.patch("/api/notifications/:notificationId/read", requireAuth, async (request, response) => {
+  const context = await getAuthContext(request.authUser.id);
+  if (context) {
+    await supabaseServer.from("notifications").update({ read: true })
+      .eq("id", request.params.notificationId).eq("user_role", context.role).eq("user_id", context.profileId);
+  }
+  response.json({ ok: true });
+});
 app.use((request, response) => {
   // Never turn an unknown API request into an HTML page. This keeps frontend
   // JSON parsing errors actionable when a route is misspelled or unavailable.
