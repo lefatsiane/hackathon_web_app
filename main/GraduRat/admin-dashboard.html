@@ -467,31 +467,21 @@
       <!-- ================= STATISTICS ================= -->
 
       <section class="stats">
-        <div class="stat-card">
-          <div class="stat-title">Total Students</div>
-
-          <div class="stat-number" id="studentCount">—</div>
-        </div>
-
-        <div class="stat-card">
-          <div class="stat-title">Employers</div>
-
-          <div class="stat-number" id="employerCount">—</div>
-        </div>
-
-        <div class="stat-card">
-          <div class="stat-title">Job Opportunities</div>
-
-          <div class="stat-number" id="opportunityCount">—</div>
-        </div>
-
-        <div class="stat-card">
-          <div class="stat-title">AI Matches</div>
-
-          <div class="stat-number" id="matchCount">—</div>
-        </div>
+        <div class="stat-card"><div class="stat-title">Total Students</div><div class="stat-number" id="studentCount">—</div></div>
+        <div class="stat-card"><div class="stat-title">Graduates</div><div class="stat-number" id="graduateCount">—</div></div>
+        <div class="stat-card"><div class="stat-title">Employers</div><div class="stat-number" id="employerCount">—</div></div>
+        <div class="stat-card"><div class="stat-title">Lecturers</div><div class="stat-number" id="lecturerCount">—</div></div>
+        <div class="stat-card"><div class="stat-title">Job Opportunities</div><div class="stat-number" id="opportunityCount">—</div></div>
+        <div class="stat-card"><div class="stat-title">Matches</div><div class="stat-number" id="matchCount">—</div></div>
+        <div class="stat-card"><div class="stat-title">Events</div><div class="stat-number" id="eventCount">—</div></div>
+        <div class="stat-card"><div class="stat-title">Applications</div><div class="stat-number" id="appCount">—</div></div>
       </section>
 
+      <style>
+        .stats { grid-template-columns: repeat(4, 1fr); }
+        @media (max-width: 1000px) { .stats { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 700px) { .stats { grid-template-columns: 1fr; } }
+      </style>
       <!-- ================= CONTENT ================= -->
 
       <div class="content-grid">
