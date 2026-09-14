@@ -1314,6 +1314,12 @@
               setPhoto(result.student.profile_picture_url);
             }
             setProfileSaveStatus("Profile changes saved.");
+            if (new URLSearchParams(window.location.search).get("onboarding") === "1") {
+              setProfileSaveStatus("Profile saved! Taking you to your dashboard...");
+              setTimeout(() => {
+                window.location.href = "dashboard.html";
+              }, 900);
+            }
           } catch (error) {
             setProfileSaveStatus(error.message, true);
           } finally {
