@@ -724,6 +724,10 @@
 
       const API_BASE = "/api";
 
+      const getEmployerId = () =>
+        sessionStorage.getItem("graduRatEmployerId") ||
+        localStorage.getItem("graduRatEmployerId");
+
       const activeUser = graduratAuth.getUser();
       if (
         !graduratAuth.getSession()?.access_token ||
@@ -753,27 +757,31 @@
       // =========================================================
 
       async function loadCompanyProfile() {
+        const employerId = getEmployerId();
+        if (!employerId) return;
+
         try {
           const response = await graduratAuth.apiFetch(
-            `${API_BASE}/employer/profile`,
+            `${API_BASE}/employers/${encodeURIComponent(employerId)}/dashboard`,
           );
 
           if (!response.ok) {
             throw new Error("Unable to load company information.");
           }
 
-          const company = await response.json();
+          const result = await response.json();
+          const company = result.employer;
 
           document.getElementById("companyName").textContent =
-            company.name || "Your Company";
+            company.company_name || "Your Company";
 
           document.getElementById("companyIndustry").textContent =
             company.industry || "Company information will appear here.";
 
-          if (company.logo) {
+          if (company.profile_picture_url) {
             document.getElementById("companyLogo").innerHTML = `
                     <img
-                        src="${company.logo}"
+                        src="${escapeHTML(company.profile_picture_url)}"
                         alt="Company logo"
                         style="
                             width:100%;
@@ -795,6 +803,17 @@
 
       async function loadJobs() {
         const container = document.getElementById("jobsContainer");
+        const employerId = getEmployerId();
+
+        if (!employerId) {
+          container.innerHTML = `
+            <div class="empty-state">
+              <h3>Complete your employer profile first</h3>
+              <p>Register your company before posting an opportunity.</p>
+            </div>
+          `;
+          return;
+        }
 
         container.innerHTML = `
             <div class="loading">
@@ -804,14 +823,15 @@
 
         try {
           const response = await graduratAuth.apiFetch(
-            `${API_BASE}/employer/jobs`,
+            `${API_BASE}/employers/${encodeURIComponent(employerId)}/opportunities`,
           );
 
           if (!response.ok) {
             throw new Error("Unable to load opportunities.");
           }
 
-          const jobs = await response.json();
+          const result = await response.json();
+          const jobs = result.opportunities || [];
 
           if (!jobs || jobs.length === 0) {
             container.innerHTML = `
@@ -837,8 +857,6 @@
 
             card.className = "job-card";
 
-            const skills = Array.isArray(job.skills) ? job.skills : [];
-
             card.innerHTML = `
 
                     <h3>
@@ -859,10 +877,10 @@
                     <div class="job-meta">
 
                         ${
-                          job.qualification
+                          job.qualification_requirement
                             ? `
                                 <span class="tag">
-                                    ${escapeHTML(job.qualification)}
+                                    ${escapeHTML(job.qualification_requirement)}
                                 </span>
                             `
                             : ""
@@ -881,10 +899,10 @@
 
 
                         ${
-                          job.employmentType
+                          job.type
                             ? `
                                 <span class="tag">
-                                    ${escapeHTML(job.employmentType)}
+                                ${escapeHTML(job.type)}
                                 </span>
                             `
                             : ""
@@ -892,31 +910,6 @@
 
                     </div>
 
-
-                    <div class="job-actions">
-
-                        <button
-                            class="secondary-btn"
-                            onclick="loadCandidates(${job.id})"
-                        >
-                            Find Candidates
-                        </button>
-
-                        <button
-                            class="secondary-btn"
-                            onclick="editJob(${job.id})"
-                        >
-                            Edit
-                        </button>
-
-                        <button
-                            class="danger-btn"
-                            onclick="deleteJob(${job.id})"
-                        >
-                            Delete
-                        </button>
-
-                    </div>
 
                 `;
 
@@ -951,42 +944,49 @@
           hideError();
 
           const job = {
-            title: document.getElementById("jobTitle").value.trim(),
-
+            jobTitle: document.getElementById("jobTitle").value.trim(),
+            employer_id: getEmployerId(),
             industry: document.getElementById("industry").value.trim(),
-
-            qualification: document
+            qualifications: document
               .getElementById("qualification")
               .value.trim(),
-
             experience: document.getElementById("experience").value.trim(),
-
             skills: document
               .getElementById("skills")
               .value.split(",")
               .map((skill) => skill.trim())
               .filter(Boolean),
-
             description: document.getElementById("description").value.trim(),
-
-            employmentType: document.getElementById("employmentType").value,
-
-            workEnvironment: document.getElementById("workEnvironment").value,
+            jobType: document.getElementById("employmentType").value,
+            workMode: document
+              .getElementById("workEnvironment")
+              .value.toLowerCase()
+              .replace("-site", "site"),
+            status: "published",
           };
 
+          if (!job.employer_id) {
+            showError(
+              "Register an employer profile before posting an opportunity.",
+            );
+            return;
+          }
+
           try {
-            const response = await graduratAuth.apiFetch(`${API_BASE}/jobs`, {
-              method: "POST",
-
-              headers: {
-                "Content-Type": "application/json",
+            const response = await graduratAuth.apiFetch(
+              `${API_BASE}/opportunities`,
+              {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify(job),
               },
-
-              body: JSON.stringify(job),
-            });
+            );
 
             if (!response.ok) {
-              throw new Error("Unable to create opportunity.");
+              const result = await response.json().catch(() => ({}));
+              throw new Error(result.error || "Unable to create opportunity.");
             }
 
             document.getElementById("jobForm").reset();

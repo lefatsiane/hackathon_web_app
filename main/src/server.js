@@ -3317,9 +3317,7 @@ app.get(
       await getOwnedEmployer(request.params.employerId, request.authUser.id);
       const { data, error } = await supabaseServer
         .from("opportunities")
-        .select(
-          "id, title, status, archived_at, application_deadline, created_at",
-        )
+        .select("*")
         .eq("employer_id", request.params.employerId)
         .order("created_at", { ascending: false });
       if (error) throw error;
