@@ -393,85 +393,65 @@
 
     <!-- ================= JAVASCRIPT ================= -->
 
-    <script>
+        <script>
       const adminLoginForm = document.getElementById("adminLoginForm");
 
       const message = document.getElementById("message");
 
-      // Demo admin credentials
-      // We will connect this to the real
-      // admin system later.
-
-      const ADMIN_EMAIL = "admin@gradurat.com";
-      const ADMIN_PASSWORD = "Admin123";
-
-      // ==============================
-      // SHOW / HIDE PASSWORD
-      // ==============================
-
       function togglePassword() {
         const password = document.getElementById("password");
-
         const button = document.querySelector(".show-password");
-
         if (password.type === "password") {
           password.type = "text";
-
           button.textContent = "Hide";
         } else {
           password.type = "password";
-
           button.textContent = "Show";
         }
       }
 
-      // ==============================
-      // ADMIN LOGIN
-      // ==============================
-
-      adminLoginForm.addEventListener("submit", function (event) {
+      adminLoginForm.addEventListener("submit", async function (event) {
         event.preventDefault();
 
         const email = document.getElementById("email").value.trim();
-
         const password = document.getElementById("password").value;
 
-        // Clear previous message
-
         message.className = "message";
-
         message.textContent = "";
 
-        // Check credentials
+        try {
+          const response = await fetch("/api/admin/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email, password }),
+          });
+          const result = await response.json();
 
-        if (email === ADMIN_EMAIL && password === ADMIN_PASSWORD) {
+          if (!response.ok) {
+            throw new Error(result.error || "Login failed.");
+          }
+
           message.textContent = "Login successful! Redirecting...";
-
           message.classList.add("success");
 
-          // Save admin login
-
           localStorage.setItem("graduratAdminLoggedIn", "true");
-
           localStorage.setItem(
             "graduratAdmin",
             JSON.stringify({
-              email: email,
+              email: result.email,
               role: "admin",
+              token: result.token,
             }),
           );
 
-          // Redirect
-
           setTimeout(function () {
             window.location.href = "admin-dashboard.html";
-          }, 1000);
-        } else {
-          message.textContent = "Incorrect admin email or password.";
-
+          }, 800);
+        } catch (error) {
+          message.textContent = error.message;
           message.classList.add("error");
         }
       });
-    </script>
+    </script>  
   </body>
 </html>
