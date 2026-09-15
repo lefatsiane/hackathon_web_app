@@ -140,7 +140,7 @@ export default function RegisterScreen() {
           Welcome to <Text style={styles.blue}>GraduRat.</Text>
         </Text>
         <Text style={styles.intro}>
-          Let's get you connected with the right opportunities. Tell us what
+          Let&apos;s get you connected with the right opportunities. Tell us what
           brings you to GraduRat.
         </Text>
         <View style={styles.roleGrid}>
@@ -221,7 +221,7 @@ export default function RegisterScreen() {
       <Text style={styles.title}>
         {isStudent ? (
           <>
-            Let's build your <Text style={styles.blue}>profile.</Text>
+            Let&apos;s build your <Text style={styles.blue}>profile.</Text>
           </>
         ) : (
           <>

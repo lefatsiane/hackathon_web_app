@@ -27,4 +27,10 @@ export const getAccessToken = async () => {
 export const signUp = (email: string, password: string) =>
   supabase.auth.signUp({ email, password });
 
+export const signIn = (email: string, password: string) =>
+  supabase.auth.signInWithPassword({ email, password });
+
+export const requestPasswordReset = (email: string, redirectTo?: string) =>
+  supabase.auth.resetPasswordForEmail(email, redirectTo ? { redirectTo } : undefined);
+
 export const signOut = () => supabase.auth.signOut();

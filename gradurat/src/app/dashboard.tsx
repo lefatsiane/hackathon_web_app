@@ -18,6 +18,7 @@ import {
   Student,
 } from "@/lib/api";
 import { getProfileId } from "@/lib/storage";
+import { signOut } from "@/lib/auth";
 
 const initials = (name: string, fallback = "GR") =>
   name
@@ -244,12 +245,21 @@ export default function DashboardScreen() {
           <Text style={styles.navItem}>
             ♡ Saved {isStudent ? "Jobs" : "Candidates"}
           </Text>
-          <Text style={styles.navItem}>◫ Applications</Text>
+          <Pressable onPress={() => router.push(`/applications?role=${isStudent ? "student" : "employer"}`)}>
+            <Text style={styles.navItem}>◫ Applications</Text>
+          </Pressable>
           <Text style={styles.navItem}>◉ Messages</Text>
         </View>
         <View style={styles.nav}>
-          <Text style={styles.navItem}>⚙ Settings</Text>
-          <Pressable onPress={() => router.replace("/")}>
+          <Pressable onPress={() => router.push(`/settings?role=${isStudent ? "student" : "employer"}`)}>
+            <Text style={styles.navItem}>⚙ Settings</Text>
+          </Pressable>
+          <Pressable
+            onPress={async () => {
+              await signOut();
+              router.replace("/login");
+            }}
+          >
             <Text style={styles.navItem}>↪ Log Out</Text>
           </Pressable>
         </View>
