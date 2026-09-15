@@ -1,0 +1,1334 @@
+<!doctype html>
+
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Gradurat | Complete Your Profile</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      :root {
+        --background: #05070d;
+        --card: #0c101b;
+        --card-alt: #080c15;
+        --border: #202a3d;
+        --input-border: #263044;
+        --text: #ffffff;
+        --secondary-text: #aab3c5;
+        --muted-text: #8994a8;
+        --blue: #258cff;
+        --blue-hover: #1478e8;
+        --blue-light: rgba(37, 140, 255, 0.1);
+        --blue-border: rgba(37, 140, 255, 0.25);
+      }
+
+      body.light-theme {
+        --background: #f4f7fb;
+        --card: #ffffff;
+        --card-alt: #f8fafc;
+        --border: #dce3ee;
+        --input-border: #c8d2e2;
+        --text: #111827;
+        --secondary-text: #5c677a;
+        --muted-text: #697586;
+        --blue: #1266e3;
+        --blue-hover: #0958c9;
+        --blue-light: #eaf2ff;
+        --blue-border: #b9d3ff;
+      }
+
+      body {
+        font-family: "Inter", sans-serif;
+        background: var(--background);
+        color: var(--text);
+        min-height: 100vh;
+        transition:
+          background 0.25s ease,
+          color 0.25s ease;
+      }
+
+      /* NAVBAR */
+
+      .navbar {
+        height: 80px;
+        padding: 0 7%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-bottom: 1px solid var(--border);
+        background: var(--background);
+      }
+
+      .brand img {
+        width: 48px;
+        height: 48px;
+        object-fit: contain;
+      }
+
+      .home-link {
+        color: var(--secondary-text);
+        text-decoration: none;
+        font-size: 14px;
+      }
+
+      .home-link:hover {
+        color: var(--blue);
+      }
+
+      /* PAGE */
+
+      .page {
+        width: 90%;
+        max-width: 1000px;
+        margin: 50px auto;
+      }
+
+      .page-heading {
+        margin-bottom: 35px;
+      }
+
+      .page-heading h1 {
+        font-size: 32px;
+        margin-bottom: 10px;
+      }
+
+      .page-heading p {
+        color: var(--muted-text);
+        line-height: 1.6;
+        font-size: 14px;
+      }
+
+      /* PROFILE HEADER */
+
+      .profile-header {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 18px;
+        padding: 30px;
+        display: flex;
+        align-items: center;
+        gap: 25px;
+        margin-bottom: 25px;
+      }
+
+      .photo-section {
+        text-align: center;
+      }
+
+      .profile-photo {
+        width: 110px;
+        height: 110px;
+        border-radius: 50%;
+        border: 2px solid var(--blue);
+        background: var(--card-alt);
+        object-fit: cover;
+        display: block;
+      }
+
+      .profile-photo-fallback {
+        width: 110px;
+        height: 110px;
+        border-radius: 50%;
+        border: 2px solid var(--blue);
+        background: var(--card-alt);
+        display: grid;
+        place-items: center;
+        color: var(--text);
+        font-size: 30px;
+        font-weight: 700;
+      }
+
+      .profile-photo[hidden],
+      .profile-photo-fallback[hidden] {
+        display: none;
+      }
+
+      .photo-button {
+        display: inline-block;
+        margin-top: 12px;
+        color: var(--blue);
+        font-size: 12px;
+        cursor: pointer;
+      }
+
+      .photo-button.remove {
+        border: 0;
+        background: transparent;
+        padding: 0;
+        margin-left: 12px;
+      }
+
+      .photo-status {
+        min-height: 18px;
+        margin-top: 8px;
+        color: var(--muted-text);
+        font-size: 12px;
+      }
+
+      .profile-save-status {
+        min-height: 20px;
+        flex-basis: 100%;
+        margin-top: 4px;
+        color: var(--muted-text);
+        font-size: 13px;
+      }
+
+      .profile-save-status.success {
+        color: #087443;
+      }
+
+      .profile-save-status.error {
+        color: #b42318;
+      }
+
+      #photoInput {
+        display: none;
+      }
+
+      .user-info h2 {
+        font-size: 24px;
+        margin-bottom: 8px;
+      }
+
+      .user-info p {
+        color: var(--muted-text);
+        font-size: 14px;
+        margin-bottom: 5px;
+      }
+
+      .role-badge {
+        display: inline-block;
+        margin-top: 8px;
+        padding: 6px 12px;
+        border-radius: 20px;
+        background: var(--blue-light);
+        color: var(--blue);
+        font-size: 12px;
+        font-weight: 600;
+      }
+
+      /* COMPLETION */
+
+      .completion {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 18px;
+        padding: 25px;
+        margin-bottom: 25px;
+      }
+
+      .completion-top {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 12px;
+        font-size: 13px;
+      }
+
+      .completion-top span:last-child {
+        color: var(--blue);
+        font-weight: 700;
+      }
+
+      .progress-bar {
+        height: 7px;
+        background: var(--input-border);
+        border-radius: 10px;
+        overflow: hidden;
+      }
+
+      .progress {
+        width: 20%;
+        height: 100%;
+        background: var(--blue);
+        border-radius: 10px;
+        transition: 0.3s;
+      }
+
+      /* SECTIONS */
+
+      .section {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 18px;
+        padding: 30px;
+        margin-bottom: 25px;
+      }
+
+      .section h2 {
+        font-size: 20px;
+        margin-bottom: 8px;
+      }
+
+      .section-description {
+        color: var(--muted-text);
+        font-size: 13px;
+        margin-bottom: 25px;
+      }
+
+      /* FORM */
+
+      .form-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+      }
+
+      .form-group {
+        margin-bottom: 20px;
+      }
+
+      .form-group.full {
+        grid-column: 1 / -1;
+      }
+
+      label {
+        display: block;
+        font-size: 13px;
+        font-weight: 600;
+        margin-bottom: 8px;
+      }
+
+      input,
+      textarea,
+      select {
+        width: 100%;
+        padding: 14px;
+        border-radius: 10px;
+        border: 1px solid var(--input-border);
+        background: var(--card-alt);
+        color: var(--text);
+        outline: none;
+        font-family: inherit;
+        font-size: 13px;
+      }
+
+      input:focus,
+      textarea:focus,
+      select:focus {
+        border-color: var(--blue);
+      }
+
+      textarea {
+        min-height: 120px;
+        resize: vertical;
+      }
+
+      /* FILE UPLOAD */
+
+      .file-upload {
+        border: 1px dashed var(--input-border);
+        background: var(--card-alt);
+        padding: 25px;
+        border-radius: 12px;
+        text-align: center;
+      }
+
+      .file-upload p {
+        color: var(--muted-text);
+        font-size: 12px;
+        margin-bottom: 12px;
+      }
+
+      .file-label {
+        display: inline-block;
+        padding: 10px 18px;
+        background: var(--blue-light);
+        color: var(--blue);
+        border-radius: 8px;
+        font-size: 12px;
+        cursor: pointer;
+      }
+
+      .file-label:hover {
+        background: rgba(37, 140, 255, 0.18);
+      }
+
+      input[type="file"] {
+        display: none;
+      }
+
+      .file-name {
+        margin-top: 10px;
+        color: var(--secondary-text);
+        font-size: 12px;
+      }
+
+      /* TAGS */
+
+      .tag-input {
+        display: flex;
+        gap: 10px;
+      }
+
+      .tag-input input {
+        flex: 1;
+      }
+
+      .add-btn {
+        padding: 0 18px;
+        border: 1px solid var(--blue);
+        background: transparent;
+        color: var(--blue);
+        border-radius: 10px;
+        cursor: pointer;
+      }
+
+      .add-btn:hover {
+        background: var(--blue-light);
+      }
+
+      .tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 15px;
+      }
+
+      .tag {
+        background: var(--blue-light);
+        color: #7dbbff;
+        border: 1px solid var(--blue-border);
+        padding: 7px 10px;
+        border-radius: 20px;
+        font-size: 11px;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .tag-remove {
+        border: 0;
+        padding: 0;
+        background: transparent;
+        color: inherit;
+        cursor: pointer;
+        font-size: 14px;
+        line-height: 1;
+      }
+
+      /* BUTTONS */
+
+      .actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 15px;
+        margin-top: 10px;
+      }
+
+      .btn {
+        padding: 14px 25px;
+        border-radius: 10px;
+        text-decoration: none;
+        font-size: 13px;
+        font-weight: 700;
+        cursor: pointer;
+      }
+
+      .btn-secondary {
+        border: 1px solid var(--input-border);
+        color: var(--secondary-text);
+        background: transparent;
+      }
+
+      .btn-primary {
+        border: none;
+        color: white;
+        background: var(--blue);
+      }
+
+      .btn-primary:hover {
+        background: var(--blue-hover);
+      }
+
+      /* RESPONSIVE */
+
+      @media (max-width: 700px) {
+        .navbar {
+          padding: 0 5%;
+        }
+
+        .page {
+          width: 94%;
+          margin-top: 35px;
+        }
+
+        .profile-header {
+          flex-direction: column;
+          text-align: center;
+        }
+
+        .form-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .form-group.full {
+          grid-column: auto;
+        }
+
+        .actions {
+          flex-direction: column;
+        }
+
+        .btn {
+          text-align: center;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <script src="theme.js"></script>
+    <!-- NAVIGATION -->
+
+    <nav class="navbar">
+      <a href="index.html" class="brand">
+        <img src="logo1.jpg" alt="Gradurat Logo" />
+      </a>
+
+      <a href="index.html" class="home-link"> Back to Home </a>
+    </nav>
+
+    <main class="page">
+      <!-- HEADING -->
+
+      <div class="page-heading">
+        <h1>Complete Your Profile</h1>
+
+        <p>
+          Tell Gradurat more about yourself so we can help you discover the
+          right career opportunities.
+        </p>
+      </div>
+
+      <!-- PROFILE HEADER -->
+
+      <section class="profile-header">
+        <div class="photo-section">
+          <img
+            id="profilePhoto"
+            class="profile-photo"
+            src=""
+            alt="Profile Photo"
+            hidden
+          />
+
+          <div id="profilePhotoFallback" class="profile-photo-fallback">GR</div>
+
+          <label for="photoInput" class="photo-button"> Upload Photo </label>
+
+          <input type="file" id="photoInput" accept="image/*" />
+
+          <button
+            id="removePhoto"
+            class="photo-button remove"
+            type="button"
+            hidden
+          >
+            Remove
+          </button>
+
+          <p id="photoStatus" class="photo-status" aria-live="polite"></p>
+        </div>
+
+        <div class="user-info">
+          <h2 id="displayName">Your Name</h2>
+
+          <p id="displayEmail">your@email.com</p>
+
+          <span id="displayRole" class="role-badge"> Role </span>
+        </div>
+      </section>
+
+      <!-- COMPLETION -->
+
+      <section class="completion">
+        <div class="completion-top">
+          <span> Profile Completion </span>
+
+          <span id="completionText"> 20% </span>
+        </div>
+
+        <div class="progress-bar">
+          <div class="progress" id="progressBar"></div>
+        </div>
+      </section>
+
+      <!-- PERSONAL / PROFESSIONAL -->
+
+      <section class="section">
+        <h2>Professional Information</h2>
+
+        <p class="section-description">
+          Add information that will help Gradurat understand your professional
+          background.
+        </p>
+
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="qualification"> Qualification </label>
+
+            <input
+              type="text"
+              id="qualification"
+              placeholder="Example: Bachelor of Information Technology"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="institution"> Institution </label>
+
+            <input
+              type="text"
+              id="institution"
+              placeholder="School, college or university"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="field"> Field of Study </label>
+
+            <input
+              type="text"
+              id="field"
+              placeholder="Example: Information Technology"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="location"> Location </label>
+
+            <input type="text" id="location" placeholder="City or region" />
+          </div>
+
+          <div class="form-group">
+            <label for="experience"> Experience </label>
+
+            <input
+              type="text"
+              id="experience"
+              placeholder="Example: Internship, part-time work"
+            />
+          </div>
+        </div>
+      </section>
+
+      <!-- CERTIFICATIONS -->
+
+      <section class="section">
+        <h2>Certifications</h2>
+
+        <p class="section-description">
+          Add any certifications you have. This section is optional.
+        </p>
+
+        <div class="tag-input">
+          <input
+            type="text"
+            id="certificationInput"
+            placeholder="Example: AWS Cloud Practitioner"
+          />
+
+          <button class="add-btn" id="addCertification" type="button">
+            Add
+          </button>
+        </div>
+
+        <div class="tags" id="certificationTags"></div>
+      </section>
+
+      <!-- SKILLS -->
+
+      <section class="section">
+        <h2>Skills</h2>
+
+        <p class="section-description">Add the skills you currently have.</p>
+
+        <div class="tag-input">
+          <input type="text" id="skillInput" placeholder="Example: Python" />
+
+          <button class="add-btn" id="addSkill" type="button">Add</button>
+        </div>
+
+        <div class="tags" id="skillTags"></div>
+      </section>
+
+      <!-- INTERESTS -->
+
+      <section class="section">
+        <h2>Interests</h2>
+
+        <p class="section-description">
+          Tell us what areas or industries interest you.
+        </p>
+
+        <div class="tag-input">
+          <input
+            type="text"
+            id="interestInput"
+            placeholder="Example: Software Development"
+          />
+
+          <button class="add-btn" id="addInterest" type="button">Add</button>
+        </div>
+
+        <div class="tags" id="interestTags"></div>
+      </section>
+
+      <!-- CV -->
+
+      <section class="section">
+        <h2>Your CV</h2>
+
+        <p class="section-description">
+          Upload your CV so potential employers can view it when you become a
+          match.
+        </p>
+
+        <div class="file-upload">
+          <p>Upload your CV in PDF format.</p>
+
+          <label for="cvInput" class="file-label"> Choose CV </label>
+
+          <input type="file" id="cvInput" accept="application/pdf" />
+
+          <button
+            id="removeCv"
+            class="photo-button remove"
+            type="button"
+            hidden
+          >
+            Remove
+          </button>
+
+          <div class="file-name" id="cvName"></div>
+
+          <p id="cvStatus" class="photo-status" aria-live="polite"></p>
+        </div>
+      </section>
+
+      <!-- CAREER GOALS -->
+
+      <section class="section">
+        <h2>Career Goals</h2>
+
+        <p class="section-description">
+          Tell Gradurat what you hope to achieve.
+        </p>
+
+        <div class="form-group">
+          <textarea
+            id="careerGoals"
+            placeholder="Example: I want to become a full-stack developer and work on technology that solves real-world problems."
+          ></textarea>
+        </div>
+      </section>
+
+      <!-- ACTIONS -->
+
+      <div class="actions">
+        <a href="index.html" class="btn btn-secondary"> Complete Later </a>
+
+        <button id="saveProfileButton" class="btn btn-primary" type="button">
+          Save Profile
+        </button>
+
+        <p
+          id="profileSaveStatus"
+          class="profile-save-status"
+          role="status"
+          aria-live="polite"
+        ></p>
+      </div>
+    </main>
+
+    <script src="auth-client.js"></script>
+    <script src="navigation.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        /* =========================
+       LOAD REGISTRATION DETAILS
+    ========================= */
+
+        const savedUser = graduratAuth.getUser();
+        const storedStudentId = sessionStorage.getItem("graduRatStudentId");
+
+        if (
+          !graduratAuth.getSession()?.access_token ||
+          (!savedUser && !storedStudentId)
+        ) {
+          alert(
+            "No registration information found. Please create an account first.",
+          );
+          window.location.href = "register.html";
+          return;
+        }
+
+        const user = savedUser || {
+          fullName: "Graduate",
+          email: "",
+          role: "student",
+        };
+
+        // Display the information from registration
+        const profileName = document.getElementById("displayName");
+        const profileEmail = document.getElementById("displayEmail");
+        const profileRole = document.getElementById("displayRole");
+
+        if (profileName) {
+          profileName.textContent = user.fullName;
+        }
+
+        if (profileEmail) {
+          profileEmail.textContent = user.email;
+        }
+
+        if (profileRole) {
+          profileRole.textContent =
+            user.role.charAt(0).toUpperCase() + user.role.slice(1);
+        }
+
+        /* =========================
+       PROFILE PHOTO
+    ========================= */
+
+        const photoInput = document.getElementById("photoInput");
+        const profilePhoto = document.getElementById("profilePhoto");
+
+        const photoFallback = document.getElementById("profilePhotoFallback");
+        const removePhoto = document.getElementById("removePhoto");
+        const photoStatus = document.getElementById("photoStatus");
+        const studentId = storedStudentId;
+        const supportedImageTypes = new Set([
+          "image/jpeg",
+          "image/png",
+          "image/webp",
+        ]);
+        const initials = (name) =>
+          String(name || "Graduate")
+            .trim()
+            .split(/\s+/)
+            .slice(0, 2)
+            .map((part) => part[0])
+            .join("")
+            .toUpperCase();
+        const setPhoto = (url) => {
+          const hasPhoto = Boolean(url);
+          if (profilePhoto) {
+            profilePhoto.src = hasPhoto ? url : "";
+            profilePhoto.hidden = !hasPhoto;
+          }
+          if (photoFallback) {
+            photoFallback.textContent = initials(user.fullName);
+            photoFallback.hidden = hasPhoto;
+          }
+          if (removePhoto) removePhoto.hidden = !hasPhoto;
+        };
+        const setPhotoStatus = (message, isError = false) => {
+          if (!photoStatus) return;
+          photoStatus.textContent = message;
+          photoStatus.style.color = isError ? "#ff8d8d" : "#8994a8";
+        };
+
+        const profileSaveStatus = document.getElementById("profileSaveStatus");
+        const saveProfileButton = document.getElementById("saveProfileButton");
+        const setProfileSaveStatus = (message, isError = false) => {
+          if (!profileSaveStatus) return;
+          profileSaveStatus.textContent = message;
+          profileSaveStatus.className = `profile-save-status${isError ? " error" : " success"}`;
+        };
+        const requestJson = async (url, options) => {
+          const response = await graduratAuth.apiFetch(url, options);
+          const result = await graduratAuth.readJson(
+            response,
+            "The profile photo response was not valid JSON.",
+          );
+          if (!response.ok)
+            throw new Error(result.error || "Profile photo request failed.");
+          return result;
+        };
+
+        const createTag = (container, value) => {
+          const normalizedValue = String(value || "").trim();
+          if (!container || !normalizedValue) return;
+          const alreadyExists = [...container.children].some(
+            (tag) =>
+              tag.dataset.value.toLowerCase() === normalizedValue.toLowerCase(),
+          );
+          if (alreadyExists) return;
+
+          const tag = document.createElement("span");
+          tag.className = "tag";
+          tag.dataset.value = normalizedValue;
+          tag.append(document.createTextNode(normalizedValue));
+
+          const removeButton = document.createElement("button");
+          removeButton.type = "button";
+          removeButton.className = "tag-remove";
+          removeButton.setAttribute("aria-label", `Remove ${normalizedValue}`);
+          removeButton.textContent = "x";
+          removeButton.addEventListener("click", () => {
+            tag.remove();
+            updateProgress();
+          });
+          tag.append(removeButton);
+          container.append(tag);
+        };
+
+        const renderTags = (containerId, values) => {
+          const container = document.getElementById(containerId);
+          if (!container) return;
+          container.replaceChildren();
+          (values || []).forEach((value) => createTag(container, value));
+        };
+
+        const loadProfile = async () => {
+          if (!studentId) return null;
+          const result = await requestJson(
+            `/api/students/${encodeURIComponent(studentId)}`,
+          );
+          const student = result.student;
+          user.fullName = student.full_name || user.fullName;
+          user.email = student.email || user.email;
+          if (profileName) profileName.textContent = user.fullName;
+          if (profileEmail) profileEmail.textContent = user.email;
+          const fields = {
+            qualification: student.qualification,
+            institution: student.institution,
+            field: student.field_of_study,
+            location: student.location,
+            experience: student.work_experience_summary,
+            careerGoals: student.preferred_opportunity_type,
+          };
+          Object.entries(fields).forEach(([id, value]) => {
+            const input = document.getElementById(id);
+            if (input) input.value = value || "";
+          });
+          renderTags("skillTags", student.skills);
+          renderTags("interestTags", student.projects);
+          renderTags("certificationTags", student.certifications);
+          setPhoto(student.profile_picture_url);
+          updateProgress();
+          return student;
+        };
+
+        setPhoto(null);
+        if (studentId) {
+          loadProfile().catch((error) => setPhotoStatus(error.message, true));
+        }
+
+        if (photoInput) {
+          photoInput.addEventListener("change", async function () {
+            const file = this.files[0];
+            if (!file) return;
+            if (!studentId) {
+              setPhotoStatus(
+                "Your authenticated profile is not ready yet.",
+                true,
+              );
+              return;
+            }
+            if (!supportedImageTypes.has(file.type)) {
+              setPhotoStatus("Choose a JPEG, PNG, or WebP image.", true);
+              return;
+            }
+            if (file.size > 5 * 1024 * 1024) {
+              setPhotoStatus("Profile photos must be 5 MB or smaller.", true);
+              return;
+            }
+
+            photoInput.disabled = true;
+            setPhotoStatus("Uploading photo...");
+            const previewUrl = URL.createObjectURL(file);
+            setPhoto(previewUrl);
+            try {
+              const upload = await requestJson(
+                `/api/students/${encodeURIComponent(studentId)}/avatar/upload-url`,
+                {
+                  method: "POST",
+                  body: JSON.stringify({ content_type: file.type }),
+                },
+              );
+              const uploadResponse = await fetch(upload.upload_url, {
+                method: "PUT",
+                headers: {
+                  "Content-Type": upload.content_type,
+                  "x-upsert": "true",
+                },
+                body: file,
+              });
+              if (!uploadResponse.ok)
+                throw new Error("The image could not be uploaded.");
+              const result = await requestJson(
+                `/api/students/${encodeURIComponent(studentId)}/avatar`,
+                {
+                  method: "POST",
+                  body: JSON.stringify({ avatar_path: upload.avatar_path }),
+                },
+              );
+              setPhoto(result.student.profile_picture_url);
+              setPhotoStatus("Profile photo saved.");
+            } catch (error) {
+              setPhoto(null);
+              setPhotoStatus(error.message, true);
+            } finally {
+              URL.revokeObjectURL(previewUrl);
+              photoInput.value = "";
+              photoInput.disabled = false;
+            }
+          });
+        }
+
+        removePhoto?.addEventListener("click", async () => {
+          if (!studentId) return;
+          removePhoto.disabled = true;
+          setPhotoStatus("Removing photo...");
+          try {
+            await requestJson(
+              `/api/students/${encodeURIComponent(studentId)}/avatar`,
+              { method: "DELETE" },
+            );
+            setPhoto(null);
+            setPhotoStatus("Profile photo removed.");
+          } catch (error) {
+            setPhotoStatus(error.message, true);
+          } finally {
+            removePhoto.disabled = false;
+          }
+        });
+
+        /* =========================
+       TAG SYSTEM
+    ========================= */
+
+        function setupTags(inputId, containerId, addButtonId) {
+          const input = document.getElementById(inputId);
+          const container = document.getElementById(containerId);
+          const addButton = document.getElementById(addButtonId);
+
+          if (!input || !container) return;
+
+          const addTag = () => {
+            createTag(container, input.value);
+            input.value = "";
+            updateProgress();
+          };
+
+          input.addEventListener("keydown", (event) => {
+            if (event.key === "Enter") {
+              event.preventDefault();
+              addTag();
+            }
+          });
+          addButton?.addEventListener("click", addTag);
+        }
+
+        setupTags("skillInput", "skillTags", "addSkill");
+
+        setupTags("interestInput", "interestTags", "addInterest");
+
+        setupTags(
+          "certificationInput",
+          "certificationTags",
+          "addCertification",
+        );
+
+        /* =========================
+       CV UPLOAD
+    ========================= */
+
+        const cvInput = document.getElementById("cvInput");
+        const cvName = document.getElementById("cvName");
+        const removeCv = document.getElementById("removeCv");
+        const cvStatus = document.getElementById("cvStatus");
+        const setCvStatus = (message, isError = false) => {
+          if (!cvStatus) return;
+          cvStatus.textContent = message;
+          cvStatus.style.color = isError ? "#ff8d8d" : "#8994a8";
+        };
+        const setCvName = (hasCv) => {
+          if (cvName) cvName.textContent = hasCv ? "CV uploaded" : "";
+          if (removeCv) removeCv.hidden = !hasCv;
+        };
+
+        setCvName(false);
+        if (studentId) {
+          requestJson(`/api/students/${encodeURIComponent(studentId)}`)
+            .then((result) => setCvName(Boolean(result.student.cv_path)))
+            .catch((error) => setCvStatus(error.message, true));
+        }
+
+        if (cvInput) {
+          cvInput.addEventListener("change", async function () {
+            const file = this.files[0];
+            if (!file) return;
+            if (!studentId) {
+              setCvStatus("Your authenticated profile is not ready yet.", true);
+              return;
+            }
+            if (file.type !== "application/pdf") {
+              setCvStatus("Choose a PDF file.", true);
+              cvInput.value = "";
+              return;
+            }
+            if (file.size > 10 * 1024 * 1024) {
+              setCvStatus("CVs must be 10 MB or smaller.", true);
+              cvInput.value = "";
+              return;
+            }
+
+            cvInput.disabled = true;
+            setCvStatus("Uploading CV...");
+            try {
+              const upload = await requestJson(
+                `/api/students/${encodeURIComponent(studentId)}/cv/upload-url`,
+                {
+                  method: "POST",
+                  body: JSON.stringify({ content_type: file.type }),
+                },
+              );
+              const uploadResponse = await fetch(upload.upload_url, {
+                method: "PUT",
+                headers: {
+                  "Content-Type": upload.content_type,
+                  "x-upsert": "true",
+                },
+                body: file,
+              });
+              if (!uploadResponse.ok)
+                throw new Error("The CV could not be uploaded.");
+              await requestJson(
+                `/api/students/${encodeURIComponent(studentId)}/cv`,
+                {
+                  method: "POST",
+                  body: JSON.stringify({ cv_path: upload.cv_path }),
+                },
+              );
+              setCvName(true);
+              setCvStatus("CV saved.");
+            } catch (error) {
+              setCvStatus(error.message, true);
+            } finally {
+              cvInput.value = "";
+              cvInput.disabled = false;
+              updateProgress();
+            }
+          });
+        }
+
+        removeCv?.addEventListener("click", async () => {
+          if (!studentId) return;
+          removeCv.disabled = true;
+          setCvStatus("Removing CV...");
+          try {
+            await requestJson(
+              `/api/students/${encodeURIComponent(studentId)}/cv`,
+              { method: "DELETE" },
+            );
+            setCvName(false);
+            setCvStatus("CV removed.");
+          } catch (error) {
+            setCvStatus(error.message, true);
+          } finally {
+            removeCv.disabled = false;
+            updateProgress();
+          }
+        });
+
+        /* =========================
+       PROFILE PROGRESS
+    ========================= */
+
+        function updateProgress() {
+          let completed = 0;
+          let total = 7;
+
+          const qualification = document.getElementById("qualification");
+
+          const institution = document.getElementById("institution");
+
+          const field = document.getElementById("field");
+
+          const experience = document.getElementById("experience");
+
+          const careerGoals = document.getElementById("careerGoals");
+
+          if (qualification && qualification.value.trim() !== "") {
+            completed++;
+          }
+
+          if (institution && institution.value.trim() !== "") {
+            completed++;
+          }
+
+          if (field && field.value.trim() !== "") {
+            completed++;
+          }
+
+          if (experience && experience.value.trim() !== "") {
+            completed++;
+          }
+
+          if (document.getElementById("skillTags")?.children.length > 0) {
+            completed++;
+          }
+
+          if (document.getElementById("interestTags")?.children.length > 0) {
+            completed++;
+          }
+
+          if (careerGoals && careerGoals.value.trim() !== "") {
+            completed++;
+          }
+
+          const percentage = Math.round((completed / total) * 100);
+
+          const progressBar = document.getElementById("progressBar");
+
+          const progressText = document.getElementById("progressText");
+
+          if (progressBar) {
+            progressBar.style.width = percentage + "%";
+          }
+
+          const completionText = document.getElementById("completionText");
+          if (completionText) {
+            completionText.textContent = percentage + "%";
+          }
+        }
+
+        /* =========================
+       WATCH FORM CHANGES
+    ========================= */
+
+        document
+          .querySelectorAll("input, textarea")
+          .forEach(function (element) {
+            element.addEventListener("input", updateProgress);
+          });
+
+        /* =========================
+       SAVE PROFILE
+    ========================= */
+
+        const saveProfile = async function () {
+          if (saveProfileButton) saveProfileButton.disabled = true;
+          setProfileSaveStatus("Saving profile changes...");
+
+          const profile = {
+            // Registration information
+            fullName: user.fullName,
+
+            email: user.email,
+
+            role: user.role,
+
+            // Professional information
+            qualification:
+              document.getElementById("qualification")?.value || "",
+
+            institution: document.getElementById("institution")?.value || "",
+
+            field: document.getElementById("field")?.value || "",
+
+            experience: document.getElementById("experience")?.value || "",
+
+            // Career goals
+            careerGoals: document.getElementById("careerGoals")?.value || "",
+
+            // Skills
+            skills: Array.from(
+              document.querySelectorAll("#skillTags .tag"),
+            ).map(function (tag) {
+              return tag.dataset.value;
+            }),
+
+            // Interests
+            interests: Array.from(
+              document.querySelectorAll("#interestTags .tag"),
+            ).map(function (tag) {
+              return tag.dataset.value;
+            }),
+
+            // Certifications
+            certifications: Array.from(
+              document.querySelectorAll("#certificationTags .tag"),
+            ).map(function (tag) {
+              return tag.dataset.value;
+            }),
+          };
+
+          try {
+            const studentId = sessionStorage.getItem("graduRatStudentId");
+            if (!studentId || user.role === "employer") {
+              throw new Error("Your authenticated profile is not ready yet.");
+            }
+            const response = await graduratAuth.apiFetch(
+              `/api/students/${encodeURIComponent(studentId)}`,
+              {
+                method: "PATCH",
+                body: JSON.stringify({
+                  firstName: user.fullName.split(/\s+/)[0],
+                  lastName: user.fullName.split(/\s+/).slice(1).join(" "),
+                  email: user.email,
+                  qualification: profile.qualification,
+                  institution: profile.institution,
+                  fieldOfStudy: profile.field,
+                  location: document.getElementById("location")?.value || "",
+                  workExperienceSummary: profile.experience,
+                  skills: profile.skills,
+                  certifications: profile.certifications,
+                  projects: profile.interests,
+                  preferredOpportunityType: profile.careerGoals,
+                }),
+              },
+            );
+            const result = await graduratAuth.readJson(
+              response,
+              "The profile response was not valid JSON.",
+            );
+            if (!response.ok)
+              throw new Error(
+                result.error || "Your profile could not be saved.",
+              );
+            localStorage.setItem("graduratProfile", JSON.stringify(profile));
+            if (result.student) {
+              user.fullName = result.student.full_name || user.fullName;
+              user.email = result.student.email || user.email;
+              graduratAuth.saveUser(user);
+              if (profileName) profileName.textContent = user.fullName;
+              if (profileEmail) profileEmail.textContent = user.email;
+              setPhoto(result.student.profile_picture_url);
+            }
+            setProfileSaveStatus("Profile changes saved.");
+          } catch (error) {
+            setProfileSaveStatus(error.message, true);
+          } finally {
+            if (saveProfileButton) saveProfileButton.disabled = false;
+          }
+        };
+
+        saveProfileButton?.addEventListener("click", saveProfile);
+
+        /* =========================
+       INITIAL PROGRESS
+    ========================= */
+
+        updateProgress();
+      });
+    </script>
+  </body>
+</html>

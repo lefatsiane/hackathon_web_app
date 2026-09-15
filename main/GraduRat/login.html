@@ -1,0 +1,359 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Login | Gradurat</title>
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      :root {
+        --background: #05070d;
+        --card: #0b0f1a;
+        --input: #070a12;
+        --border: rgba(255, 255, 255, 0.08);
+        --input-border: #20283a;
+        --text: #ffffff;
+        --secondary-text: #8b93a7;
+        --muted-text: #555e70;
+        --blue: #1677ff;
+        --blue-hover: #075fd6;
+        --blue-tint: #8dbbff;
+        --blue-link: #4d9aff;
+        --blue-border: rgba(45, 126, 255, 0.25);
+      }
+
+      body.light-theme {
+        --background: #f4f7fb;
+        --card: #ffffff;
+        --input: #f8fafc;
+        --border: #dce3ee;
+        --input-border: #c8d2e2;
+        --text: #111827;
+        --secondary-text: #5c677a;
+        --muted-text: #8a94a6;
+        --blue: #1266e3;
+        --blue-hover: #0958c9;
+        --blue-tint: #1266e3;
+        --blue-link: #1266e3;
+        --blue-border: #b9d3ff;
+      }
+
+      body {
+        font-family: "Inter", sans-serif;
+        background: var(--background);
+        color: var(--text);
+        min-height: 100vh;
+        transition:
+          background 0.25s ease,
+          color 0.25s ease;
+      }
+
+      /* NAVBAR */
+
+      nav {
+        height: 80px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 7%;
+        border-bottom: 1px solid var(--border);
+        background: var(--background);
+      }
+
+      .logo {
+        display: flex;
+        align-items: center;
+      }
+
+      .logo img {
+        width: 52px;
+        height: 52px;
+        object-fit: contain;
+      }
+
+      .back-home {
+        color: var(--blue-tint);
+        text-decoration: none;
+        font-size: 14px;
+        font-weight: 500;
+      }
+
+      .back-home:hover {
+        color: var(--text);
+      }
+
+      /* LOGIN AREA */
+
+      .login-container {
+        min-height: calc(100vh - 80px);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 40px 20px;
+      }
+
+      .login-box {
+        width: 100%;
+        max-width: 440px;
+        background: var(--card);
+        border: 1px solid var(--blue-border);
+        border-radius: 20px;
+        padding: 45px;
+        box-shadow: 0 0 50px rgba(0, 102, 255, 0.08);
+      }
+
+      .login-box h1 {
+        font-size: 32px;
+        margin-bottom: 10px;
+      }
+
+      .login-box .subtitle {
+        color: var(--secondary-text);
+        font-size: 14px;
+        margin-bottom: 35px;
+        line-height: 1.6;
+      }
+
+      /* FORM */
+
+      .form-group {
+        margin-bottom: 22px;
+      }
+
+      .form-group label {
+        display: block;
+        font-size: 14px;
+        font-weight: 600;
+        margin-bottom: 9px;
+      }
+
+      .form-group input {
+        width: 100%;
+        padding: 14px 16px;
+        background: var(--input);
+        border: 1px solid var(--input-border);
+        border-radius: 10px;
+        color: var(--text);
+        font-size: 14px;
+        outline: none;
+        transition: 0.3s;
+      }
+
+      .form-group input:focus {
+        border-color: var(--blue);
+        box-shadow: 0 0 0 3px rgba(22, 119, 255, 0.1);
+      }
+
+      .form-group input::placeholder {
+        color: var(--muted-text);
+      }
+
+      /* LOGIN BUTTON */
+
+      .login-btn {
+        width: 100%;
+        padding: 15px;
+        border: none;
+        border-radius: 10px;
+        background: var(--blue);
+        color: white;
+        font-size: 15px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: 0.3s;
+        margin-top: 5px;
+      }
+
+      .login-btn:hover {
+        background: var(--blue-hover);
+        transform: translateY(-1px);
+      }
+
+      /* MESSAGE */
+
+      .message {
+        margin-top: 18px;
+        text-align: center;
+        font-size: 13px;
+        display: none;
+      }
+
+      .error {
+        color: #ff6b6b;
+      }
+
+      .success {
+        color: #55d88a;
+      }
+
+      /* REGISTER */
+
+      .register-text {
+        text-align: center;
+        margin-top: 28px;
+        color: var(--secondary-text);
+        font-size: 14px;
+      }
+
+      .register-text a {
+        color: var(--blue-link);
+        text-decoration: none;
+        font-weight: 600;
+      }
+
+      .register-text a:hover {
+        color: var(--text);
+      }
+
+      /* MOBILE */
+
+      @media (max-width: 500px) {
+        .login-box {
+          padding: 30px 22px;
+        }
+
+        .login-box h1 {
+          font-size: 27px;
+        }
+
+        nav {
+          padding: 0 5%;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <script src="theme.js"></script>
+    <!-- NAVBAR -->
+
+    <nav>
+      <a href="index.html" class="logo">
+        <img src="logo1.jpg" alt="Gradurat Logo" />
+      </a>
+
+      <a href="index.html" class="back-home"> Back to Home </a>
+    </nav>
+
+    <!-- LOGIN -->
+
+    <main class="login-container">
+      <div class="login-box">
+        <h1>Welcome Back</h1>
+
+        <p class="subtitle">
+          Sign in to your Gradurat account and continue building your future.
+        </p>
+
+        <form id="loginForm">
+          <div class="form-group">
+            <label for="email"> Email Address </label>
+
+            <input
+              type="email"
+              id="email"
+              placeholder="Enter your email address"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="password"> Password </label>
+
+            <input
+              type="password"
+              id="password"
+              placeholder="Enter your password"
+              required
+            />
+          </div>
+
+          <button type="submit" class="login-btn">Sign In</button>
+        </form>
+
+        <p id="message" class="message"></p>
+
+        <div class="register-text">
+          Don't have an account?
+
+          <a href="register.html"> Create Account </a>
+        </div>
+      </div>
+    </main>
+
+    <!-- LOGIN SCRIPT -->
+
+    <script src="auth-client.js"></script>
+    <script>
+      document
+        .getElementById("loginForm")
+        .addEventListener("submit", async function (event) {
+          event.preventDefault();
+
+          const email = document.getElementById("email").value.trim();
+
+          const password = document.getElementById("password").value;
+
+          const message = document.getElementById("message");
+
+          try {
+            const session = await graduratAuth.signIn(email, password);
+            graduratAuth.saveSession(session);
+            const pendingResult = await graduratAuth.completePendingProfile();
+            const profileResponse = await graduratAuth.apiFetch("/api/me");
+            const profile = await graduratAuth.readJson(
+              profileResponse,
+              "The account response was not valid JSON.",
+            );
+            if (!profileResponse.ok)
+              throw new Error(profile.error || "Could not load your profile.");
+            if (!profile.student && !profile.employer) {
+              throw new Error(
+                "Your email is confirmed, but your profile is incomplete. Please register again to finish setup.",
+              );
+            }
+            if (profile.student)
+              sessionStorage.setItem("graduRatStudentId", profile.student.id);
+            if (profile.employer)
+              sessionStorage.setItem("graduRatEmployerId", profile.employer.id);
+            graduratAuth.saveUser({
+              fullName:
+                profile.student?.full_name ||
+                profile.employer?.company_name ||
+                email,
+              email,
+              role: profile.employer ? "employer" : "student",
+              studentId:
+                profile.student?.id || pendingResult?.student?.id || null,
+              employerId:
+                profile.employer?.id || pendingResult?.employer?.id || null,
+            });
+            message.textContent = "Login successful!";
+            message.className = "message success";
+            message.style.display = "block";
+            setTimeout(() => {
+              window.location.href = profile.employer
+                ? "employer-dashboard.html"
+                : "dashboard.html";
+            }, 500);
+          } catch (error) {
+            message.textContent = error.message;
+            message.className = "message error";
+            message.style.display = "block";
+          }
+        });
+    </script>
+  </body>
+</html>

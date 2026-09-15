@@ -1,0 +1,1282 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Opportunity | Gradurat</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      :root {
+        --background: #05070d;
+        --navbar: #080b13;
+        --card: #0b0f19;
+        --card-alt: #080c15;
+        --card-alt2: #121927;
+        --border: rgba(255, 255, 255, 0.08);
+        --input-border: rgba(255, 255, 255, 0.1);
+        --text: #ffffff;
+        --secondary-text: #999999;
+        --muted-text: #777777;
+        --blue: #168cff;
+        --blue-hover: #0875df;
+        --blue-light: rgba(22, 140, 255, 0.08);
+        --blue-border: rgba(22, 140, 255, 0.15);
+        --blue-tint: #64b5ff;
+      }
+
+      body.light-theme {
+        --background: #f4f7fb;
+        --navbar: #ffffff;
+        --card: #ffffff;
+        --card-alt: #f8fafc;
+        --card-alt2: #eef2f7;
+        --border: #dce3ee;
+        --input-border: #c8d2e2;
+        --text: #111827;
+        --secondary-text: #5c677a;
+        --muted-text: #697586;
+        --blue: #1266e3;
+        --blue-hover: #0958c9;
+        --blue-light: #eaf2ff;
+        --blue-border: #b9d3ff;
+        --blue-tint: #1266e3;
+      }
+
+      body {
+        font-family: "Inter", sans-serif;
+        background: var(--background);
+        color: var(--text);
+        min-height: 100vh;
+        transition:
+          background 0.25s ease,
+          color 0.25s ease;
+      }
+
+      a {
+        text-decoration: none;
+        color: inherit;
+      }
+
+      button {
+        font-family: inherit;
+      }
+
+      /* ================= NAVBAR ================= */
+
+      nav {
+        height: 75px;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 6%;
+        background: var(--navbar);
+        position: sticky;
+        top: 0;
+        z-index: 100;
+      }
+
+      .logo {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .logo img {
+        width: 42px;
+        height: 42px;
+        border-radius: 10px;
+        object-fit: cover;
+      }
+
+      .logo span {
+        font-size: 22px;
+        font-weight: 800;
+      }
+
+      .nav-links {
+        display: flex;
+        gap: 28px;
+      }
+
+      .nav-links a {
+        color: var(--secondary-text);
+        font-size: 14px;
+        transition: 0.2s;
+      }
+
+      .nav-links a:hover,
+      .nav-links a.active {
+        color: var(--blue);
+      }
+
+      /* ================= CONTAINER ================= */
+
+      .container {
+        width: min(1150px, 92%);
+        margin: auto;
+        padding: 40px 0 80px;
+      }
+
+      .back-btn {
+        display: inline-block;
+        color: var(--secondary-text);
+        margin-bottom: 25px;
+        font-size: 14px;
+      }
+
+      .back-btn:hover {
+        color: var(--blue);
+      }
+
+      /* ================= STATES ================= */
+
+      .state {
+        text-align: center;
+        padding: 100px 20px;
+        color: var(--muted-text);
+      }
+
+      .state h2 {
+        color: var(--text);
+        margin-bottom: 10px;
+      }
+
+      .hidden {
+        display: none !important;
+      }
+
+      .spinner {
+        width: 42px;
+        height: 42px;
+        border: 3px solid var(--input-border);
+        border-top-color: var(--blue);
+        border-radius: 50%;
+        margin: 0 auto 20px;
+        animation: spin 0.8s linear infinite;
+      }
+
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      /* ================= OPPORTUNITY HEADER ================= */
+
+      .opportunity-header {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 22px;
+        padding: 35px;
+        margin-bottom: 25px;
+      }
+
+      .status {
+        display: inline-block;
+        padding: 7px 12px;
+        border-radius: 20px;
+        background: var(--blue-light);
+        border: 1px solid var(--blue-border);
+        color: var(--blue-tint);
+        font-size: 11px;
+        margin-bottom: 18px;
+      }
+
+      .opportunity-header h1 {
+        font-size: 32px;
+        margin-bottom: 12px;
+      }
+
+      .company {
+        color: var(--blue);
+        font-weight: 600;
+        margin-bottom: 18px;
+      }
+
+      .description {
+        max-width: 850px;
+        color: var(--secondary-text);
+        line-height: 1.7;
+        font-size: 14px;
+      }
+
+      .meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 22px;
+      }
+
+      .meta-item {
+        background: var(--card-alt);
+        border: 1px solid var(--border);
+        padding: 9px 13px;
+        border-radius: 8px;
+        color: var(--secondary-text);
+        font-size: 12px;
+      }
+
+      /* ================= GRID ================= */
+
+      .grid {
+        display: grid;
+        grid-template-columns: 1fr 2fr;
+        gap: 22px;
+      }
+
+      .card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 18px;
+        padding: 26px;
+        margin-bottom: 22px;
+      }
+
+      .card h2 {
+        font-size: 18px;
+        margin-bottom: 20px;
+      }
+
+      .card p {
+        color: var(--secondary-text);
+        font-size: 14px;
+        line-height: 1.7;
+      }
+
+      .retry-button {
+        margin-top: 20px;
+      }
+
+      .candidate-intro {
+        margin-bottom: 20px;
+      }
+
+      .candidate-loading-state {
+        padding: 50px 10px;
+      }
+
+      /* ================= REQUIREMENTS ================= */
+
+      .requirement {
+        margin-bottom: 20px;
+      }
+
+      .requirement:last-child {
+        margin-bottom: 0;
+      }
+
+      .requirement-title {
+        color: var(--muted-text);
+        text-transform: uppercase;
+        letter-spacing: 0.7px;
+        font-size: 11px;
+        margin-bottom: 8px;
+      }
+
+      .requirement-value {
+        color: var(--secondary-text);
+        font-size: 14px;
+      }
+
+      /* ================= TAGS ================= */
+
+      .tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .tag {
+        background: var(--blue-light);
+        border: 1px solid var(--blue-border);
+        color: var(--blue-tint);
+        padding: 7px 11px;
+        border-radius: 20px;
+        font-size: 12px;
+      }
+
+      /* ================= CANDIDATES ================= */
+
+      .candidate-list {
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+      }
+
+      .candidate-card {
+        border: 1px solid var(--border);
+        background: var(--card-alt);
+        border-radius: 14px;
+        padding: 18px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+        transition: 0.2s;
+      }
+
+      .candidate-card:hover {
+        border-color: var(--blue);
+        transform: translateY(-2px);
+      }
+
+      .candidate-main {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        min-width: 0;
+      }
+
+      .candidate-photo {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        object-fit: cover;
+        background: var(--card-alt2);
+        border: 2px solid var(--blue);
+        flex-shrink: 0;
+      }
+
+      .candidate-info {
+        min-width: 0;
+      }
+
+      .candidate-info h3 {
+        font-size: 15px;
+        margin-bottom: 5px;
+      }
+
+      .candidate-role {
+        color: var(--blue);
+        font-size: 12px;
+        margin-bottom: 5px;
+      }
+
+      .candidate-details {
+        color: var(--muted-text);
+        font-size: 12px;
+        line-height: 1.5;
+      }
+
+      .candidate-actions {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        flex-shrink: 0;
+      }
+
+      .candidate-order {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: var(--muted-text);
+        font-size: 12px;
+        white-space: nowrap;
+      }
+
+      .order-button {
+        width: 30px;
+        height: 30px;
+        padding: 0;
+        border: 1px solid var(--input-border);
+        border-radius: 7px;
+        background: var(--card);
+        color: var(--secondary-text);
+        cursor: pointer;
+      }
+
+      .order-button:hover:not(:disabled) {
+        border-color: var(--blue);
+        color: var(--blue);
+      }
+
+      .order-button:disabled {
+        cursor: not-allowed;
+        opacity: 0.35;
+      }
+
+      /* ================= BUTTON ================= */
+
+      .btn {
+        border: none;
+        border-radius: 9px;
+        padding: 11px 16px;
+        cursor: pointer;
+        font-size: 12px;
+        font-weight: 600;
+        transition: 0.2s;
+      }
+
+      .primary-btn {
+        background: var(--blue);
+        color: white;
+      }
+
+      .primary-btn:hover {
+        background: var(--blue-hover);
+      }
+
+      .secondary-btn {
+        background: var(--card-alt);
+        border: 1px solid var(--input-border);
+        color: var(--secondary-text);
+      }
+
+      .secondary-btn:hover {
+        border-color: var(--blue);
+        color: var(--blue);
+      }
+
+      /* ================= MATCHING STATUS ================= */
+
+      .ai-box {
+        background: var(--blue-light);
+        border: 1px solid var(--blue-border);
+        border-radius: 13px;
+        padding: 18px;
+      }
+
+      .ai-box h3 {
+        font-size: 14px;
+        margin-bottom: 8px;
+        color: var(--blue-tint);
+      }
+
+      .ai-box p {
+        font-size: 12px;
+        color: var(--blue-tint);
+      }
+
+      .application-actions {
+        margin-top: 20px;
+      }
+
+      .fit-meter {
+        height: 10px;
+        margin: 14px 0 8px;
+        overflow: hidden;
+        border-radius: 999px;
+        background: var(--card-alt2);
+      }
+
+      .fit-meter span {
+        display: block;
+        width: 0;
+        height: 100%;
+        border-radius: inherit;
+        background: #3bb273;
+        transition: width 0.35s ease;
+      }
+
+      /* ================= EMPTY ================= */
+
+      .empty {
+        text-align: center;
+        padding: 60px 20px;
+        border: 1px dashed var(--input-border);
+        border-radius: 14px;
+        color: var(--muted-text);
+      }
+
+      .empty h3 {
+        color: var(--secondary-text);
+        margin-bottom: 8px;
+      }
+
+      /* ================= RESPONSIVE ================= */
+
+      @media (max-width: 850px) {
+        .grid {
+          grid-template-columns: 1fr;
+        }
+
+        .candidate-card {
+          align-items: flex-start;
+          flex-direction: column;
+        }
+
+        .candidate-actions {
+          width: 100%;
+          justify-content: space-between;
+        }
+      }
+
+      @media (max-width: 600px) {
+        nav {
+          padding: 0 4%;
+        }
+
+        .nav-links {
+          gap: 12px;
+        }
+
+        .nav-links a {
+          font-size: 11px;
+        }
+
+        .opportunity-header h1 {
+          font-size: 25px;
+        }
+
+        .candidate-actions {
+          flex-direction: column;
+          align-items: stretch;
+        }
+
+        .candidate-actions .btn {
+          width: 100%;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <script src="theme.js"></script>
+    <script src="auth-client.js"></script>
+    <script src="navigation.js"></script>
+    <!-- ================= NAVBAR ================= -->
+
+    <nav>
+      <a href="index.html" class="logo">
+        <img src="logo1.jpg" alt="Gradurat Logo" />
+
+        <span>Gradurat</span>
+      </a>
+
+      <div class="nav-links">
+        <a href="employer-dashboard.html"> Dashboard </a>
+
+        <a href="fyp.html"> Find Your People </a>
+
+        <a href="matches.html"> Matches </a>
+
+        <a href="settings.html"> Settings </a>
+      </div>
+    </nav>
+
+    <main class="container">
+      <a href="javascript:history.back()" class="back-btn"> ← Back </a>
+
+      <!-- ================= LOADING ================= -->
+
+      <div id="loadingState" class="state">
+        <div class="spinner"></div>
+
+        <h2>Loading opportunity...</h2>
+
+        <p>Retrieving opportunity information.</p>
+      </div>
+
+      <!-- ================= ERROR ================= -->
+
+      <div id="errorState" class="state hidden">
+        <h2>Unable to load opportunity</h2>
+
+        <p id="errorMessage">Something went wrong.</p>
+
+        <button
+          class="btn secondary-btn retry-button"
+          onclick="loadOpportunity()"
+        >
+          Try Again
+        </button>
+      </div>
+
+      <!-- ================= NOT FOUND ================= -->
+
+      <div id="emptyState" class="state hidden">
+        <h2>Opportunity not found</h2>
+
+        <p>This opportunity may have been removed or does not exist.</p>
+      </div>
+
+      <!-- ================= CONTENT ================= -->
+
+      <section id="content" class="hidden">
+        <!-- ================= HEADER ================= -->
+
+        <div class="opportunity-header">
+          <span id="status" class="status"> Active Opportunity </span>
+
+          <h1 id="jobTitle">Opportunity</h1>
+
+          <div id="company" class="company">--</div>
+
+          <p id="description" class="description">--</p>
+
+          <div id="meta" class="meta"></div>
+
+          <div class="application-actions">
+            <button id="applyButton" class="btn primary-btn" type="button">
+              Apply for this opportunity
+            </button>
+          </div>
+        </div>
+
+        <!-- ================= MAIN GRID ================= -->
+
+        <div class="grid">
+          <!-- ================= LEFT ================= -->
+
+          <div>
+            <!-- REQUIREMENTS -->
+
+            <div class="card">
+              <h2>Requirements</h2>
+
+              <div class="requirement">
+                <div class="requirement-title">Qualification</div>
+
+                <div id="qualification" class="requirement-value">--</div>
+              </div>
+
+              <div class="requirement">
+                <div class="requirement-title">Experience</div>
+
+                <div id="experience" class="requirement-value">--</div>
+              </div>
+
+              <div class="requirement">
+                <div class="requirement-title">Work Environment</div>
+
+                <div id="workEnvironment" class="requirement-value">--</div>
+              </div>
+
+              <div class="requirement">
+                <div class="requirement-title">Employment Type</div>
+
+                <div id="employmentType" class="requirement-value">--</div>
+              </div>
+            </div>
+
+            <!-- SKILLS -->
+
+            <div class="card">
+              <h2>Skills Required</h2>
+
+              <div id="skills" class="tags"></div>
+            </div>
+
+            <!-- AI -->
+
+            <div class="card">
+              <div id="fitCard" class="ai-box" hidden>
+                <h3>Your fit for this opportunity</h3>
+                <div class="fit-meter" aria-label="Your fit percentage">
+                  <span id="fitMeterFill"></span>
+                </div>
+                <p id="fitScore">Assessing your fit...</p>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="ai-box">
+                <h3>✦ Gradurat AI Matching</h3>
+
+                <p>
+                  Gradurat compares this opportunity with student and graduate
+                  profiles using their qualifications, skills, interests,
+                  experience and career goals.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- ================= RIGHT ================= -->
+
+          <div class="card">
+            <h2>Applicants</h2>
+
+            <p class="candidate-intro">
+              Candidates are shown in the order their applications were
+              received.
+            </p>
+
+            <!-- CANDIDATE LOADING -->
+
+            <div
+              id="candidateLoading"
+              class="state hidden candidate-loading-state"
+            >
+              <div class="spinner"></div>
+
+              <p>Loading applicants...</p>
+            </div>
+
+            <!-- CANDIDATES -->
+
+            <div id="candidateList" class="candidate-list"></div>
+
+            <!-- EMPTY -->
+
+            <div id="candidateEmpty" class="empty hidden">
+              <h3>No applicants yet</h3>
+
+              <p>No one has applied for this opportunity yet. yet.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script src="auth-client.js"></script>
+    <script>
+      /* =========================================
+   GET OPPORTUNITY ID
+========================================= */
+
+      const params = new URLSearchParams(window.location.search);
+
+      const opportunityId = params.get("id");
+
+      /* =========================================
+   LOAD OPPORTUNITY
+========================================= */
+
+      async function loadOpportunity() {
+        const loading = document.getElementById("loadingState");
+
+        const error = document.getElementById("errorState");
+
+        const empty = document.getElementById("emptyState");
+
+        const content = document.getElementById("content");
+
+        loading.classList.remove("hidden");
+
+        error.classList.add("hidden");
+
+        empty.classList.add("hidden");
+
+        content.classList.add("hidden");
+
+        if (!opportunityId) {
+          loading.classList.add("hidden");
+
+          empty.classList.remove("hidden");
+
+          return;
+        }
+
+        try {
+          /*
+            Backend:
+
+            GET /api/jobs/:id
+        */
+
+          const response = await fetch(
+            `/api/opportunities/${encodeURIComponent(opportunityId)}`,
+          );
+
+          if (!response.ok) {
+            if (response.status === 404) {
+              loading.classList.add("hidden");
+
+              empty.classList.remove("hidden");
+
+              return;
+            }
+
+            throw new Error("Unable to load opportunity");
+          }
+
+          const payload = await response.json();
+          const opportunity = payload.opportunity || payload;
+
+          renderOpportunity(opportunity);
+
+          loading.classList.add("hidden");
+
+          content.classList.remove("hidden");
+
+          /*
+            Once opportunity is loaded,
+            get AI-ranked candidates.
+        */
+
+          loadCandidates();
+          loadStudentFit(opportunity);
+        } catch (err) {
+          console.error(err);
+
+          loading.classList.add("hidden");
+
+          error.classList.remove("hidden");
+
+          document.getElementById("errorMessage").textContent =
+            "The opportunity could not be loaded. Please try again.";
+        }
+      }
+
+      /* =========================================
+   RENDER OPPORTUNITY
+========================================= */
+
+      function renderOpportunity(job) {
+        document.getElementById("jobTitle").textContent =
+          job.title || "Opportunity";
+
+        document.getElementById("company").textContent =
+          job.employers?.company_name ||
+          job.companyName ||
+          job.company ||
+          "Company";
+
+        document.getElementById("description").textContent =
+          job.description || "No description provided.";
+
+        document.getElementById("qualification").textContent =
+          job.qualification_requirement || job.qualification || "Not specified";
+
+        document.getElementById("experience").textContent =
+          job.duration || job.experience || "Not specified";
+
+        document.getElementById("workEnvironment").textContent =
+          job.work_arrangement || job.workEnvironment || "Not specified";
+
+        document.getElementById("employmentType").textContent =
+          job.opportunity_type ||
+          job.type ||
+          job.employmentType ||
+          "Not specified";
+
+        renderTags(
+          "skills",
+          job.required_skills || job.preferred_skills || job.skills,
+        );
+
+        renderMeta(job);
+
+        const status = document.getElementById("status");
+
+        if (job.status) {
+          status.textContent = job.status;
+        }
+      }
+
+      /* =========================================
+   META
+========================================= */
+
+      function renderMeta(job) {
+        const container = document.getElementById("meta");
+
+        container.innerHTML = "";
+
+        const values = [
+          job.location,
+
+          job.industry,
+
+          job.salary,
+
+          job.application_deadline || job.applicationDeadline,
+        ];
+
+        values.filter(Boolean).forEach((value) => {
+          const div = document.createElement("div");
+
+          div.className = "meta-item";
+
+          div.textContent = value;
+
+          container.appendChild(div);
+        });
+      }
+
+      /* =========================================
+   TAGS
+========================================= */
+
+      function renderTags(elementId, tags) {
+        const container = document.getElementById(elementId);
+
+        container.innerHTML = "";
+
+        if (!Array.isArray(tags) || tags.length === 0) {
+          container.innerHTML = `<span style="color:#666;font-size:13px;">
+                No skills specified
+            </span>`;
+
+          return;
+        }
+
+        tags.forEach((skill) => {
+          const tag = document.createElement("span");
+
+          tag.className = "tag";
+
+          tag.textContent = skill;
+
+          container.appendChild(tag);
+        });
+      }
+
+      /* =========================================
+   LOAD CANDIDATES
+========================================= */
+
+      async function loadCandidates() {
+        const loading = document.getElementById("candidateLoading");
+
+        const list = document.getElementById("candidateList");
+
+        const empty = document.getElementById("candidateEmpty");
+
+        loading.classList.remove("hidden");
+
+        list.innerHTML = "";
+
+        empty.classList.add("hidden");
+
+        try {
+          const response = await graduratAuth.apiFetch(
+            `/api/opportunities/${encodeURIComponent(opportunityId)}/candidates`,
+          );
+
+          if (!response.ok) {
+            throw new Error("Unable to load candidates");
+          }
+
+          const data = await response.json();
+
+          const candidates = data.candidates || [];
+
+          loading.classList.add("hidden");
+
+          if (candidates.length === 0) {
+            empty.classList.remove("hidden");
+
+            return;
+          }
+
+          candidates.forEach((candidate, index) => {
+            renderCandidate(
+              candidate,
+              Boolean(data.isOwner),
+              index,
+              candidates.length,
+            );
+          });
+        } catch (error) {
+          console.error(error);
+
+          loading.classList.add("hidden");
+
+          list.innerHTML = `
+            <div class="empty">
+
+                <h3>
+                    Candidates unavailable
+                </h3>
+
+                <p>
+                    Gradurat could not retrieve potential candidates right now.
+                </p>
+
+                <button
+                    class="btn secondary-btn"
+                    onclick="loadCandidates()"
+                    style="margin-top:15px;">
+
+                    Try Again
+
+                </button>
+
+            </div>
+        `;
+        }
+      }
+
+      /* =========================================
+   RENDER CANDIDATE
+========================================= */
+
+      function renderCandidate(candidate, isOwner, index, total) {
+        const list = document.getElementById("candidateList");
+
+        const card = document.createElement("div");
+
+        card.className = "candidate-card";
+        card.dataset.candidateId = candidate.id || "";
+
+        card.innerHTML = `
+
+        <div class="candidate-main">
+
+            <img
+                class="candidate-photo"
+                src="${escapeHTML(candidate.photo || "https://via.placeholder.com/60?text=Profile")}"
+                alt="Candidate"
+            >
+
+
+            <div class="candidate-info">
+
+                <h3>
+                    ${escapeHTML(candidate.name || "Candidate")}
+                </h3>
+
+
+                <div class="candidate-role">
+
+                    ${escapeHTML(candidate.role || "Student / Graduate")}
+
+                </div>
+
+
+                <div class="candidate-details">
+
+                    ${escapeHTML(
+                      candidate.qualification || "Qualification not provided",
+                    )}
+
+                    ${
+                      candidate.field ? " • " + escapeHTML(candidate.field) : ""
+                    }
+
+                    <br>
+                    Applied ${escapeHTML(formatApplicationDate(candidate.appliedAt))}
+
+                    ${
+                      candidate.experience
+                        ? " • " + escapeHTML(candidate.experience)
+                        : ""
+                    }
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+        <div class="candidate-actions">
+          ${
+            isOwner
+              ? `<div class="candidate-order" aria-label="Employer-only candidate order">
+              <button class="order-button" type="button" data-order="up" ${index === 0 ? "disabled" : ""} aria-label="Move candidate up">↑</button>
+              <span>${index + 1}</span>
+              <button class="order-button" type="button" data-order="down" ${index === total - 1 ? "disabled" : ""} aria-label="Move candidate down">↓</button>
+              </div>`
+              : ""
+          }
+            <button
+                class="btn primary-btn"
+            type="button"
+            data-view-candidate="${escapeHTML(candidate.id)}">
+
+                View Profile
+
+            </button>
+
+        </div>
+
+    `;
+
+        list.appendChild(card);
+      }
+
+      async function saveCandidateOrder() {
+        const list = document.getElementById("candidateList");
+        const candidateIds = [...list.children]
+          .map((card) => card.dataset.candidateId)
+          .filter(Boolean);
+        const response = await graduratAuth.apiFetch(
+          `/api/opportunities/${encodeURIComponent(opportunityId)}/candidates/order`,
+          {
+            method: "PATCH",
+            body: JSON.stringify({ candidateIds }),
+          },
+        );
+        if (!response.ok) throw new Error("Could not save candidate order.");
+      }
+
+      function formatApplicationDate(value) {
+        const date = new Date(value);
+        return Number.isNaN(date.getTime())
+          ? "recently"
+          : date.toLocaleString();
+      }
+
+      document
+        .getElementById("candidateList")
+        .addEventListener("click", async (event) => {
+          const list = document.getElementById("candidateList");
+          const card = event.target.closest(".candidate-card");
+          if (!card) return;
+          const viewButton = event.target.closest("[data-view-candidate]");
+          if (viewButton) {
+            viewCandidate(viewButton.dataset.viewCandidate);
+            return;
+          }
+          const orderButton = event.target.closest("[data-order]");
+          if (!orderButton || orderButton.disabled) return;
+          const sibling =
+            orderButton.dataset.order === "up"
+              ? card.previousElementSibling
+              : card.nextElementSibling;
+          if (!sibling) return;
+          if (orderButton.dataset.order === "up")
+            list.insertBefore(card, sibling);
+          else list.insertBefore(sibling, card);
+          [...list.children].forEach((item, itemIndex) => {
+            const order = item.querySelector(".candidate-order span");
+            if (order) order.textContent = itemIndex + 1;
+          });
+          try {
+            await saveCandidateOrder();
+            loadCandidates();
+          } catch (error) {
+            console.error(error);
+            loadCandidates();
+          }
+        });
+
+      /* =========================================
+   VIEW CANDIDATE
+========================================= */
+
+      function viewCandidate(id) {
+        if (!id) {
+          return;
+        }
+
+        window.location.href = `candidate.html?id=${encodeURIComponent(id)}`;
+      }
+
+      async function loadStudentFit(opportunity) {
+        const fitCard = document.getElementById("fitCard");
+        const fitScore = document.getElementById("fitScore");
+        const fitMeterFill = document.getElementById("fitMeterFill");
+        const studentId = sessionStorage.getItem("graduRatStudentId");
+        if (!studentId) return;
+
+        try {
+          const studentResponse = await graduratAuth.apiFetch(
+            `/api/students/${encodeURIComponent(studentId)}`,
+          );
+          const studentPayload = await graduratAuth.readJson(
+            studentResponse,
+            "The student profile response was not valid JSON.",
+          );
+          if (!studentResponse.ok)
+            throw new Error(
+              studentPayload.error || "Could not load your profile.",
+            );
+
+          const feedbackResponse = await graduratAuth.apiFetch(
+            "/api/ai/feedback",
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                subject_type: "student",
+                subject: {
+                  name: studentPayload.student.full_name,
+                  qualification: studentPayload.student.qualification,
+                  skills: studentPayload.student.skills,
+                  experience: studentPayload.student.work_experience_summary,
+                  goals: studentPayload.student.preferred_industry,
+                  location: studentPayload.student.location,
+                },
+                target_type: "opportunity",
+                target: {
+                  title: opportunity.title,
+                  qualification: opportunity.qualification_requirement,
+                  skills:
+                    opportunity.required_skills || opportunity.preferred_skills,
+                  description: opportunity.description,
+                  industry: opportunity.industry,
+                  location: opportunity.location,
+                },
+              }),
+            },
+          );
+          const feedbackPayload = await graduratAuth.readJson(
+            feedbackResponse,
+            "The AI feedback response was not valid JSON.",
+          );
+          if (!feedbackResponse.ok)
+            throw new Error(
+              feedbackPayload.error || "Fit assessment unavailable.",
+            );
+
+          const score = Number(feedbackPayload.assessment.fit_score);
+          fitCard.hidden = false;
+          fitScore.textContent = `${score}% fit for this opportunity`;
+          fitMeterFill.style.width = `${Math.max(0, Math.min(100, score))}%`;
+        } catch (error) {
+          fitCard.hidden = false;
+          fitScore.textContent = error.message;
+        }
+      }
+
+      document
+        .getElementById("applyButton")
+        .addEventListener("click", async () => {
+          const button = document.getElementById("applyButton");
+          const studentId = sessionStorage.getItem("graduRatStudentId");
+          if (!studentId) {
+            button.textContent = "Log in as a student to apply";
+            return;
+          }
+          button.disabled = true;
+          try {
+            const response = await graduratAuth.apiFetch(
+              `/api/opportunities/${encodeURIComponent(opportunityId)}/applications`,
+              {
+                method: "POST",
+                body: JSON.stringify({ student_id: studentId }),
+              },
+            );
+            const payload = await graduratAuth.readJson(
+              response,
+              "The application response was not valid JSON.",
+            );
+            if (!response.ok)
+              throw new Error(payload.error || "Could not submit application.");
+            button.textContent = "Application submitted";
+          } catch (error) {
+            button.disabled = false;
+            button.textContent = error.message;
+          }
+        });
+
+      /* =========================================
+   SECURITY
+========================================= */
+
+      function escapeHTML(value) {
+        const div = document.createElement("div");
+
+        div.textContent = value;
+
+        return div.innerHTML;
+      }
+
+      /* =========================================
+   START
+========================================= */
+
+      loadOpportunity();
+    </script>
+  </body>
+</html>

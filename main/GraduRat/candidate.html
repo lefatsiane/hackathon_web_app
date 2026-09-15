@@ -1,0 +1,975 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Candidate Profile | Gradurat</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      :root {
+        --background: #050505;
+        --card: #0c0c0c;
+        --card-alt: #101010;
+        --border: #202020;
+        --input-border: #1d1d1d;
+        --text: #ffffff;
+        --secondary-text: #a5a5a5;
+        --muted-text: #8c8c8c;
+        --blue: #168cff;
+        --blue-hover: #0875df;
+        --blue-light: #0b1b2a;
+        --blue-border: #16476e;
+        --blue-tint: #64b5ff;
+      }
+
+      body.light-theme {
+        --background: #f4f7fb;
+        --card: #ffffff;
+        --card-alt: #f8fafc;
+        --border: #dce3ee;
+        --input-border: #c8d2e2;
+        --text: #111827;
+        --secondary-text: #5c677a;
+        --muted-text: #697586;
+        --blue: #1266e3;
+        --blue-hover: #0958c9;
+        --blue-light: #eaf2ff;
+        --blue-border: #b9d3ff;
+        --blue-tint: #1266e3;
+      }
+
+      body {
+        font-family: "Inter", sans-serif;
+        background: var(--background);
+        color: var(--text);
+        min-height: 100vh;
+        transition:
+          background 0.25s ease,
+          color 0.25s ease;
+      }
+
+      a {
+        text-decoration: none;
+        color: inherit;
+      }
+
+      button {
+        font-family: inherit;
+      }
+
+      /* ================= NAVBAR ================= */
+
+      nav {
+        height: 75px;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 6%;
+        background: var(--background);
+        position: sticky;
+        top: 0;
+        z-index: 100;
+      }
+
+      .logo {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .logo img {
+        width: 42px;
+        height: 42px;
+        border-radius: 10px;
+        object-fit: cover;
+      }
+
+      .logo span {
+        font-size: 22px;
+        font-weight: 800;
+      }
+
+      .logo span::first-letter {
+        color: var(--blue);
+      }
+
+      .nav-links {
+        display: flex;
+        gap: 28px;
+        align-items: center;
+      }
+
+      .nav-links a {
+        color: var(--secondary-text);
+        font-size: 14px;
+        transition: 0.2s;
+      }
+
+      .nav-links a:hover,
+      .nav-links a.active {
+        color: var(--blue);
+      }
+
+      /* ================= PAGE ================= */
+
+      .container {
+        width: min(1100px, 92%);
+        margin: 0 auto;
+        padding: 45px 0 80px;
+      }
+
+      .back-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        color: var(--secondary-text);
+        margin-bottom: 28px;
+        font-size: 14px;
+        transition: 0.2s;
+      }
+
+      .back-btn:hover {
+        color: var(--blue);
+      }
+
+      /* ================= LOADING ================= */
+
+      .state {
+        text-align: center;
+        padding: 100px 20px;
+        color: var(--muted-text);
+      }
+
+      .state h2 {
+        color: var(--text);
+        margin-bottom: 10px;
+      }
+
+      .spinner {
+        width: 42px;
+        height: 42px;
+        border: 3px solid var(--input-border);
+        border-top-color: var(--blue);
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+        margin: 0 auto 20px;
+      }
+
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      .hidden {
+        display: none !important;
+      }
+
+      /* ================= PROFILE HEADER ================= */
+
+      .profile-header {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 22px;
+        padding: 35px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 30px;
+      }
+
+      .candidate-main {
+        display: flex;
+        align-items: center;
+        gap: 25px;
+      }
+
+      .candidate-photo {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 3px solid var(--blue);
+        background: var(--card-alt);
+      }
+
+      .candidate-info h1 {
+        font-size: 30px;
+        margin-bottom: 8px;
+      }
+
+      .candidate-role {
+        color: var(--blue);
+        font-weight: 600;
+        margin-bottom: 8px;
+      }
+
+      .candidate-meta {
+        color: var(--secondary-text);
+        font-size: 14px;
+        line-height: 1.7;
+      }
+
+      /* ================= MATCH ================= */
+
+      .match-box {
+        min-width: 180px;
+        text-align: center;
+        background: var(--blue-light);
+        border: 1px solid var(--blue-border);
+        border-radius: 18px;
+        padding: 22px;
+      }
+
+      .match-label {
+        color: var(--blue-tint);
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      }
+
+      .match-score {
+        font-size: 42px;
+        font-weight: 800;
+        color: var(--blue);
+        margin: 5px 0;
+      }
+
+      .match-status {
+        color: var(--blue-tint);
+        font-size: 12px;
+      }
+
+      /* ================= GRID ================= */
+
+      .content-grid {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 22px;
+        margin-top: 22px;
+      }
+
+      .card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 18px;
+        padding: 26px;
+      }
+
+      .card h2 {
+        font-size: 18px;
+        margin-bottom: 20px;
+      }
+
+      .card p {
+        color: var(--secondary-text);
+        line-height: 1.7;
+        font-size: 14px;
+      }
+
+      /* ================= INFO ================= */
+
+      .info-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 18px;
+      }
+
+      .info-item {
+        background: var(--card-alt);
+        border: 1px solid var(--input-border);
+        border-radius: 12px;
+        padding: 16px;
+      }
+
+      .info-item span {
+        display: block;
+        color: var(--muted-text);
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+        margin-bottom: 7px;
+      }
+
+      .info-item strong {
+        font-size: 14px;
+        color: var(--secondary-text);
+        font-weight: 500;
+      }
+
+      /* ================= TAGS ================= */
+
+      .tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .achievement-list {
+        display: grid;
+        gap: 10px;
+      }
+
+      .achievement-item {
+        padding: 14px 16px;
+        border-left: 3px solid var(--blue);
+        background: var(--card-alt);
+        color: var(--secondary-text);
+        font-size: 14px;
+        line-height: 1.6;
+      }
+
+      .empty-data {
+        color: var(--muted-text);
+        font-size: 13px;
+      }
+
+      .tag {
+        background: var(--blue-light);
+        border: 1px solid var(--blue-border);
+        color: var(--blue-tint);
+        padding: 7px 11px;
+        border-radius: 20px;
+        font-size: 12px;
+      }
+
+      /* ================= MATCH REASONS ================= */
+
+      .match-reason {
+        display: flex;
+        gap: 12px;
+        padding: 13px 0;
+        border-bottom: 1px solid var(--border);
+        color: var(--secondary-text);
+        font-size: 13px;
+        line-height: 1.5;
+      }
+
+      .match-reason:last-child {
+        border-bottom: none;
+      }
+
+      .reason-icon {
+        color: var(--blue);
+        font-size: 16px;
+      }
+
+      /* ================= CV ================= */
+
+      .cv-box {
+        background: var(--card-alt);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 20px;
+      }
+
+      .cv-status {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 15px;
+      }
+
+      .lock-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 10px;
+        background: var(--card);
+        display: grid;
+        place-items: center;
+        font-size: 18px;
+      }
+
+      .cv-status strong {
+        display: block;
+        font-size: 14px;
+        margin-bottom: 4px;
+      }
+
+      .cv-status span {
+        color: var(--muted-text);
+        font-size: 12px;
+      }
+
+      /* ================= BUTTONS ================= */
+
+      .actions {
+        display: flex;
+        gap: 12px;
+        margin-top: 22px;
+      }
+
+      .btn {
+        border: none;
+        border-radius: 10px;
+        padding: 13px 20px;
+        cursor: pointer;
+        font-weight: 600;
+        font-size: 13px;
+        transition: 0.2s;
+      }
+
+      .primary-btn {
+        background: var(--blue);
+        color: white;
+      }
+
+      .primary-btn:hover {
+        background: var(--blue-hover);
+      }
+
+      .secondary-btn {
+        background: var(--card-alt);
+        color: var(--secondary-text);
+        border: 1px solid var(--input-border);
+      }
+
+      .secondary-btn:hover {
+        border-color: var(--blue);
+        color: var(--blue);
+      }
+
+      .disabled-btn {
+        background: var(--card-alt);
+        color: var(--muted-text);
+        cursor: not-allowed;
+        border: 1px solid var(--input-border);
+      }
+
+      /* ================= CONNECTION ================= */
+
+      .connection-status {
+        margin-top: 15px;
+        padding: 12px;
+        border-radius: 10px;
+        background: var(--blue-light);
+        color: var(--blue-tint);
+        font-size: 13px;
+        display: none;
+      }
+
+      .employer-review {
+        margin-top: 22px;
+      }
+
+      .review-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 14px;
+      }
+
+      .review-item {
+        background: var(--card-alt);
+        border: 1px solid var(--input-border);
+        border-radius: 12px;
+        padding: 14px;
+      }
+
+      .review-item h3 {
+        font-size: 13px;
+        margin-bottom: 8px;
+      }
+
+      .review-item p,
+      .review-item li {
+        color: var(--secondary-text);
+        font-size: 13px;
+        line-height: 1.6;
+      }
+
+      .review-item ul {
+        padding-left: 18px;
+      }
+
+      .review-item a {
+        color: var(--blue-tint);
+        overflow-wrap: anywhere;
+      }
+
+      .review-note {
+        color: var(--muted-text);
+        font-size: 12px;
+        margin-top: 12px;
+      }
+
+      /* ================= RESPONSIVE ================= */
+
+      @media (max-width: 850px) {
+        .content-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .profile-header {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+
+        .match-box {
+          width: 100%;
+        }
+      }
+
+      @media (max-width: 600px) {
+        nav {
+          padding: 0 4%;
+        }
+
+        .nav-links {
+          gap: 12px;
+        }
+
+        .nav-links a {
+          font-size: 12px;
+        }
+
+        .candidate-main {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+
+        .info-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .actions {
+          flex-direction: column;
+        }
+
+        .btn {
+          width: 100%;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <script src="theme.js"></script>
+    <script src="auth-client.js"></script>
+    <script src="navigation.js"></script>
+    <!-- ================= NAVBAR ================= -->
+
+    <nav>
+      <a href="index.html" class="logo">
+        <img src="logo1.jpg" alt="Gradurat Logo" />
+        <span>Gradurat</span>
+      </a>
+
+      <div class="nav-links">
+        <a href="employer-dashboard.html">Dashboard</a>
+        <a href="fyp.html">Find Your People</a>
+        <a href="matches.html">Matches</a>
+        <a href="settings.html">Settings</a>
+      </div>
+    </nav>
+
+    <main class="container">
+      <a href="javascript:history.back()" class="back-btn"> ← Back </a>
+
+      <!-- ================= LOADING ================= -->
+
+      <div id="loadingState" class="state">
+        <div class="spinner"></div>
+        <h2>Loading candidate...</h2>
+        <p>Gradurat is retrieving the candidate profile.</p>
+      </div>
+
+      <!-- ================= ERROR ================= -->
+
+      <div id="errorState" class="state hidden">
+        <h2>Unable to load candidate</h2>
+        <p id="errorMessage">
+          Something went wrong while retrieving this profile.
+        </p>
+
+        <button class="btn secondary-btn" onclick="loadCandidate()">
+          Try Again
+        </button>
+      </div>
+
+      <!-- ================= EMPTY ================= -->
+
+      <div id="emptyState" class="state hidden">
+        <h2>Candidate not found</h2>
+        <p>The candidate profile could not be found.</p>
+      </div>
+
+      <!-- ================= CANDIDATE ================= -->
+
+      <section id="candidateContent" class="hidden">
+        <!-- PROFILE HEADER -->
+
+        <div class="profile-header">
+          <div class="candidate-main">
+            <img
+              id="candidatePhoto"
+              class="candidate-photo"
+              src=""
+              alt="Candidate photo"
+            />
+
+            <div class="candidate-info">
+              <h1 id="candidateName">Candidate</h1>
+
+              <div id="candidateRole" class="candidate-role"></div>
+
+              <div id="candidateMeta" class="candidate-meta"></div>
+            </div>
+          </div>
+
+          <div class="match-box">
+            <div class="match-label">Candidate spotlight</div>
+            <div class="match-score">✦</div>
+            <div class="match-status">Share, learn, grow</div>
+          </div>
+        </div>
+
+        <!-- MAIN CONTENT -->
+
+        <div class="content-grid">
+          <div>
+            <!-- PUBLIC PROFILE -->
+
+            <div class="card">
+              <h2>Profile Snapshot</h2>
+
+              <div class="info-grid">
+                <div class="info-item">
+                  <span>Qualification</span>
+                  <strong id="qualification"> -- </strong>
+                </div>
+
+                <div class="info-item">
+                  <span>Focus Areas</span>
+                  <strong id="institution"> -- </strong>
+                </div>
+
+                <div class="info-item">
+                  <span>Field of Study</span>
+                  <strong id="field"> -- </strong>
+                </div>
+
+                <div class="info-item">
+                  <span>Experience</span>
+                  <strong id="experience"> -- </strong>
+                </div>
+
+                <div class="info-item">
+                  <span>Graduation Year</span>
+                  <strong id="graduationYear"> -- </strong>
+                </div>
+              </div>
+            </div>
+
+            <div class="card">
+              <h2>About This Candidate</h2>
+              <p id="bio">No profile story provided yet.</p>
+            </div>
+
+            <!-- SKILLS -->
+
+            <div class="card">
+              <h2>Skills</h2>
+
+              <div id="skills" class="tags"></div>
+            </div>
+
+            <!-- INTERESTS -->
+
+            <div class="card">
+              <h2>Interests</h2>
+
+              <div id="interests" class="tags"></div>
+            </div>
+
+            <!-- PROJECTS -->
+
+            <div class="card">
+              <h2>Projects & Achievements</h2>
+              <div id="projects" class="achievement-list"></div>
+            </div>
+
+            <div class="card">
+              <h2>Certifications</h2>
+              <div id="certifications" class="tags"></div>
+            </div>
+          </div>
+
+          <!-- SIDEBAR -->
+
+          <div>
+            <!-- EXPERIENCE -->
+
+            <div class="card">
+              <h2>Work Experience</h2>
+
+              <p id="experienceDetails">--</p>
+            </div>
+
+            <div class="card">
+              <h2>Keep Inspiring Others</h2>
+
+              <p>
+                Every project, skill, and lesson can help another graduate take
+                their next step.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <section id="employerReview" class="card employer-review hidden">
+          <h2>Employer review</h2>
+          <div id="contactDetails" class="review-grid"></div>
+          <div id="aiAssessment" class="review-grid"></div>
+          <p id="reviewNote" class="review-note"></p>
+        </section>
+      </section>
+    </main>
+
+    <script>
+      /* =========================================
+           GET CANDIDATE ID
+        ========================================= */
+
+      const params = new URLSearchParams(window.location.search);
+
+      const candidateId = params.get("id");
+
+      /* =========================================
+           LOAD CANDIDATE
+        ========================================= */
+
+      async function loadCandidate() {
+        const loadingState = document.getElementById("loadingState");
+
+        const errorState = document.getElementById("errorState");
+
+        const emptyState = document.getElementById("emptyState");
+
+        const candidateContent = document.getElementById("candidateContent");
+
+        loadingState.classList.remove("hidden");
+        errorState.classList.add("hidden");
+        emptyState.classList.add("hidden");
+        candidateContent.classList.add("hidden");
+
+        if (!candidateId) {
+          loadingState.classList.add("hidden");
+          emptyState.classList.remove("hidden");
+
+          return;
+        }
+
+        try {
+          /*
+                    Backend endpoint:
+
+                    GET /api/candidates/:id
+                */
+
+          const response = await graduratAuth.apiFetch(
+            `/api/candidates/${encodeURIComponent(candidateId)}`,
+          );
+
+          if (!response.ok) {
+            if (response.status === 404) {
+              loadingState.classList.add("hidden");
+              emptyState.classList.remove("hidden");
+
+              return;
+            }
+
+            throw new Error("Failed to load candidate");
+          }
+
+          const result = await graduratAuth.readJson(
+            response,
+            "The candidate response was not valid JSON.",
+          );
+          if (!response.ok)
+            throw new Error(result.error || "Failed to load candidate");
+
+          renderCandidate(result.candidate);
+
+          if (graduratAuth.getUser()?.role === "employer") {
+            await loadEmployerReview();
+          }
+
+          loadingState.classList.add("hidden");
+          candidateContent.classList.remove("hidden");
+        } catch (error) {
+          console.error(error);
+
+          loadingState.classList.add("hidden");
+          errorState.classList.remove("hidden");
+
+          document.getElementById("errorMessage").textContent =
+            "The candidate could not be loaded. Please check your connection and try again.";
+        }
+      }
+
+      async function loadEmployerReview() {
+        const review = document.getElementById("employerReview");
+        try {
+          const response = await graduratAuth.apiFetch(
+            `/api/candidates/${encodeURIComponent(candidateId)}/employer-review`,
+          );
+          const result = await graduratAuth.readJson(
+            response,
+            "The employer review response was not valid JSON.",
+          );
+          if (!response.ok)
+            throw new Error(result.error || "Review unavailable.");
+
+          const contact = result.contact || {};
+          const cv = result.cv || {};
+          document.getElementById("contactDetails").innerHTML = `
+            <div class="review-item"><h3>Contact details</h3><p>${escapeHtml(contact.email || "Email not provided")}</p><p>${escapeHtml(contact.phone || "Phone not provided")}</p></div>
+            <div class="review-item"><h3>Professional links</h3><p>${contact.linkedin_url ? `<a href="${escapeAttribute(contact.linkedin_url)}" target="_blank" rel="noopener">LinkedIn profile</a>` : "LinkedIn not provided"}</p><p>${contact.portfolio_url ? `<a href="${escapeAttribute(contact.portfolio_url)}" target="_blank" rel="noopener">Portfolio</a>` : "Portfolio not provided"}</p></div>
+            <div class="review-item"><h3>CV</h3><p>${cv.downloadable ? `<a href="${escapeAttribute(cv.url)}" target="_blank" rel="noopener">Open candidate CV</a>` : cv.available ? "CV download is disabled by the candidate." : "No CV uploaded yet."}</p></div>`;
+
+          const assessment = result.assessment;
+          document.getElementById("aiAssessment").innerHTML = assessment
+            ? `
+            <div class="review-item"><h3>Groq fit summary</h3><p>${escapeHtml(assessment.summary)}</p><p><strong>Fit score: ${escapeHtml(assessment.fit_score)}%</strong></p></div>
+            <div class="review-item"><h3>Strengths</h3><ul>${assessment.strengths.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul></div>
+            <div class="review-item"><h3>Gaps and next steps</h3><ul>${[...assessment.gaps, ...assessment.next_steps].map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul></div>`
+            : '<div class="review-item"><h3>Groq fit summary</h3><p>AI review is temporarily unavailable. The candidate details above are still available.</p></div>';
+          document.getElementById("reviewNote").textContent =
+            "Sensitive details are shown only because your employer account is connected to this candidate.";
+          review.classList.remove("hidden");
+        } catch (error) {
+          console.error(error);
+        }
+      }
+
+      function escapeHtml(value) {
+        return String(value ?? "")
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#039;");
+      }
+
+      function escapeAttribute(value) {
+        return escapeHtml(value).replace(/`/g, "&#096;");
+      }
+
+      /* =========================================
+           RENDER CANDIDATE
+        ========================================= */
+
+      function renderCandidate(candidate) {
+        document.getElementById("candidateName").textContent =
+          candidate.full_name || "Candidate";
+
+        document.getElementById("candidateRole").textContent =
+          candidate.qualification || "Graduate profile";
+
+        document.getElementById("candidateMeta").textContent = [
+          candidate.location,
+        ]
+          .filter(Boolean)
+          .join(" • ");
+
+        document.getElementById("qualification").textContent =
+          candidate.qualification || "Not provided";
+
+        document.getElementById("institution").textContent =
+          candidate.skills?.slice(0, 2).join(", ") || "Not provided";
+
+        document.getElementById("field").textContent =
+          candidate.skills?.slice(2, 4).join(", ") || "Not provided";
+
+        document.getElementById("experience").textContent =
+          candidate.work_experience_summary || "Not provided";
+
+        document.getElementById("experienceDetails").textContent =
+          candidate.work_experience_summary ||
+          "No experience information available.";
+
+        document.getElementById("graduationYear").textContent =
+          candidate.graduation_year || "Not provided";
+
+        document.getElementById("bio").textContent =
+          candidate.bio || "No profile story provided yet.";
+
+        /* PHOTO */
+
+        const photo = document.getElementById("candidatePhoto");
+
+        photo.src =
+          candidate.profile_picture_url ||
+          "https://via.placeholder.com/120?text=Profile";
+
+        /* SKILLS */
+
+        renderTags("skills", candidate.skills);
+        renderTags("certifications", candidate.certifications);
+        renderAchievements("projects", candidate.projects);
+      }
+
+      function renderAchievements(elementId, items) {
+        const container = document.getElementById(elementId);
+        container.innerHTML = "";
+        if (!Array.isArray(items) || items.length === 0) {
+          container.innerHTML = `<span style="color:var(--muted-text);font-size:13px;">Not provided</span>`;
+          return;
+        }
+        items.forEach((item) => {
+          const achievement = document.createElement("div");
+          achievement.className = "achievement-item";
+          achievement.textContent = item;
+          container.appendChild(achievement);
+        });
+      }
+
+      /* =========================================
+           TAGS
+        ========================================= */
+
+      function renderTags(elementId, tags) {
+        const container = document.getElementById(elementId);
+
+        container.innerHTML = "";
+
+        if (!Array.isArray(tags) || tags.length === 0) {
+          container.innerHTML = '<span class="empty-data">Not provided</span>';
+
+          return;
+        }
+
+        tags.forEach((tag) => {
+          const span = document.createElement("span");
+
+          span.className = "tag";
+
+          span.textContent = tag;
+
+          container.appendChild(span);
+        });
+      }
+
+      /* =========================================
+           START
+        ========================================= */
+
+      loadCandidate();
+    </script>
+  </body>
+</html>
