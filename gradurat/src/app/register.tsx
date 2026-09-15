@@ -9,10 +9,10 @@ import {
   TextInput,
   View,
 } from "react-native";
-import { colors, type } from "@/constants/theme";
+import { useTheme } from "@/lib/theme";
 import { createEmployer, createStudent } from "@/lib/api";
 import { signUp } from "@/lib/auth";
-import { saveProfileId } from "@/lib/storage";
+import { clearProfileId, saveProfileId } from "@/lib/storage";
 
 type FormState = Record<string, string>;
 const initialForm: FormState = {
@@ -69,8 +69,10 @@ const Field = ({
   onChangeText: (value: string) => void;
   multiline?: boolean;
   secureTextEntry?: boolean;
-}) => (
-  <View style={styles.field}>
+}) => {
+  const { colors } = useTheme();
+  const styles = makeStyles(colors);
+  return <View style={styles.field}>
     <Text style={styles.label}>{label}</Text>
     <TextInput
       accessibilityLabel={label}
@@ -83,8 +85,8 @@ const Field = ({
       numberOfLines={multiline ? 5 : 1}
       style={[styles.input, multiline && styles.textarea]}
     />
-  </View>
-);
+  </View>;
+};
 const ChoiceRow = ({
   label,
   values,
@@ -95,8 +97,10 @@ const ChoiceRow = ({
   values: string[];
   value: string;
   onChange: (value: string) => void;
-}) => (
-  <View style={styles.field}>
+}) => {
+  const { colors } = useTheme();
+  const styles = makeStyles(colors);
+  return <View style={styles.field}>
     <Text style={styles.label}>{label}</Text>
     <View style={styles.choices}>
       {values.map((item) => (
@@ -116,10 +120,12 @@ const ChoiceRow = ({
         </Pressable>
       ))}
     </View>
-  </View>
-);
+  </View>;
+};
 
 export default function RegisterScreen() {
+  const { colors } = useTheme();
+  const styles = makeStyles(colors);
   const { role } = useLocalSearchParams<{ role?: string }>();
   const isStudent = role === "student";
   const isEmployer = role === "employer";
@@ -181,7 +187,8 @@ export default function RegisterScreen() {
             .filter(Boolean),
         });
         await saveProfileId("student", result.student.id);
-        router.replace("/dashboard?role=student");
+        await clearProfileId("employer");
+        router.replace("/(tabs)/dashboard?role=student");
       } else {
         const result = await createEmployer({
           ...form,
@@ -191,7 +198,8 @@ export default function RegisterScreen() {
             .filter(Boolean),
         });
         await saveProfileId("employer", result.employer.id);
-        router.replace("/dashboard?role=employer");
+        await clearProfileId("student");
+        router.replace("/(tabs)/dashboard?role=employer");
       }
     } catch (error) {
       setMessage(
@@ -480,6 +488,8 @@ function RoleCard({
   copy: string;
   onPress: () => void;
 }) {
+  const { colors } = useTheme();
+  const styles = makeStyles(colors);
   return (
     <View style={styles.roleCard}>
       <Text style={styles.roleIcon}>{icon}</Text>
@@ -506,6 +516,8 @@ function Section({
   title: string;
   children: React.ReactNode;
 }) {
+  const { colors } = useTheme();
+  const styles = makeStyles(colors);
   return (
     <View style={styles.section}>
       <View style={styles.sectionTitle}>
@@ -522,7 +534,7 @@ function Section({
   );
 }
 
-const styles = StyleSheet.create({
+const makeStyles = (colors: ReturnType<typeof useTheme>['colors']) => StyleSheet.create({
   rolePage: {
     flexGrow: 1,
     padding: 24,
@@ -551,7 +563,7 @@ const styles = StyleSheet.create({
     fontWeight: "800",
     letterSpacing: 1.5,
   },
-  title: { ...type.title, color: colors.text },
+  title: { fontSize: 32, lineHeight: 38, fontWeight: "800", color: colors.text },
   blue: { color: colors.blue },
   intro: { color: colors.muted, fontSize: 16, lineHeight: 25, maxWidth: 680 },
   roleGrid: { gap: 16, marginTop: 14 },

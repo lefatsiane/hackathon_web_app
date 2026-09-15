@@ -3,20 +3,23 @@ import { useEffect, useState } from "react";
 import {
   ActivityIndicator,
   Pressable,
+  RefreshControl,
   ScrollView,
   StyleSheet,
   Text,
-  TextInput,
+  useWindowDimensions,
   View,
 } from "react-native";
-import { colors, type } from "@/constants/theme";
+import { useTheme } from "@/lib/theme";
 import { Avatar } from "@/components/avatar";
 import {
   loadEmployerDashboard,
   loadStudentDashboard,
+  generateAiFeedback,
   Opportunity,
   Student,
 } from "@/lib/api";
+import { clearSession } from "@/lib/auth";
 import { getProfileId } from "@/lib/storage";
 
 const initials = (name: string, fallback = "GR") =>
@@ -39,7 +42,10 @@ const Stat = ({
   value: string | number;
   note: string;
   tone: string;
-}) => (
+}) => {
+  const { colors } = useTheme();
+  const styles = makeStyles(colors);
+  return (
   <View style={styles.stat}>
     <View style={[styles.statIcon, { backgroundColor: tone }]}>
       <Text style={styles.statIconText}>{icon}</Text>
@@ -50,8 +56,12 @@ const Stat = ({
       <Text style={styles.muted}>{note}</Text>
     </View>
   </View>
-);
-const OpportunityCard = ({ item }: { item: Opportunity }) => (
+  );
+};
+const OpportunityCard = ({ item }: { item: Opportunity }) => {
+  const { colors } = useTheme();
+  const styles = makeStyles(colors);
+  return (
   <View style={styles.card}>
     <View style={styles.cardRow}>
       <View style={styles.companyLogo}>
@@ -99,7 +109,8 @@ const OpportunityCard = ({ item }: { item: Opportunity }) => (
       </View>
     </View>
   </View>
-);
+  );
+};
 const CandidateCard = ({
   candidate,
 }: {
@@ -108,7 +119,10 @@ const CandidateCard = ({
     matching_skills?: string[];
     reasoning?: string;
   };
-}) => (
+}) => {
+  const { colors } = useTheme();
+  const styles = makeStyles(colors);
+  return (
   <View style={styles.card}>
     <View style={styles.cardRow}>
       <Avatar
@@ -151,17 +165,26 @@ const CandidateCard = ({
       </View>
     </View>
   </View>
-);
+  );
+};
 
 export default function DashboardScreen() {
+  const { colors } = useTheme();
+  const styles = makeStyles(colors);
   const { role = "student" } = useLocalSearchParams<{ role?: string }>();
   const isStudent = role !== "employer";
+  const { width } = useWindowDimensions();
+  const compact = width < 700;
   const [name, setName] = useState("");
   const [profileId, setProfileId] = useState<string | null>(null);
   const [profilePictureUrl, setProfilePictureUrl] = useState<string | null>(
     null,
   );
   const [opportunities, setOpportunities] = useState<Opportunity[]>([]);
+  const [allOpportunities, setAllOpportunities] = useState<Opportunity[]>([]);
+  const [dashboardPage, setDashboardPage] = useState(1);
+  const [refreshing, setRefreshing] = useState(false);
+  const [refreshKey, setRefreshKey] = useState(0);
   const [candidates, setCandidates] = useState<
     (Student & {
       match_score?: number;
@@ -170,6 +193,12 @@ export default function DashboardScreen() {
     })[]
   >([]);
   const [stats, setStats] = useState({ first: 0, second: 0 });
+  const [aiFeedback, setAiFeedback] = useState<{
+    summary?: string;
+    strengths?: string[];
+    gaps?: string[];
+    next_steps?: string[];
+  } | null>(null);
   const [state, setState] = useState<"loading" | "error" | "content">(
     "loading",
   );
@@ -187,10 +216,22 @@ export default function DashboardScreen() {
           if (active) {
             setName(result.student.full_name);
             setProfilePictureUrl(result.student.profile_picture_url || null);
-            setOpportunities(result.opportunities);
+            setAllOpportunities(result.opportunities);
+            setDashboardPage(1);
+            setOpportunities(result.opportunities.slice(0, 3));
             setStats({
               first: result.stats.matches,
               second: result.stats.opportunities,
+            });
+            generateAiFeedback({
+              subjectType: "student",
+              subject: result.student,
+              targetType: "opportunity",
+              target: result.opportunities[0] || null,
+            }).then((feedback) => {
+              if (active) setAiFeedback(feedback.assessment);
+            }).catch(() => {
+              if (active) setAiFeedback(null);
             });
           }
         } else {
@@ -198,11 +239,21 @@ export default function DashboardScreen() {
           if (active) {
             setName(result.employer.company_name);
             setProfilePictureUrl(result.employer.profile_picture_url || null);
-            setOpportunities(result.opportunities);
+            setAllOpportunities(result.opportunities);
             setCandidates(result.candidates as typeof candidates);
             setStats({
               first: result.stats.active_jobs,
               second: result.stats.candidates,
+            });
+            generateAiFeedback({
+              subjectType: "employer",
+              subject: result.employer,
+              targetType: "student",
+              target: result.candidates[0] || null,
+            }).then((feedback) => {
+              if (active) setAiFeedback(feedback.assessment);
+            }).catch(() => {
+              if (active) setAiFeedback(null);
             });
           }
         }
@@ -216,12 +267,27 @@ export default function DashboardScreen() {
               : "Could not load dashboard.",
           );
         }
+      } finally {
+        if (active) setRefreshing(false);
       }
     })();
     return () => {
       active = false;
     };
-  }, [isStudent]);
+  }, [isStudent, refreshKey]);
+
+  const totalDashboardPages = Math.max(1, Math.ceil(allOpportunities.length / 3));
+  const setDashboardPageAndItems = (nextPage: number) => {
+    const safePage = Math.max(1, Math.min(totalDashboardPages, nextPage));
+    setDashboardPage(safePage);
+    setOpportunities(allOpportunities.slice((safePage - 1) * 3, safePage * 3));
+  };
+
+  const refreshDashboard = () => {
+    setRefreshing(true);
+    setRefreshKey((value) => value + 1);
+  };
+
   if (state === "loading")
     return (
       <View style={styles.center}>
@@ -230,55 +296,24 @@ export default function DashboardScreen() {
       </View>
     );
   return (
-    <View style={styles.safe}>
-      <View style={styles.sidebar}>
-        <Text style={styles.logo}>
-          <Text style={styles.blue}>G</Text>radu
-          <Text style={styles.blue}>R</Text>at
-        </Text>
-        <View style={styles.nav}>
-          <Text style={[styles.navItem, styles.navActive]}>⌂ Dashboard</Text>
-          <Text style={styles.navItem}>
-            {isStudent ? "✦  AI Matches" : "▣  Post a Job"}
-          </Text>
-          <Text style={styles.navItem}>
-            ♡ Saved {isStudent ? "Jobs" : "Candidates"}
-          </Text>
-          <Text style={styles.navItem}>◫ Applications</Text>
-          <Text style={styles.navItem}>◉ Messages</Text>
-        </View>
-        <View style={styles.nav}>
-          <Text style={styles.navItem}>⚙ Settings</Text>
-          <Pressable onPress={() => router.replace("/")}>
-            <Text style={styles.navItem}>↪ Log Out</Text>
-          </Pressable>
-        </View>
-      </View>
+    <View style={[styles.safe, compact && styles.safeCompact]}>
       <ScrollView
-        contentContainerStyle={styles.main}
+        contentContainerStyle={[styles.main, compact && styles.mainCompact]}
         contentInsetAdjustmentBehavior="automatic"
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refreshDashboard} tintColor={colors.blue} />}
       >
         <View style={styles.topbar}>
-          <TextInput
-            style={styles.search}
-            placeholder={
-              isStudent
-                ? "Search jobs, companies or skills..."
-                : "Search candidates, skills or jobs..."
-            }
-            placeholderTextColor={colors.subtle}
-          />
           <View style={styles.user}>
             {profileId ? (
-              <Avatar
-                name={name || (isStudent ? "Graduate" : "Employer")}
-                profileId={profileId}
-                profileType={isStudent ? "students" : "employers"}
-                url={profilePictureUrl}
-                size={36}
-                editable
-                onChange={setProfilePictureUrl}
-              />
+              <Pressable onPress={() => router.push(`/profile?role=${isStudent ? "student" : "employer"}`)}>
+                <Avatar
+                  name={name || (isStudent ? "Graduate" : "Employer")}
+                  profileId={profileId}
+                  profileType={isStudent ? "students" : "employers"}
+                  url={profilePictureUrl}
+                  size={36}
+                />
+              </Pressable>
             ) : null}
             <View>
               <Text style={styles.userName}>
@@ -353,6 +388,22 @@ export default function DashboardScreen() {
               tone="#633c12"
             />
           </View>
+          {aiFeedback && (
+            <View style={styles.aiPanel}>
+              <Text style={styles.smallTitle}>GROQ AI FEEDBACK</Text>
+              <Text style={styles.aiSummary}>{aiFeedback.summary || "Your profile has been reviewed."}</Text>
+              <View style={styles.aiColumns}>
+                <View style={styles.aiColumn}>
+                  <Text style={styles.aiHeading}>Strengths</Text>
+                  {(aiFeedback.strengths || []).map((item) => <Text key={item} style={styles.aiItem}>• {item}</Text>)}
+                </View>
+                <View style={styles.aiColumn}>
+                  <Text style={styles.aiHeading}>Focus next</Text>
+                  {[...(aiFeedback.gaps || []), ...(aiFeedback.next_steps || [])].map((item) => <Text key={item} style={styles.aiItem}>• {item}</Text>)}
+                </View>
+              </View>
+            </View>
+          )}
           {state === "error" ? (
             <View style={styles.empty}>
               <Text style={styles.error}>{message}</Text>
@@ -360,7 +411,7 @@ export default function DashboardScreen() {
                 style={styles.primary}
                 onPress={() =>
                   router.replace(
-                    `/dashboard?role=${isStudent ? "student" : "employer"}`,
+                    `/(tabs)/dashboard?role=${isStudent ? "student" : "employer"}`,
                   )
                 }
               >
@@ -401,6 +452,17 @@ export default function DashboardScreen() {
                   No candidate matches yet. Publish a job to start matching.
                 </Text>
               )}
+              {isStudent && totalDashboardPages > 1 && (
+                <View style={styles.pagination}>
+                  <Pressable disabled={dashboardPage === 1} onPress={() => setDashboardPageAndItems(dashboardPage - 1)} style={[styles.pageButton, dashboardPage === 1 && styles.pageButtonDisabled]}>
+                    <Text style={styles.pageButtonText}>Previous</Text>
+                  </Pressable>
+                  <Text style={styles.pageLabel}>Page {dashboardPage} of {totalDashboardPages}</Text>
+                  <Pressable disabled={dashboardPage === totalDashboardPages} onPress={() => setDashboardPageAndItems(dashboardPage + 1)} style={[styles.pageButton, dashboardPage === totalDashboardPages && styles.pageButtonDisabled]}>
+                    <Text style={styles.pageButtonText}>Next</Text>
+                  </Pressable>
+                </View>
+              )}
             </View>
           )}
         </View>
@@ -409,32 +471,12 @@ export default function DashboardScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  safe: { flex: 1, flexDirection: "row", backgroundColor: colors.background },
-  sidebar: {
-    width: 180,
-    padding: 24,
-    backgroundColor: "#030811",
-    borderRightColor: "#101e34",
-    borderRightWidth: 1,
-    justifyContent: "space-between",
-  },
-  logo: {
-    color: colors.text,
-    fontSize: 24,
-    fontWeight: "800",
-    marginBottom: 36,
-  },
+const makeStyles = (colors: ReturnType<typeof useTheme>['colors']) => StyleSheet.create({
+  safe: { flex: 1, backgroundColor: colors.background },
+  safeCompact: { flexDirection: "column" },
   blue: { color: colors.blue },
-  nav: { gap: 8 },
-  navItem: { color: colors.subtle, paddingVertical: 12, fontSize: 13 },
-  navActive: {
-    color: colors.text,
-    backgroundColor: colors.blueDark,
-    borderRadius: 7,
-    paddingHorizontal: 9,
-  },
-  main: { flexGrow: 1 },
+  main: { flexGrow: 1, paddingBottom: 24 },
+  mainCompact: { width: "100%" },
   topbar: {
     minHeight: 74,
     padding: 17,
@@ -442,20 +484,8 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-between",
+    justifyContent: "flex-end",
     gap: 16,
-  },
-  search: {
-    flex: 1,
-    maxWidth: 390,
-    paddingHorizontal: 14,
-    paddingVertical: 11,
-    borderColor: colors.border,
-    borderWidth: 1,
-    borderRadius: 8,
-    color: colors.text,
-    backgroundColor: colors.surface,
-    fontSize: 12,
   },
   user: { flexDirection: "row", alignItems: "center", gap: 9 },
   smallAvatar: {
@@ -482,7 +512,7 @@ const styles = StyleSheet.create({
     fontWeight: "800",
     letterSpacing: 1.2,
   },
-  heading: { ...type.title, color: colors.text, marginVertical: 8 },
+  heading: { fontSize: 32, lineHeight: 38, fontWeight: "800", color: colors.text, marginVertical: 8 },
   muted: { color: colors.muted, fontSize: 13, lineHeight: 20 },
   primary: {
     alignSelf: "flex-start",
@@ -492,17 +522,17 @@ const styles = StyleSheet.create({
     paddingVertical: 13,
   },
   primaryText: { color: colors.text, fontWeight: "800" },
-  stats: { flexDirection: "row", flexWrap: "wrap", gap: 12 },
+  stats: { flexDirection: "row", flexWrap: "wrap", gap: 10 },
   stat: {
-    flex: 1,
-    minWidth: 145,
+    width: "48%",
+    minWidth: 0,
     padding: 15,
     borderColor: colors.border,
     borderWidth: 1,
     borderRadius: 10,
     backgroundColor: colors.surface,
     flexDirection: "row",
-    gap: 11,
+    gap: 9,
   },
   statIcon: {
     width: 34,
@@ -512,17 +542,28 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   statIconText: { color: colors.text, fontSize: 17 },
-  statCopy: { gap: 2 },
-  statLabel: { color: colors.subtle, fontSize: 10, fontWeight: "800" },
+  statCopy: { flex: 1, minWidth: 0, gap: 2 },
+  statLabel: { color: colors.subtle, fontSize: 10, lineHeight: 13, fontWeight: "800", flexShrink: 1 },
   statValue: { color: colors.text, fontSize: 24, fontWeight: "800" },
+  aiPanel: { gap: 12, padding: 17, borderColor: colors.borderStrong, borderWidth: 1, borderRadius: 10, backgroundColor: colors.surfaceRaised },
+  aiSummary: { color: colors.text, fontSize: 14, lineHeight: 21 },
+  aiColumns: { flexDirection: "row", gap: 14 },
+  aiColumn: { flex: 1, minWidth: 0, gap: 6 },
+  aiHeading: { color: colors.text, fontWeight: "800" },
+  aiItem: { color: colors.muted, fontSize: 12, lineHeight: 18, flexShrink: 1 },
   list: { gap: 14 },
   sectionHeading: {
     flexDirection: "row",
     alignItems: "flex-end",
     justifyContent: "space-between",
   },
-  sectionTitle: { color: colors.text, ...type.section, marginTop: 4 },
+  sectionTitle: { color: colors.text, fontSize: 21, lineHeight: 26, fontWeight: "800", marginTop: 4 },
   link: { color: "#7daeff", fontWeight: "700", fontSize: 12 },
+  pagination: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: 10, marginTop: 4 },
+  pageButton: { borderColor: colors.border, borderWidth: 1, borderRadius: 8, paddingHorizontal: 12, paddingVertical: 9 },
+  pageButtonDisabled: { opacity: 0.45 },
+  pageButtonText: { color: colors.blue, fontSize: 12, fontWeight: "800" },
+  pageLabel: { color: colors.muted, fontSize: 12 },
   card: {
     padding: 17,
     borderColor: colors.border,

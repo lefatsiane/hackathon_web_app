@@ -27,4 +27,18 @@ export const getAccessToken = async () => {
 export const signUp = (email: string, password: string) =>
   supabase.auth.signUp({ email, password });
 
+export const signIn = (email: string, password: string) =>
+  supabase.auth.signInWithPassword({ email, password });
+
+export const requestPasswordReset = (email: string) =>
+  supabase.auth.resetPasswordForEmail(email);
+
+export const updateEmail = (email: string) => supabase.auth.updateUser({ email });
+
+export const logoutAllDevices = () => supabase.auth.signOut({ scope: 'global' });
+
 export const signOut = () => supabase.auth.signOut();
+
+export const clearSession = async () => {
+  await supabase.auth.signOut({ scope: 'local' });
+};
