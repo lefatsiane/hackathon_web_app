@@ -1,0 +1,23 @@
+import { useEffect, useState } from 'react';
+import { Alert, FlatList, Pressable, RefreshControl, SafeAreaView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { deleteMatch, loadMatches, Match } from '@/lib/api';
+import { useTheme } from '@/lib/theme';
+
+export default function MatchesScreen() {
+  const { colors } = useTheme();
+  const styles = makeStyles(colors);
+  const [items, setItems] = useState<Match[]>([]);
+  const [query, setQuery] = useState('');
+  const [refreshing, setRefreshing] = useState(false);
+  const [message, setMessage] = useState('Loading matches...');
+
+  const load = async () => { try { setMessage(''); const result = await loadMatches(); setItems(result.matches || []); } catch (error) { setMessage(error instanceof Error ? error.message : 'Unable to load matches.'); } };
+  useEffect(() => { load(); }, []);
+  const refresh = async () => { setRefreshing(true); await load(); setRefreshing(false); };
+  const visible = items.filter((item) => { const counterpart = item.counterpart || {}; const text = [counterpart.name, counterpart.field, item.opportunity?.title].filter(Boolean).join(' ').toLowerCase(); return text.includes(query.trim().toLowerCase()); });
+  const remove = (item: Match) => Alert.alert('Delete match', `Delete your match with ${String(item.counterpart?.name || 'this connection')}?`, [{ text: 'Cancel', style: 'cancel' }, { text: 'Delete', style: 'destructive', onPress: async () => { try { await deleteMatch(item.id); setItems((current) => current.filter((match) => match.id !== item.id)); } catch (error) { setMessage(error instanceof Error ? error.message : 'Could not delete this match.'); } } }]);
+
+  return <SafeAreaView style={styles.safe}><FlatList data={visible} keyExtractor={(item) => item.id} refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refresh} tintColor={colors.blue} />} contentContainerStyle={styles.page} ListHeaderComponent={<><Text style={styles.eyebrow}>CONNECTIONS</Text><Text style={styles.title}>Your matches</Text><TextInput value={query} onChangeText={setQuery} placeholder="Search matches" placeholderTextColor={colors.subtle} style={styles.input} /></>} ListEmptyComponent={<View style={styles.empty}><Text style={styles.muted}>{message || (items.length ? 'No matches fit this search.' : 'No matches yet.')}</Text></View>} renderItem={({ item }) => { const counterpart = item.counterpart || {}; return <View style={styles.card}><Text style={styles.cardTitle}>{String(counterpart.name || 'Connection')}</Text><Text style={styles.muted}>{String(counterpart.type || 'Professional connection')}</Text><Text style={styles.score}>{item.match_score == null ? '--' : `${item.match_score}%`} match</Text><Text style={styles.muted}>Opportunity: {item.opportunity?.title || 'Connection'}</Text>{item.connection_advice ? <Text style={styles.advice}>Networking ideas available</Text> : null}<View style={styles.actions}><Pressable disabled style={styles.disabled}><Text style={styles.muted}>Message</Text></Pressable><Pressable onPress={() => remove(item)} style={styles.delete}><Text style={styles.deleteText}>Delete</Text></Pressable></View></View>; }} /></SafeAreaView>;
+}
+
+const makeStyles = (colors: ReturnType<typeof useTheme>['colors']) => StyleSheet.create({ safe: { flex: 1, backgroundColor: colors.background }, page: { padding: 20, gap: 14 }, eyebrow: { color: colors.blue, fontSize: 11, fontWeight: '800', letterSpacing: 1.3 }, title: { color: colors.text, fontSize: 30, fontWeight: '800' }, input: { color: colors.text, borderColor: colors.border, borderWidth: 1, borderRadius: 9, backgroundColor: colors.surface, paddingHorizontal: 14, paddingVertical: 13 }, card: { gap: 9, padding: 18, borderColor: colors.border, borderWidth: 1, borderRadius: 14, backgroundColor: colors.surfaceRaised }, cardTitle: { color: colors.text, fontSize: 18, fontWeight: '800' }, muted: { color: colors.muted, lineHeight: 21 }, score: { color: colors.blue, fontSize: 20, fontWeight: '800' }, advice: { color: colors.green, fontWeight: '700' }, actions: { flexDirection: 'row', gap: 10, marginTop: 5 }, disabled: { flex: 1, borderColor: colors.border, borderWidth: 1, borderRadius: 8, padding: 12, alignItems: 'center' }, delete: { borderColor: colors.danger, borderWidth: 1, borderRadius: 8, padding: 12 }, deleteText: { color: colors.danger, fontWeight: '800' }, empty: { alignItems: 'center', paddingVertical: 50 } });

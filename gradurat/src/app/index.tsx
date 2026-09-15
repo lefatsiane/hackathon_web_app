@@ -1,26 +1,116 @@
 import { router } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
+import { Image } from 'expo-image';
 import { Pressable, SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { colors, type } from '@/constants/theme';
+import { useTheme } from '@/lib/theme';
+
+const logo = require('@/assets/images/graduRat-logo.jpg');
+
+const futureItems = [
+  ['01', 'Discover', 'Explore opportunities built around your skills.'],
+  ['02', 'Connect', 'Meet employers and graduates moving in your direction.'],
+  ['03', 'Grow', 'Build the next step in your career with confidence.'],
+];
 
 export default function HomeScreen() {
+  const { colors } = useTheme();
+  const styles = makeStyles(colors);
   return (
     <SafeAreaView style={styles.safe}>
       <StatusBar style="light" />
-      <ScrollView contentContainerStyle={styles.scroll}>
-        <View style={styles.header}><Text style={styles.logo}><Text style={styles.logoAccent}>G</Text>radu<Text style={styles.logoAccent}>R</Text>at</Text><Pressable style={styles.headerButton} onPress={() => router.push('/register')}><Text style={styles.headerButtonText}>Get Started</Text></Pressable></View>
-        <View style={styles.hero}>
-          <View style={styles.badge}><View style={styles.dot} /><Text style={styles.badgeText}>AI-POWERED CAREER MATCHING</Text></View>
-          <Text style={styles.title}>Your Skills.{`\n`}Your <Text style={styles.blueText}>Future.</Text></Text>
-          <Text style={styles.copy}>GraduRat connects graduates with employers based on their qualifications, skills, experience and career goals.</Text>
-          <View style={styles.actions}><Pressable style={styles.primary} onPress={() => router.push('/register?role=student')}><Text style={styles.primaryText}>I'm a Graduate  →</Text></Pressable><Pressable style={styles.secondary} onPress={() => router.push('/register?role=employer')}><Text style={styles.secondaryText}>I'm an Employer  →</Text></Pressable></View>
+      <ScrollView contentContainerStyle={styles.page} showsVerticalScrollIndicator={false}>
+        <View style={styles.navbar}>
+          <Image source={logo} contentFit="contain" style={styles.logo} accessibilityLabel="GraduRat" />
+          <View style={styles.navActions}>
+            <Pressable onPress={() => router.push('/login')} hitSlop={10}>
+              <Text style={styles.signIn}>Sign in</Text>
+            </Pressable>
+            <Pressable style={styles.navButton} onPress={() => router.push('/register')}>
+              <Text style={styles.navButtonText}>Get started</Text>
+            </Pressable>
+          </View>
         </View>
-        <View style={styles.matchCard}><View style={styles.cardTop}><View><Text style={styles.cardLabel}>GRADURAT AI</Text><Text style={styles.cardTitle}>Career Match</Text></View><Text style={styles.spark}>✦</Text></View><View style={styles.profile}><View style={styles.avatar}><Text style={styles.avatarText}>GR</Text></View><View><Text style={styles.profileTitle}>Graduate Profile</Text><Text style={styles.muted}>Information Technology</Text></View></View><View style={styles.matchTop}><Text style={styles.matchLabel}>Match Found</Text><Text style={styles.matchValue}>94%</Text></View><View style={styles.progress}><View style={styles.progressFill} /></View><View style={styles.job}><View style={styles.jobIcon}><Text style={styles.jobIconText}>{'</>'}</Text></View><View style={styles.jobCopy}><Text style={styles.profileTitle}>Junior Software Developer</Text><Text style={styles.muted}>Technology · Full Time</Text></View><Text style={styles.arrow}>→</Text></View><View style={styles.skills}>{['Python', 'HTML', 'CSS', 'JavaScript'].map((skill) => <Text key={skill} style={styles.skill}>{skill}</Text>)}</View></View>
-        <View style={styles.features}>{[['✦', 'Smart Matching', 'Find opportunities that match your skills and qualifications.'], ['◆', 'Show Your Skills', 'Build a profile showcasing your education, projects and experience.'], ['↗', 'Discover Opportunities', 'Explore career opportunities from employers across industries.']].map(([icon, heading, copy]) => <View style={styles.feature} key={heading}><Text style={styles.featureIcon}>{icon}</Text><Text style={styles.featureTitle}>{heading}</Text><Text style={styles.muted}>{copy}</Text></View>)}</View>
+
+        <View style={styles.hero}>
+          <Text style={styles.eyebrow}>A CAREER PLATFORM FOR WHAT COMES NEXT</Text>
+          <Text style={styles.heroTitle}>Find your{`\n`}<Text style={styles.blue}>future.</Text></Text>
+          <Text style={styles.heroCopy}>GraduRat connects graduates with employers based on their qualifications, skills, experience and career goals.</Text>
+          <View style={styles.heroActions}>
+            <Pressable style={styles.primaryButton} onPress={() => router.push('/register?role=student')}>
+              <Text style={styles.primaryText}>I&apos;m a Graduate</Text>
+              <Text style={styles.buttonArrow}>→</Text>
+            </Pressable>
+            <Pressable style={styles.outlineButton} onPress={() => router.push('/register?role=employer')}>
+              <Text style={styles.outlineText}>I&apos;m an Employer</Text>
+              <Text style={styles.buttonArrow}>→</Text>
+            </Pressable>
+          </View>
+        </View>
+
+        <View style={styles.futurePreview}>
+          <View style={styles.previewHeader}>
+            <Text style={styles.previewLabel}>THE GRADURAT JOURNEY</Text>
+            <Text style={styles.previewMark}>GR / 01</Text>
+          </View>
+          <View style={styles.divider} />
+          {futureItems.map(([number, title, copy]) => (
+            <View style={styles.futureItem} key={number}>
+              <Text style={styles.itemNumber}>{number}</Text>
+              <View style={styles.itemBody}>
+                <Text style={styles.itemTitle}>{title}</Text>
+                <Text style={styles.itemCopy}>{copy}</Text>
+              </View>
+              <Text style={styles.itemArrow}>↗</Text>
+            </View>
+          ))}
+        </View>
+
+        <View style={styles.proofRow}>
+          <View style={styles.proof}><Text style={styles.proofNumber}>01</Text><Text style={styles.proofText}>Skills first matching</Text></View>
+          <View style={styles.proof}><Text style={styles.proofNumber}>02</Text><Text style={styles.proofText}>Real opportunities</Text></View>
+          <View style={styles.proof}><Text style={styles.proofNumber}>03</Text><Text style={styles.proofText}>Career momentum</Text></View>
+        </View>
+
         <Text style={styles.footer}>© 2026 GraduRat. Connecting talent with opportunity.</Text>
       </ScrollView>
     </SafeAreaView>
   );
 }
 
-const styles = StyleSheet.create({ safe: { flex: 1, backgroundColor: colors.background }, scroll: { padding: 24, gap: 42 }, header: { height: 58, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }, logo: { color: colors.text, fontSize: 28, fontWeight: '800' }, logoAccent: { color: colors.blue }, headerButton: { borderColor: colors.borderStrong, borderWidth: 1, borderRadius: 8, paddingHorizontal: 16, paddingVertical: 10 }, headerButtonText: { color: colors.text, fontWeight: '700' }, hero: { paddingTop: 22, gap: 20 }, badge: { alignSelf: 'flex-start', flexDirection: 'row', alignItems: 'center', gap: 9, paddingHorizontal: 12, paddingVertical: 8, borderColor: colors.borderStrong, borderWidth: 1, borderRadius: 24, backgroundColor: colors.surface }, dot: { width: 7, height: 7, borderRadius: 7, backgroundColor: colors.blue }, badgeText: { color: '#7daeff', fontSize: 11, fontWeight: '700' }, title: { ...type.display, color: colors.text }, blueText: { color: colors.blue }, copy: { color: colors.muted, fontSize: 17, lineHeight: 27, maxWidth: 580 }, actions: { gap: 12, flexDirection: 'row', flexWrap: 'wrap' }, primary: { backgroundColor: '#1265e9', borderRadius: 8, paddingHorizontal: 20, paddingVertical: 15 }, primaryText: { color: colors.text, fontSize: 15, fontWeight: '800' }, secondary: { borderColor: colors.border, borderWidth: 1, borderRadius: 8, paddingHorizontal: 20, paddingVertical: 15, backgroundColor: colors.surface }, secondaryText: { color: colors.text, fontSize: 15, fontWeight: '800' }, matchCard: { alignSelf: 'center', width: '100%', maxWidth: 430, padding: 24, borderRadius: 18, borderColor: colors.border, borderWidth: 1, backgroundColor: colors.surfaceRaised, gap: 18 }, cardTop: { flexDirection: 'row', justifyContent: 'space-between' }, cardLabel: { color: '#7daeff', fontSize: 11, fontWeight: '700', letterSpacing: 1 }, cardTitle: { color: colors.text, fontSize: 22, fontWeight: '800', marginTop: 4 }, spark: { color: colors.blue, fontSize: 28 }, profile: { flexDirection: 'row', alignItems: 'center', gap: 12 }, avatar: { width: 44, height: 44, borderRadius: 22, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.blue }, avatarText: { color: colors.text, fontWeight: '800' }, profileTitle: { color: colors.text, fontWeight: '700' }, muted: { color: colors.muted, fontSize: 13, lineHeight: 20 }, matchTop: { flexDirection: 'row', justifyContent: 'space-between' }, matchLabel: { color: colors.text, fontWeight: '700' }, matchValue: { color: colors.blue, fontWeight: '800' }, progress: { height: 7, backgroundColor: '#142844', borderRadius: 5, overflow: 'hidden' }, progressFill: { width: '94%', height: '100%', backgroundColor: colors.blue }, job: { flexDirection: 'row', alignItems: 'center', gap: 10 }, jobIcon: { width: 40, height: 40, borderRadius: 10, alignItems: 'center', justifyContent: 'center', backgroundColor: '#0b2b61' }, jobIconText: { color: '#7daeff', fontWeight: '800' }, jobCopy: { flex: 1 }, arrow: { color: colors.blue, fontSize: 20 }, skills: { flexDirection: 'row', flexWrap: 'wrap', gap: 7 }, skill: { color: '#9ac7ff', backgroundColor: '#0b2b61', borderRadius: 5, paddingHorizontal: 9, paddingVertical: 6, fontSize: 12 }, features: { flexDirection: 'row', flexWrap: 'wrap', gap: 18 }, feature: { flex: 1, minWidth: 160, gap: 8 }, featureIcon: { color: colors.blue, fontSize: 22 }, featureTitle: { color: colors.text, fontSize: 16, fontWeight: '800' }, footer: { color: colors.subtle, fontSize: 12, textAlign: 'center', paddingBottom: 12 } });
+const makeStyles = (colors: ReturnType<typeof useTheme>['colors']) => StyleSheet.create({
+  safe: { flex: 1, backgroundColor: colors.background },
+  page: { paddingHorizontal: 22, paddingBottom: 34 },
+  navbar: { minHeight: 76, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', borderBottomColor: colors.border, borderBottomWidth: 1 },
+  logo: { width: 118, height: 58 },
+  navActions: { flexDirection: 'row', alignItems: 'center', gap: 16 },
+  signIn: { color: colors.muted, fontSize: 13, fontWeight: '700' },
+  navButton: { backgroundColor: colors.blue, borderRadius: 7, paddingHorizontal: 13, paddingVertical: 10 },
+  navButtonText: { color: colors.text, fontSize: 12, fontWeight: '800' },
+  hero: { paddingTop: 64, paddingBottom: 46 },
+  eyebrow: { color: colors.blue, fontSize: 10, fontWeight: '800', letterSpacing: 1.6, lineHeight: 16 },
+  heroTitle: { fontSize: 52, lineHeight: 53, fontWeight: '800', color: colors.text, marginTop: 18, marginBottom: 20 },
+  blue: { color: colors.blue },
+  heroCopy: { color: colors.muted, fontSize: 16, lineHeight: 26, maxWidth: 430, marginBottom: 27 },
+  heroActions: { gap: 11 },
+  primaryButton: { minHeight: 50, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 16, backgroundColor: colors.blue, borderRadius: 7, paddingHorizontal: 20 },
+  primaryText: { color: colors.text, fontSize: 14, fontWeight: '800' },
+  outlineButton: { minHeight: 50, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 16, borderColor: colors.borderStrong, borderWidth: 1, borderRadius: 7, paddingHorizontal: 20 },
+  outlineText: { color: colors.text, fontSize: 14, fontWeight: '800' },
+  buttonArrow: { color: colors.text, fontSize: 20, lineHeight: 20 },
+  futurePreview: { backgroundColor: colors.surface, borderColor: colors.border, borderWidth: 1, borderRadius: 14, padding: 20, shadowColor: '#000', shadowOpacity: 0.25, shadowRadius: 22, shadowOffset: { width: 0, height: 12 }, elevation: 5 },
+  previewHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+  previewLabel: { color: colors.blue, fontSize: 10, fontWeight: '800', letterSpacing: 1.2 },
+  previewMark: { color: colors.subtle, fontSize: 10, fontWeight: '700' },
+  divider: { height: 1, backgroundColor: colors.border, marginVertical: 18 },
+  futureItem: { flexDirection: 'row', alignItems: 'center', gap: 13, marginBottom: 19 },
+  itemNumber: { color: colors.blue, fontSize: 12, fontWeight: '800', width: 24 },
+  itemBody: { flex: 1 },
+  itemTitle: { color: colors.text, fontSize: 14, fontWeight: '800', marginBottom: 4 },
+  itemCopy: { color: colors.muted, fontSize: 12, lineHeight: 18 },
+  itemArrow: { color: colors.blue, fontSize: 19 },
+  proofRow: { flexDirection: 'row', gap: 10, marginTop: 38, marginBottom: 34 },
+  proof: { flex: 1, gap: 6 },
+  proofNumber: { color: colors.blue, fontSize: 11, fontWeight: '800' },
+  proofText: { color: colors.muted, fontSize: 11, lineHeight: 16 },
+  footer: { color: colors.subtle, textAlign: 'center', fontSize: 11 },
+});

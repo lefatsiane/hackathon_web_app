@@ -144,12 +144,13 @@ const renderAvatar = (element, name, profilePictureUrl, fallback = "GR") => {
   element.append(image);
 };
 
-const renderJobCard = (opportunity) => {
+const renderJobCard = (opportunity, appliedIds = new Set()) => {
   // Build cards from API data instead of trusting the page's placeholder jobs.
   const card = document.createElement("article");
   card.className = "job-card";
   const employerName = opportunity.employers?.company_name || "Employer";
   const score = opportunity.match_score ?? null;
+  const applied = appliedIds.has(opportunity.id);
   card.innerHTML = `<div class="company-logo">${escapeHtml(initials(employerName))}</div>
     <div class="job-info"><div class="job-top"><div><h3>${escapeHtml(opportunity.title)}</h3>
     <p>${escapeHtml(employerName)} · ${escapeHtml(opportunity.type || "Opportunity")}</p></div><button class="save" type="button" aria-label="Save job">♡</button></div>
@@ -160,7 +161,7 @@ const renderJobCard = (opportunity) => {
         ?.split("\n")
         .find((line) => line.startsWith("Location:"))
         ?.replace("Location: ", "") || "Location flexible",
-    )}</span><strong>${score === null ? "New" : `${score}% Match`}</strong><button class="apply-opportunity" type="button" data-opportunity-id="${escapeHtml(opportunity.id)}">Apply</button></div></div>`;
+    )}</span><strong>${score === null ? "New" : `${score}% Match`}</strong><button class="apply-opportunity${applied ? " applied" : ""}" type="button" data-opportunity-id="${escapeHtml(opportunity.id)}" ${applied ? "disabled" : ""}>${applied ? "Application submitted" : "Apply"}</button></div></div>`;
   return card;
 };
 
@@ -178,8 +179,16 @@ const renderGraduateDashboard = async () => {
   const studentId = sessionStorage.getItem("graduRatStudentId");
   // A dashboard without a registered profile has no server identity to query.
   if (!studentId) return;
-  const { student, opportunities, stats } = await apiJson(
-    `/api/students/${encodeURIComponent(studentId)}/dashboard`,
+  const [{ student, opportunities, stats }, applicationsResult] =
+    await Promise.all([
+      apiJson(`/api/students/${encodeURIComponent(studentId)}/dashboard`),
+      apiJson(`/api/students/${encodeURIComponent(studentId)}/applications`),
+    ]);
+  const appliedIds = new Set(
+    (applicationsResult.applications || []).map(
+      (application) =>
+        application.opportunity_id || application.opportunities?.id,
+    ),
   );
   matches?.querySelectorAll(".job-card").forEach((card) => card.remove());
   // The backend returns opportunities ranked by deterministic skill overlap.
@@ -191,7 +200,7 @@ const renderGraduateDashboard = async () => {
       );
     } else {
       opportunities.forEach((opportunity) =>
-        matches.append(renderJobCard(opportunity)),
+        matches.append(renderJobCard(opportunity, appliedIds)),
       );
     }
   }
@@ -214,7 +223,8 @@ const renderGraduateDashboard = async () => {
       );
       if (!result.ok)
         throw new Error(payload.error || "Could not submit application.");
-      button.textContent = "Applied";
+      button.textContent = "Application submitted";
+      button.classList.add("applied");
     } catch (error) {
       button.disabled = false;
       button.textContent = error.message;
