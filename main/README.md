@@ -1,5 +1,23 @@
 <!-- This document explains how the Express server, static browser client, Supabase database, and Groq matching service fit together. -->
 
+# GraduRat
+
+## Deploy with Vercel
+
+In Vercel, import the repository and set the project **Root Directory** to
+`main`. Vercel will use `api/index.js` as the serverless entrypoint.
+
+Add these environment variables in the Vercel project settings:
+
+- `SUPABASE_URL`
+- `SUPABASE_SERVICE_ROLE_KEY`
+- `GROQ_API_KEY`
+- `GROQ_MODEL` (optional)
+
+Deploy from `main/` with `npx vercel`, or deploy to production with
+`npx vercel --prod`. The `vercel` plugin command is not required for this
+project; the Vercel CLI and the included configuration are sufficient.
+
 # GraduRat Full Stack App
 
 GraduRat is served by an Express backend that hosts the static `GraduRat` frontend and exposes Supabase-backed API routes.
@@ -22,10 +40,14 @@ The project uses Node.js with ES modules, Express for HTTP/static serving, Supab
    database/001_initial_schema.sql
    database/002_backend_foundation.sql
    database/003_backend_hardening.sql
+   database/004_applications.sql
+   database/005_auth_ownership.sql
+   database/006_profile_media.sql
    ```
 5. Set the required values in `.env`:
-   - `SUPABASE_URL`
+   - `SUPABASE_URL` (the project URL, for example `https://your-project.supabase.co`; do not append `/rest/v1`)
    - `SUPABASE_SERVICE_ROLE_KEY`
+   - `SUPABASE_ANON_KEY` (public browser authentication key)
    - `GROQ_API_KEY`
    - `GROQ_MODEL` (optional, default `llama-3.1-8b-instant`)
    - `ADMIN_API_KEY` for protected admin scripts
@@ -46,6 +68,9 @@ The project adds new schema in versioned migration files after the applied initi
 - `database/001_initial_schema.sql` – original schema
 - `database/002_backend_foundation.sql` – profile fields, validation, status, archiving, and index additions
 - `database/003_backend_hardening.sql` – update timestamp triggers, legacy skill normalization, and public listing indexes
+- `database/004_applications.sql` – internal student applications for public opportunities
+- `database/005_auth_ownership.sql` – links profiles to Supabase Auth users
+- `database/006_profile_media.sql` – private profile-photo storage and avatar paths
 
 Do not edit the already-applied initial migration. Create fresh migrations instead.
 
@@ -93,6 +118,14 @@ The backend keeps the existing public API shape while extending it with validati
 - `POST /api/opportunities/:opportunityId/archive` – soft archive an opportunity
 - `POST /api/opportunities/:opportunityId/reopen` – reopen a valid opportunity
 - `POST /api/matches/refresh` – manual score refresh for a student/opportunity pair
+- `POST /api/ai/feedback` – Groq profile coaching and two-sided fit assessment
+- `POST /api/opportunities/:opportunityId/applications` – submit an internal student application
+- `GET /api/students/:studentId/applications` – list a student's applications
+- `GET /api/employers/:employerId/applications` – list applications for an employer's opportunities
+- `PATCH /api/applications/:applicationId` – update an employer-owned application status
+- `GET /api/me` – return the authenticated user and owned profile
+- `POST /api/students/:studentId/avatar/upload-url` and `POST /api/employers/:employerId/avatar/upload-url` – issue ownership-checked upload URLs
+- `POST` and `DELETE` on the corresponding `/avatar` paths – commit or remove a profile photo
 
 Public opportunity listings and detail responses exclude archived, closed, draft,
 and expired opportunities. Listing filters use `keyword`, `skills`, `location`,
@@ -131,14 +164,14 @@ Available commands:
 
 The following remain intentionally unimplemented in this backend foundation:
 
-- Authentication and authorization
-- User ownership checks
-- Passwords or login flows
+- Social connections and activity feed
+- Events and event registration
+- In-app notifications
 - CV or file uploads
 - Company logo uploads
-- Internal applications workflow
-- Saved-jobs persistence
 - Messaging or notifications
+- Background worker pipelines for matching
+- Analytics dashboards
 - Employer candidate profile pages
 - Match-generation worker queues
 - Public admin pages or unauthenticated admin endpoints
@@ -149,4 +182,5 @@ The following remain intentionally unimplemented in this backend foundation:
 - The current Groq scoring still happens when dashboard routes load, and matches can be refreshed manually.
 - Match responses include `matching_skills` and `missing_skills` alongside the existing score and reasoning.
 - Opportunities are filtered out of public listings when they are archived or expired.
-- External applications should use an `external_application_url` field rather than an internal application tracker.
+- External applications continue to use `external_application_url`; internal applications are stored in `applications` when students apply in the platform.
+- Profile photos use the private `avatars` bucket. Profile and dashboard responses include a temporary `profile_picture_url`; the database stores only the internal `avatar_path`.

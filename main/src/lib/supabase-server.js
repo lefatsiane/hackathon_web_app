@@ -8,6 +8,10 @@ const supabaseUrl =
   process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
 const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
+// Supabase clients expect the project URL and append /rest/v1 themselves.
+// Accept a pasted REST endpoint too, since it is a common dashboard copy error.
+const projectUrl = supabaseUrl?.replace(/\/rest\/v1\/?$/, "");
+
 // Fail during startup rather than allowing every API request to fail later
 // with an opaque authentication or row-level-security error.
 if (!supabaseUrl || !serviceRoleKey) {
@@ -33,7 +37,7 @@ if (isAnonymousJwt) {
   );
 }
 
-export const supabaseServer = createClient(supabaseUrl, serviceRoleKey, {
+export const supabaseServer = createClient(projectUrl, serviceRoleKey, {
   auth: { autoRefreshToken: false, persistSession: false },
   // Node 20 does not provide the native WebSocket used by Supabase Realtime.
   // Supplying ws keeps the server compatible without exposing Realtime to pages.
