@@ -129,26 +129,6 @@
         color: var(--blue);
       }
 
-      .profile-nav {
-        display: flex;
-        align-items: center;
-
-        gap: 12px;
-      }
-
-      .profile-nav img {
-        width: 38px;
-        height: 38px;
-
-        border-radius: 50%;
-
-        object-fit: cover;
-
-        border: 2px solid var(--blue);
-
-        background: var(--card);
-      }
-
       /* =========================
            DASHBOARD
         ========================= */
@@ -189,26 +169,6 @@
         line-height: 1.6;
       }
 
-      .role-badge {
-        display: inline-block;
-
-        margin-top: 15px;
-
-        padding: 7px 14px;
-
-        border-radius: 20px;
-
-        background: var(--blue-light);
-
-        border: 1px solid var(--blue-border);
-
-        color: var(--blue);
-
-        font-size: 12px;
-
-        font-weight: 600;
-
-        text-transform: capitalize;
       }
 
       /* =========================
@@ -741,6 +701,7 @@
 
   <body>
     <script src="theme.js"></script>
+    <script src="navigation.js"></script>
     <!-- =========================
      NAVBAR
 ========================= -->
@@ -760,10 +721,6 @@
         <a href="profile.html"> Profile </a>
 
         <a href="settings.html"> Settings </a>
-      </div>
-
-      <div class="profile-nav">
-        <img id="navProfilePhoto" src="logo1.jpg" alt="Profile" />
       </div>
     </nav>
 
@@ -963,17 +920,15 @@
            GET USER
         ========================= */
 
-        const savedUser = localStorage.getItem("graduratUser");
+        const user = graduratAuth.getUser();
 
-        if (!savedUser) {
+        if (!graduratAuth.getSession()?.access_token || !user) {
           alert("Please create a Gradurat account first.");
 
           window.location.href = "register.html";
 
           return;
         }
-
-        const user = JSON.parse(savedUser);
 
         /* =========================
            USER NAME
@@ -1013,18 +968,6 @@
         if (welcomeMessage && user.role === "graduate") {
           welcomeMessage.textContent =
             "Turn your qualifications into your next opportunity and discover where your skills can take you.";
-        }
-
-        /* =========================
-           PROFILE PHOTO
-        ========================= */
-
-        const savedPhoto = localStorage.getItem("graduratPhoto");
-
-        const navProfilePhoto = document.getElementById("navProfilePhoto");
-
-        if (savedPhoto && navProfilePhoto) {
-          navProfilePhoto.src = savedPhoto;
         }
 
         /* =========================
@@ -1107,7 +1050,7 @@
           logoutButton.addEventListener("click", function (event) {
             event.preventDefault();
 
-            localStorage.removeItem("graduratLoggedIn");
+            graduratAuth.clearAuth();
 
             window.location.href = "index.html";
           });

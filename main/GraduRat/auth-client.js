@@ -1,4 +1,7 @@
 const graduratAuth = (() => {
+  const SESSION_KEY = "graduRatSession";
+  const USER_KEY = "graduratUser";
+  const PENDING_PROFILE_KEY = "graduRatPendingProfile";
   let configPromise;
 
   const readJson = async (response, fallback) => {
@@ -32,17 +35,42 @@ const graduratAuth = (() => {
   };
 
   const saveSession = (session) => {
-    if (session)
-      localStorage.setItem("graduRatSession", JSON.stringify(session));
-    else localStorage.removeItem("graduRatSession");
+    if (session) sessionStorage.setItem(SESSION_KEY, JSON.stringify(session));
+    else sessionStorage.removeItem(SESSION_KEY);
+    localStorage.removeItem(SESSION_KEY);
   };
 
   const getSession = () => {
     try {
-      return JSON.parse(localStorage.getItem("graduRatSession") || "null");
+      return JSON.parse(sessionStorage.getItem(SESSION_KEY) || "null");
     } catch {
       return null;
     }
+  };
+
+  const saveUser = (user) => {
+    if (user) sessionStorage.setItem(USER_KEY, JSON.stringify(user));
+    else sessionStorage.removeItem(USER_KEY);
+    localStorage.removeItem(USER_KEY);
+  };
+
+  const getUser = () => {
+    try {
+      return JSON.parse(sessionStorage.getItem(USER_KEY) || "null");
+    } catch {
+      return null;
+    }
+  };
+
+  const clearAuth = () => {
+    saveSession(null);
+    saveUser(null);
+    sessionStorage.removeItem("graduRatLoggedIn");
+    localStorage.removeItem("graduRatLoggedIn");
+    sessionStorage.removeItem("graduRatStudentId");
+    sessionStorage.removeItem("graduRatEmployerId");
+    localStorage.removeItem("graduRatStudentId");
+    localStorage.removeItem("graduRatEmployerId");
   };
 
   const authRequest = async (path, body) => {
@@ -84,13 +112,17 @@ const graduratAuth = (() => {
     const session = getSession();
     const config = await getConfig();
     if (session?.access_token) {
-      await fetch(`${config.supabaseUrl}/auth/v1/logout?scope=global`, {
-        method: "POST",
-        headers: {
-          apikey: config.supabasePublishableKey,
-          Authorization: `Bearer ${session.access_token}`,
+      const response = await fetch(
+        `${config.supabaseUrl}/auth/v1/logout?scope=global`,
+        {
+          method: "POST",
+          headers: {
+            apikey: config.supabasePublishableKey,
+            Authorization: `Bearer ${session.access_token}`,
+          },
         },
-      });
+      );
+      if (!response.ok) throw new Error("Could not log out of all devices.");
     }
     saveSession(null);
   };
@@ -136,12 +168,10 @@ const graduratAuth = (() => {
   };
 
   const setPendingProfile = (profile) =>
-    localStorage.setItem("graduRatPendingProfile", JSON.stringify(profile));
+    sessionStorage.setItem(PENDING_PROFILE_KEY, JSON.stringify(profile));
   const getPendingProfile = () => {
     try {
-      return JSON.parse(
-        localStorage.getItem("graduRatPendingProfile") || "null",
-      );
+      return JSON.parse(sessionStorage.getItem(PENDING_PROFILE_KEY) || "null");
     } catch {
       return null;
     }
@@ -160,17 +190,20 @@ const graduratAuth = (() => {
     );
     if (!response.ok)
       throw new Error(result.error || "Could not create your profile.");
-    localStorage.removeItem("graduRatPendingProfile");
+    sessionStorage.removeItem(PENDING_PROFILE_KEY);
     if (result.student)
-      localStorage.setItem("graduRatStudentId", result.student.id);
+      sessionStorage.setItem("graduRatStudentId", result.student.id);
     if (result.employer)
-      localStorage.setItem("graduRatEmployerId", result.employer.id);
+      sessionStorage.setItem("graduRatEmployerId", result.employer.id);
     return result;
   };
 
   return {
     getSession,
     saveSession,
+    getUser,
+    saveUser,
+    clearAuth,
     signUp,
     signIn,
     apiFetch,

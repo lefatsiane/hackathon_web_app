@@ -55,7 +55,7 @@ const submitForm = async (form) => {
   if (formType === "opportunity") {
     // Job creation is linked to the employer created during registration. The
     // browser sends only this public identifier; the service key stays server-side.
-    payload.employer_id = localStorage.getItem("graduRatEmployerId");
+    payload.employer_id = sessionStorage.getItem("graduRatEmployerId");
     if (!payload.employer_id) {
       throw new Error("Register an employer profile before publishing a job.");
     }
@@ -175,7 +175,7 @@ const setStat = (label, value) => {
 
 const renderGraduateDashboard = async () => {
   const matches = document.querySelector(".matches");
-  const studentId = localStorage.getItem("graduRatStudentId");
+  const studentId = sessionStorage.getItem("graduRatStudentId");
   // A dashboard without a registered profile has no server identity to query.
   if (!studentId) return;
   const { student, opportunities, stats } = await apiJson(
@@ -314,7 +314,7 @@ const renderEmployerDashboard = async () => {
     ".candidates, #candidateContainer",
   );
   if (!candidatesSection) return;
-  const employerId = localStorage.getItem("graduRatEmployerId");
+  const employerId = sessionStorage.getItem("graduRatEmployerId");
   // Employer-scoped data must use the ID saved during employer registration.
   if (!employerId) return;
   const { employer, candidates, stats } = await apiJson(

@@ -187,6 +187,42 @@
         margin: 40px auto 0;
       }
 
+      .fyp-mode-switch {
+        display: flex;
+        justify-content: center;
+        gap: 8px;
+        margin: 24px auto -16px;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+      .fyp-mode-label {
+        flex-basis: 100%;
+        color: var(--muted-text);
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.8px;
+        text-align: center;
+        text-transform: uppercase;
+      }
+      .mode-button {
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 9px 14px;
+        background: var(--card);
+        color: var(--secondary-text);
+        cursor: pointer;
+        font: inherit;
+      }
+      .mode-button.active {
+        border-color: var(--blue);
+        color: var(--blue);
+        background: var(--blue-light);
+        box-shadow:
+          0 0 0 2px var(--blue-light),
+          0 4px 12px rgba(30, 99, 214, 0.16);
+        font-weight: 700;
+      }
+
       /* ================= PROFILE CARD ================= */
 
       .profile-card {
@@ -203,6 +239,8 @@
         text-align: left;
 
         box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+
+        touch-action: pan-y;
 
         transition: 0.25s;
       }
@@ -286,7 +324,7 @@
 
         font-weight: 700;
 
-        backdrop-filter: blur(8px);
+        transition: 0.25s;
       }
 
       .match-badge.pending {
@@ -514,6 +552,115 @@
         font-weight: 600;
       }
 
+      .connection-modal {
+        position: fixed;
+        inset: 0;
+        display: none;
+        place-items: center;
+        padding: 20px;
+        background: rgba(5, 7, 13, 0.78);
+        z-index: 300;
+      }
+      .connection-modal.show {
+        display: grid;
+        animation: connection-fade 0.2s ease both;
+      }
+      .connection-panel {
+        width: min(100%, 460px);
+        max-height: 90vh;
+        overflow: auto;
+        padding: 30px;
+        border: 1px solid var(--blue-border);
+        border-radius: 20px;
+        background: var(--card);
+        box-shadow: 0 25px 80px rgba(0, 0, 0, 0.45);
+        animation: connection-pop 0.35s ease both;
+      }
+      .connection-check {
+        width: 64px;
+        height: 64px;
+        display: grid;
+        place-items: center;
+        margin: 0 auto 18px;
+        border: 2px solid var(--blue);
+        border-radius: 50%;
+        color: var(--blue);
+        font-size: 32px;
+        animation: connection-check 0.55s 0.12s ease both;
+      }
+      .connection-panel h2,
+      .connection-panel > p {
+        text-align: center;
+      }
+      .connection-panel h2 {
+        margin-bottom: 8px;
+      }
+      .connection-panel > p {
+        color: var(--secondary-text);
+        font-size: 13px;
+        line-height: 1.6;
+      }
+      .connection-advice {
+        margin: 22px 0;
+        padding: 16px;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        background: var(--card-alt);
+      }
+      .connection-advice h3 {
+        margin: 0 0 10px;
+        font-size: 13px;
+        color: var(--blue);
+      }
+      .connection-advice ul {
+        padding-left: 18px;
+        color: var(--secondary-text);
+        font-size: 13px;
+        line-height: 1.7;
+      }
+      .connection-close {
+        width: 100%;
+        border: 0;
+        border-radius: 9px;
+        padding: 12px;
+        background: var(--blue);
+        color: white;
+        cursor: pointer;
+        font: inherit;
+        font-weight: 700;
+      }
+      @keyframes connection-fade {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+      @keyframes connection-pop {
+        from {
+          opacity: 0;
+          transform: translateY(18px) scale(0.94);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0) scale(1);
+        }
+      }
+      @keyframes connection-check {
+        from {
+          transform: scale(0.2);
+          opacity: 0;
+        }
+        70% {
+          transform: scale(1.12);
+        }
+        to {
+          transform: scale(1);
+          opacity: 1;
+        }
+      }
+
       /* ================= FOOTER ================= */
 
       footer {
@@ -556,6 +703,8 @@
 
   <body>
     <script src="theme.js"></script>
+    <script src="auth-client.js"></script>
+    <script src="navigation.js"></script>
     <!-- ================= NAVBAR ================= -->
 
     <nav>
@@ -568,7 +717,7 @@
 
         <a href="careers.html"> Career Explorer </a>
 
-        <a href="fyp.html" class="active"> FYP </a>
+        <a href="fyp.html" class="active"> Find Your People </a>
 
         <a href="profile.html" class="profile-btn"> Profile </a>
       </div>
@@ -586,6 +735,31 @@
         career interests. Show interest when you find the right fit. A
         connection is created when the interest is mutual.
       </p>
+
+      <div
+        class="fyp-mode-switch"
+        id="fypModeSwitch"
+        aria-label="Choose what to discover"
+        hidden
+      >
+        <span class="fyp-mode-label" id="fypModeLabel">Showing Employers</span>
+        <button
+          type="button"
+          class="mode-button active"
+          data-fyp-mode="opportunity"
+          aria-pressed="true"
+        >
+          Employers
+        </button>
+        <button
+          type="button"
+          class="mode-button"
+          data-fyp-mode="peer"
+          aria-pressed="false"
+        >
+          People
+        </button>
+      </div>
 
       <!-- ================= FYP ================= -->
 
@@ -709,11 +883,35 @@
       </section>
     </main>
 
+    <div
+      class="connection-modal"
+      id="connectionModal"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="connectionTitle"
+    >
+      <div class="connection-panel">
+        <div class="connection-check">✓</div>
+        <h2 id="connectionTitle">Connection made</h2>
+        <p id="connectionSummary">
+          You both showed interest. Here are a few ways to start the
+          conversation.
+        </p>
+        <div class="connection-advice" id="connectionAdvice"></div>
+        <button class="connection-close" id="connectionClose" type="button">
+          Continue exploring
+        </button>
+      </div>
+    </div>
+
     <footer>© 2026 Gradurat. Discover yourself. Discover your future.</footer>
 
-    <script src="auth-client.js"></script>
     <script>
       let profiles = [];
+
+      const isEmployer = graduratAuth.getUser()?.role === "employer";
+      let activeFypMode = isEmployer ? "employer" : "student";
+      let fypLoadToken = 0;
 
       let currentIndex = 0;
 
@@ -731,11 +929,146 @@
 
       const interestBtn = document.getElementById("interestBtn");
 
+      const connectionModal = document.getElementById("connectionModal");
+      const connectionAdvice = document.getElementById("connectionAdvice");
+      const connectionSummary = document.getElementById("connectionSummary");
+      const connectionClose = document.getElementById("connectionClose");
+      const fypModeSwitch = document.getElementById("fypModeSwitch");
+      const fypModeLabel = document.getElementById("fypModeLabel");
+
+      function syncFypModeControls() {
+        const showingPeople = activeFypMode === "peer";
+        fypModeLabel.textContent = isEmployer
+          ? "Showing Candidates"
+          : showingPeople
+            ? "Showing People"
+            : "Showing Employers";
+        fypModeSwitch.querySelectorAll("[data-fyp-mode]").forEach((button) => {
+          const isSelected = showingPeople
+            ? button.dataset.fypMode === "peer"
+            : button.dataset.fypMode === "opportunity";
+          button.classList.toggle("active", isSelected);
+          button.setAttribute("aria-pressed", String(isSelected));
+        });
+      }
+
+      if (!isEmployer) {
+        fypModeSwitch.hidden = false;
+        syncFypModeControls();
+        fypModeSwitch.querySelectorAll("[data-fyp-mode]").forEach((button) => {
+          button.addEventListener("click", () => {
+            activeFypMode =
+              button.dataset.fypMode === "opportunity"
+                ? "student"
+                : button.dataset.fypMode;
+            syncFypModeControls();
+            profiles = [];
+            currentIndex = 0;
+            showCurrentProfile();
+            loadFYP();
+          });
+        });
+      } else {
+        fypModeSwitch.hidden = false;
+        fypModeSwitch.querySelector(
+          '[data-fyp-mode="opportunity"]',
+        ).textContent = "Candidates";
+        fypModeSwitch.querySelector('[data-fyp-mode="peer"]').remove();
+        syncFypModeControls();
+      }
+
+      function showConnectionAnimation(result) {
+        const advice =
+          result.match?.connection_advice || result.connection_advice;
+        connectionSummary.textContent =
+          advice?.summary ||
+          "You both showed interest. A professional connection is ready to grow.";
+        connectionAdvice.replaceChildren();
+        const benefitsHeading = document.createElement("h3");
+        benefitsHeading.textContent = "How this connection could help";
+        const benefits = document.createElement("ul");
+        (
+          advice?.benefits || [
+            "Compare goals and strengths.",
+            "Share useful context and feedback.",
+            "Start with a short introduction.",
+          ]
+        ).forEach((item) => {
+          const entry = document.createElement("li");
+          entry.textContent = item;
+          benefits.append(entry);
+        });
+        connectionAdvice.append(benefitsHeading, benefits);
+        if (advice?.prompts?.length) {
+          const promptsHeading = document.createElement("h3");
+          promptsHeading.textContent = "Conversation starters";
+          const prompts = document.createElement("ul");
+          advice.prompts.forEach((item) => {
+            const entry = document.createElement("li");
+            entry.textContent = item;
+            prompts.append(entry);
+          });
+          connectionAdvice.append(promptsHeading, prompts);
+        }
+        connectionModal.classList.add("show");
+      }
+
+      connectionClose.addEventListener("click", () =>
+        connectionModal.classList.remove("show"),
+      );
+      connectionModal.addEventListener("click", (event) => {
+        if (event.target === connectionModal)
+          connectionModal.classList.remove("show");
+      });
+
       /* ================= LOAD FYP ================= */
 
       async function loadFYP() {
         try {
-          const studentId = localStorage.getItem("graduRatStudentId");
+          if (isEmployer) {
+            const employerId =
+              sessionStorage.getItem("graduRatEmployerId") ||
+              localStorage.getItem("graduRatEmployerId");
+            if (!employerId) {
+              profiles = [];
+              showCurrentProfile();
+              return;
+            }
+
+            const dashboardResponse = await graduratAuth.apiFetch(
+              `/api/employers/${encodeURIComponent(employerId)}/dashboard`,
+            );
+            const dashboardPayload = await graduratAuth.readJson(
+              dashboardResponse,
+              "The employer dashboard response was not valid JSON.",
+            );
+            if (!dashboardResponse.ok)
+              throw new Error(
+                dashboardPayload.error || "Could not load candidate profiles.",
+              );
+
+            profiles = (dashboardPayload.candidates || []).map((student) => ({
+              id: student.id,
+              type: "student",
+              name: student.full_name,
+              photo: student.profile_picture_url,
+              description: student.bio || student.work_experience_summary,
+              qualification: student.qualification,
+              field: student.preferred_industry || student.location,
+              experience: student.work_experience_summary,
+              skills: student.skills || [],
+              interests: student.projects || student.certifications || [],
+              careerGoals: student.preferred_opportunity_type,
+              matchScore: student.match_score,
+            }));
+            currentIndex = 0;
+            showCurrentProfile();
+            return;
+          }
+
+          const studentId =
+            sessionStorage.getItem("graduRatStudentId") ||
+            localStorage.getItem("graduRatStudentId");
           if (!studentId) {
             profiles = [];
             showCurrentProfile();
@@ -1019,6 +1352,43 @@
 
         const profile = profiles[currentIndex];
 
+        passBtn.disabled = true;
+        interestBtn.disabled = true;
+
+        try {
+          const response = await graduratAuth.apiFetch("/api/fyp/swipes", {
+            method: "POST",
+            body: JSON.stringify({
+              mode: activeFypMode === "peer" ? "peer" : undefined,
+              student_id:
+                activeFypMode === "peer" ? undefined : profile.studentId,
+              target_student_id:
+                activeFypMode === "peer" ? profile.studentId : undefined,
+              opportunity_id:
+                activeFypMode === "peer"
+                  ? undefined
+                  : profile.opportunityId || profile.id,
+              decision: decision === "interest" ? "like" : "pass",
+            }),
+          });
+          const result = await graduratAuth.readJson(
+            response,
+            "The swipe response was not valid JSON.",
+          );
+          if (!response.ok)
+            throw new Error(result.error || "Could not save your decision.");
+          if (result.matched) {
+            statusMessage.textContent =
+              "It is a mutual match. Open Matches to connect.";
+            showConnectionAnimation(result);
+          }
+        } catch (error) {
+          statusMessage.textContent = error.message;
+          passBtn.disabled = false;
+          interestBtn.disabled = false;
+          return;
+        }
+
         /*
     ==================================================
     BACKEND CONNECTION
@@ -1063,6 +1433,8 @@
 
         setTimeout(function () {
           currentIndex++;
+          passBtn.disabled = false;
+          interestBtn.disabled = false;
 
           showCurrentProfile();
         }, 300);
@@ -1083,6 +1455,149 @@
           profileCard.classList.remove("swiping-right");
         }, 300);
       }
+
+      let selectedOpportunityId = null;
+
+      function mapSwipeCard(card, opportunityId, mode) {
+        if (mode === "peer") {
+          return {
+            id: card.id,
+            studentId: card.id,
+            type: "student",
+            name: card.full_name,
+            photo: card.profile_picture_url,
+            description: card.work_experience_summary,
+            qualification: card.qualification,
+            field: card.preferred_industry || card.location,
+            experience: card.work_experience_summary,
+            skills: card.skills || [],
+            interests: card.projects || card.certifications || [],
+            careerGoals: card.preferred_opportunity_type,
+            matchScore: card.peer_match_score,
+          };
+        }
+        if (isEmployer) {
+          return {
+            id: card.id,
+            studentId: card.id,
+            opportunityId,
+            type: "student",
+            name: card.full_name,
+            photo: card.profile_picture_url,
+            description: card.work_experience_summary,
+            qualification: card.qualification,
+            field: card.preferred_industry || card.location,
+            experience: card.work_experience_summary,
+            skills: card.skills || [],
+            interests: card.projects || card.certifications || [],
+            careerGoals: card.preferred_opportunity_type,
+            matchScore: card.match_score,
+          };
+        }
+        return {
+          id: card.id,
+          opportunityId: card.id,
+          type: "opportunity",
+          name: card.employers?.company_name || "Employer",
+          photo: null,
+          description:
+            card.description || "Opportunity information will appear here.",
+          qualification: card.qualification_requirement,
+          field: card.industry || "Open industry",
+          experience: card.opportunity_type || card.type,
+          skills: card.required_skills || card.preferred_skills || [],
+          interests: [card.work_arrangement].filter(Boolean),
+          careerGoals: card.title,
+          matchScore: card.match_score,
+        };
+      }
+
+      loadFYP = async function loadSwipeQueue() {
+        const loadToken = ++fypLoadToken;
+        const requestedMode = isEmployer ? "employer" : activeFypMode;
+        try {
+          let opportunityId = selectedOpportunityId;
+          if (isEmployer && !opportunityId) {
+            const employerId =
+              sessionStorage.getItem("graduRatEmployerId") ||
+              localStorage.getItem("graduRatEmployerId");
+            const opportunitiesResponse = await graduratAuth.apiFetch(
+              `/api/employers/${encodeURIComponent(employerId)}/opportunities`,
+            );
+            const opportunitiesPayload = await graduratAuth.readJson(
+              opportunitiesResponse,
+              "The employer opportunities response was not valid JSON.",
+            );
+            if (!opportunitiesResponse.ok)
+              throw new Error(
+                opportunitiesPayload.error || "Could not load opportunities.",
+              );
+            opportunityId = opportunitiesPayload.opportunities?.find(
+              (opportunity) =>
+                opportunity.status === "published" && !opportunity.archived_at,
+            )?.id;
+            selectedOpportunityId = opportunityId || null;
+          }
+          const query = new URLSearchParams({
+            mode: requestedMode,
+            limit: "15",
+          });
+          if (isEmployer && opportunityId)
+            query.set("opportunity_id", opportunityId);
+          const response = await graduratAuth.apiFetch(
+            `/api/fyp/queue?${query}`,
+          );
+          const result = await graduratAuth.readJson(
+            response,
+            "The swipe queue was not valid JSON.",
+          );
+          if (!response.ok)
+            throw new Error(result.error || "Could not load the swipe queue.");
+          if (loadToken !== fypLoadToken) return;
+          profiles = (result.cards || []).map((card) =>
+            mapSwipeCard(card, opportunityId, requestedMode),
+          );
+          currentIndex = 0;
+          showCurrentProfile();
+        } catch (error) {
+          if (loadToken !== fypLoadToken) return;
+          statusMessage.textContent = error.message;
+          profiles = [];
+          showCurrentProfile();
+        }
+      };
+
+      let dragStartX = 0;
+      let dragging = false;
+
+      profileCard.addEventListener("pointerdown", (event) => {
+        if (passBtn.disabled || interestBtn.disabled || !profiles[currentIndex])
+          return;
+        dragging = true;
+        dragStartX = event.clientX;
+        profileCard.setPointerCapture(event.pointerId);
+        profileCard.style.transition = "none";
+      });
+
+      profileCard.addEventListener("pointermove", (event) => {
+        if (!dragging) return;
+        const offset = event.clientX - dragStartX;
+        profileCard.style.transform = `translateX(${offset}px) rotate(${offset / 18}deg)`;
+      });
+
+      const finishDrag = (event) => {
+        if (!dragging) return;
+        dragging = false;
+        const offset = event.clientX - dragStartX;
+        profileCard.style.transition = "transform 0.25s ease";
+        profileCard.style.transform = "";
+        if (Math.abs(offset) >= 110) {
+          handleDecision(offset > 0 ? "interest" : "pass");
+        }
+      };
+
+      profileCard.addEventListener("pointerup", finishDrag);
+      profileCard.addEventListener("pointercancel", finishDrag);
 
       /* ================= START ================= */
 

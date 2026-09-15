@@ -69,7 +69,8 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        border-bottom: 1px solid var(--border);
+        background: var(--background);
       }
 
       .brand img {
@@ -176,6 +177,22 @@
         margin-top: 8px;
         color: var(--muted-text);
         font-size: 12px;
+      }
+
+      .profile-save-status {
+        min-height: 20px;
+        flex-basis: 100%;
+        margin-top: 4px;
+        color: var(--muted-text);
+        font-size: 13px;
+      }
+
+      .profile-save-status.success {
+        color: #087443;
+      }
+
+      .profile-save-status.error {
+        color: #b42318;
       }
 
       #photoInput {
@@ -388,6 +405,19 @@
         padding: 7px 10px;
         border-radius: 20px;
         font-size: 11px;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .tag-remove {
+        border: 0;
+        padding: 0;
+        background: transparent;
+        color: inherit;
+        cursor: pointer;
+        font-size: 14px;
+        line-height: 1;
       }
 
       /* BUTTONS */
@@ -579,6 +609,12 @@
           </div>
 
           <div class="form-group">
+            <label for="location"> Location </label>
+
+            <input type="text" id="location" placeholder="City or region" />
+          </div>
+
+          <div class="form-group">
             <label for="experience"> Experience </label>
 
             <input
@@ -606,7 +642,9 @@
             placeholder="Example: AWS Cloud Practitioner"
           />
 
-          <button class="add-btn" onclick="addCertification()">Add</button>
+          <button class="add-btn" id="addCertification" type="button">
+            Add
+          </button>
         </div>
 
         <div class="tags" id="certificationTags"></div>
@@ -622,7 +660,7 @@
         <div class="tag-input">
           <input type="text" id="skillInput" placeholder="Example: Python" />
 
-          <button class="add-btn" onclick="addSkill()">Add</button>
+          <button class="add-btn" id="addSkill" type="button">Add</button>
         </div>
 
         <div class="tags" id="skillTags"></div>
@@ -644,7 +682,7 @@
             placeholder="Example: Software Development"
           />
 
-          <button class="add-btn" onclick="addInterest()">Add</button>
+          <button class="add-btn" id="addInterest" type="button">Add</button>
         </div>
 
         <div class="tags" id="interestTags"></div>
@@ -704,23 +742,34 @@
       <div class="actions">
         <a href="index.html" class="btn btn-secondary"> Complete Later </a>
 
-        <button class="btn btn-primary" onclick="saveProfile()">
+        <button id="saveProfileButton" class="btn btn-primary" type="button">
           Save Profile
         </button>
+
+        <p
+          id="profileSaveStatus"
+          class="profile-save-status"
+          role="status"
+          aria-live="polite"
+        ></p>
       </div>
     </main>
 
     <script src="auth-client.js"></script>
+    <script src="navigation.js"></script>
     <script>
       document.addEventListener("DOMContentLoaded", function () {
         /* =========================
        LOAD REGISTRATION DETAILS
     ========================= */
 
-        const savedUser = localStorage.getItem("graduratUser");
-        const storedStudentId = localStorage.getItem("graduRatStudentId");
+        const savedUser = graduratAuth.getUser();
+        const storedStudentId = sessionStorage.getItem("graduRatStudentId");
 
-        if (!savedUser && !storedStudentId) {
+        if (
+          !graduratAuth.getSession()?.access_token ||
+          (!savedUser && !storedStudentId)
+        ) {
           alert(
             "No registration information found. Please create an account first.",
           );
@@ -728,14 +777,16 @@
           return;
         }
 
-        const user = savedUser
-          ? JSON.parse(savedUser)
-          : { fullName: "Graduate", email: "", role: "student" };
+        const user = savedUser || {
+          fullName: "Graduate",
+          email: "",
+          role: "student",
+        };
 
         // Display the information from registration
-        const profileName = document.getElementById("profileName");
-        const profileEmail = document.getElementById("profileEmail");
-        const profileRole = document.getElementById("profileRole");
+        const profileName = document.getElementById("displayName");
+        const profileEmail = document.getElementById("displayEmail");
+        const profileRole = document.getElementById("displayRole");
 
         if (profileName) {
           profileName.textContent = user.fullName;
@@ -791,6 +842,14 @@
           photoStatus.textContent = message;
           photoStatus.style.color = isError ? "#ff8d8d" : "#8994a8";
         };
+
+        const profileSaveStatus = document.getElementById("profileSaveStatus");
+        const saveProfileButton = document.getElementById("saveProfileButton");
+        const setProfileSaveStatus = (message, isError = false) => {
+          if (!profileSaveStatus) return;
+          profileSaveStatus.textContent = message;
+          profileSaveStatus.className = `profile-save-status${isError ? " error" : " success"}`;
+        };
         const requestJson = async (url, options) => {
           const response = await graduratAuth.apiFetch(url, options);
           const result = await graduratAuth.readJson(
@@ -802,14 +861,73 @@
           return result;
         };
 
+        const createTag = (container, value) => {
+          const normalizedValue = String(value || "").trim();
+          if (!container || !normalizedValue) return;
+          const alreadyExists = [...container.children].some(
+            (tag) =>
+              tag.dataset.value.toLowerCase() === normalizedValue.toLowerCase(),
+          );
+          if (alreadyExists) return;
+
+          const tag = document.createElement("span");
+          tag.className = "tag";
+          tag.dataset.value = normalizedValue;
+          tag.append(document.createTextNode(normalizedValue));
+
+          const removeButton = document.createElement("button");
+          removeButton.type = "button";
+          removeButton.className = "tag-remove";
+          removeButton.setAttribute("aria-label", `Remove ${normalizedValue}`);
+          removeButton.textContent = "x";
+          removeButton.addEventListener("click", () => {
+            tag.remove();
+            updateProgress();
+          });
+          tag.append(removeButton);
+          container.append(tag);
+        };
+
+        const renderTags = (containerId, values) => {
+          const container = document.getElementById(containerId);
+          if (!container) return;
+          container.replaceChildren();
+          (values || []).forEach((value) => createTag(container, value));
+        };
+
+        const loadProfile = async () => {
+          if (!studentId) return null;
+          const result = await requestJson(
+            `/api/students/${encodeURIComponent(studentId)}`,
+          );
+          const student = result.student;
+          user.fullName = student.full_name || user.fullName;
+          user.email = student.email || user.email;
+          if (profileName) profileName.textContent = user.fullName;
+          if (profileEmail) profileEmail.textContent = user.email;
+          const fields = {
+            qualification: student.qualification,
+            institution: student.institution,
+            field: student.field_of_study,
+            location: student.location,
+            experience: student.work_experience_summary,
+            careerGoals: student.preferred_opportunity_type,
+          };
+          Object.entries(fields).forEach(([id, value]) => {
+            const input = document.getElementById(id);
+            if (input) input.value = value || "";
+          });
+          renderTags("skillTags", student.skills);
+          renderTags("interestTags", student.projects);
+          renderTags("certificationTags", student.certifications);
+          setPhoto(student.profile_picture_url);
+          updateProgress();
+          return student;
+        };
+
         setPhoto(null);
         if (studentId) {
-          requestJson(`/api/students/${encodeURIComponent(studentId)}`)
-            .then((result) => {
-              user.fullName = result.student.full_name || user.fullName;
-              setPhoto(result.student.profile_picture_url);
-            })
-            .catch((error) => setPhotoStatus(error.message, true));
+          loadProfile().catch((error) => setPhotoStatus(error.message, true));
         }
 
         if (photoInput) {
@@ -896,46 +1014,37 @@
        TAG SYSTEM
     ========================= */
 
-        function setupTags(inputId, containerId) {
+        function setupTags(inputId, containerId, addButtonId) {
           const input = document.getElementById(inputId);
           const container = document.getElementById(containerId);
+          const addButton = document.getElementById(addButtonId);
 
           if (!input || !container) return;
 
-          input.addEventListener("keydown", function (event) {
+          const addTag = () => {
+            createTag(container, input.value);
+            input.value = "";
+            updateProgress();
+          };
+
+          input.addEventListener("keydown", (event) => {
             if (event.key === "Enter") {
               event.preventDefault();
-
-              const value = input.value.trim();
-
-              if (value === "") return;
-
-              const tag = document.createElement("span");
-
-              tag.className = "tag";
-              tag.textContent = value;
-
-              // Click a tag to remove it
-              tag.addEventListener("click", function () {
-                tag.remove();
-
-                updateProgress();
-              });
-
-              container.appendChild(tag);
-
-              input.value = "";
-
-              updateProgress();
+              addTag();
             }
           });
+          addButton?.addEventListener("click", addTag);
         }
 
-        setupTags("skillInput", "skillsContainer");
+        setupTags("skillInput", "skillTags", "addSkill");
 
-        setupTags("interestInput", "interestsContainer");
+        setupTags("interestInput", "interestTags", "addInterest");
 
-        setupTags("certificationInput", "certificationsContainer");
+        setupTags(
+          "certificationInput",
+          "certificationTags",
+          "addCertification",
+        );
 
         /* =========================
        CV UPLOAD
@@ -1073,17 +1182,11 @@
             completed++;
           }
 
-          if (
-            document.getElementById("skillsContainer") &&
-            document.getElementById("skillsContainer").children.length > 0
-          ) {
+          if (document.getElementById("skillTags")?.children.length > 0) {
             completed++;
           }
 
-          if (
-            document.getElementById("interestsContainer") &&
-            document.getElementById("interestsContainer").children.length > 0
-          ) {
+          if (document.getElementById("interestTags")?.children.length > 0) {
             completed++;
           }
 
@@ -1101,8 +1204,9 @@
             progressBar.style.width = percentage + "%";
           }
 
-          if (progressText) {
-            progressText.textContent = percentage + "% Complete";
+          const completionText = document.getElementById("completionText");
+          if (completionText) {
+            completionText.textContent = percentage + "%";
           }
         }
 
@@ -1120,94 +1224,104 @@
        SAVE PROFILE
     ========================= */
 
-        const profileForm = document.getElementById("profileForm");
+        const saveProfile = async function () {
+          if (saveProfileButton) saveProfileButton.disabled = true;
+          setProfileSaveStatus("Saving profile changes...");
 
-        if (profileForm) {
-          profileForm.addEventListener("submit", async function (event) {
-            event.preventDefault();
+          const profile = {
+            // Registration information
+            fullName: user.fullName,
 
-            const profile = {
-              // Registration information
-              fullName: user.fullName,
+            email: user.email,
 
-              email: user.email,
+            role: user.role,
 
-              role: user.role,
+            // Professional information
+            qualification:
+              document.getElementById("qualification")?.value || "",
 
-              // Professional information
-              qualification:
-                document.getElementById("qualification")?.value || "",
+            institution: document.getElementById("institution")?.value || "",
 
-              institution: document.getElementById("institution")?.value || "",
+            field: document.getElementById("field")?.value || "",
 
-              field: document.getElementById("field")?.value || "",
+            experience: document.getElementById("experience")?.value || "",
 
-              experience: document.getElementById("experience")?.value || "",
+            // Career goals
+            careerGoals: document.getElementById("careerGoals")?.value || "",
 
-              // Career goals
-              careerGoals: document.getElementById("careerGoals")?.value || "",
+            // Skills
+            skills: Array.from(
+              document.querySelectorAll("#skillTags .tag"),
+            ).map(function (tag) {
+              return tag.dataset.value;
+            }),
 
-              // Skills
-              skills: Array.from(
-                document.querySelectorAll("#skillsContainer .tag"),
-              ).map(function (tag) {
-                return tag.textContent;
-              }),
+            // Interests
+            interests: Array.from(
+              document.querySelectorAll("#interestTags .tag"),
+            ).map(function (tag) {
+              return tag.dataset.value;
+            }),
 
-              // Interests
-              interests: Array.from(
-                document.querySelectorAll("#interestsContainer .tag"),
-              ).map(function (tag) {
-                return tag.textContent;
-              }),
+            // Certifications
+            certifications: Array.from(
+              document.querySelectorAll("#certificationTags .tag"),
+            ).map(function (tag) {
+              return tag.dataset.value;
+            }),
+          };
 
-              // Certifications
-              certifications: Array.from(
-                document.querySelectorAll("#certificationsContainer .tag"),
-              ).map(function (tag) {
-                return tag.textContent;
-              }),
-            };
-
-            try {
-              const studentId = localStorage.getItem("graduRatStudentId");
-              if (!studentId || user.role === "employer") {
-                throw new Error("Your authenticated profile is not ready yet.");
-              }
-              const response = await graduratAuth.apiFetch(
-                `/api/students/${encodeURIComponent(studentId)}`,
-                {
-                  method: "PATCH",
-                  body: JSON.stringify({
-                    firstName: user.fullName.split(/\s+/)[0],
-                    lastName: user.fullName.split(/\s+/).slice(1).join(" "),
-                    email: user.email,
-                    qualification: profile.qualification,
-                    location: document.getElementById("location")?.value || "",
-                    workExperienceSummary: profile.experience,
-                    skills: profile.skills,
-                    certifications: profile.certifications,
-                    projects: profile.interests,
-                    preferredOpportunityType: profile.careerGoals,
-                  }),
-                },
-              );
-              const result = await graduratAuth.readJson(
-                response,
-                "The profile response was not valid JSON.",
-              );
-              if (!response.ok)
-                throw new Error(
-                  result.error || "Your profile could not be saved.",
-                );
-              localStorage.setItem("graduratProfile", JSON.stringify(profile));
-              alert("Your profile has been saved!");
-              window.location.href = "dashboard.html";
-            } catch (error) {
-              alert(error.message);
+          try {
+            const studentId = sessionStorage.getItem("graduRatStudentId");
+            if (!studentId || user.role === "employer") {
+              throw new Error("Your authenticated profile is not ready yet.");
             }
-          });
-        }
+            const response = await graduratAuth.apiFetch(
+              `/api/students/${encodeURIComponent(studentId)}`,
+              {
+                method: "PATCH",
+                body: JSON.stringify({
+                  firstName: user.fullName.split(/\s+/)[0],
+                  lastName: user.fullName.split(/\s+/).slice(1).join(" "),
+                  email: user.email,
+                  qualification: profile.qualification,
+                  institution: profile.institution,
+                  fieldOfStudy: profile.field,
+                  location: document.getElementById("location")?.value || "",
+                  workExperienceSummary: profile.experience,
+                  skills: profile.skills,
+                  certifications: profile.certifications,
+                  projects: profile.interests,
+                  preferredOpportunityType: profile.careerGoals,
+                }),
+              },
+            );
+            const result = await graduratAuth.readJson(
+              response,
+              "The profile response was not valid JSON.",
+            );
+            if (!response.ok)
+              throw new Error(
+                result.error || "Your profile could not be saved.",
+              );
+            localStorage.setItem("graduratProfile", JSON.stringify(profile));
+            if (result.student) {
+              user.fullName = result.student.full_name || user.fullName;
+              user.email = result.student.email || user.email;
+              graduratAuth.saveUser(user);
+              if (profileName) profileName.textContent = user.fullName;
+              if (profileEmail) profileEmail.textContent = user.email;
+              setPhoto(result.student.profile_picture_url);
+            }
+            setProfileSaveStatus("Profile changes saved.");
+          } catch (error) {
+            setProfileSaveStatus(error.message, true);
+          } finally {
+            if (saveProfileButton) saveProfileButton.disabled = false;
+          }
+        };
+
+        saveProfileButton?.addEventListener("click", saveProfile);
 
         /* =========================
        INITIAL PROGRESS

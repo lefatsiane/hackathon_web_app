@@ -10,6 +10,13 @@ Use the migration files in order after the initial schema is already applied in 
 4. `004_applications.sql`
 5. `005_auth_ownership.sql`
 6. `006_profile_media.sql`
+7. `007_settings.sql`
+8. `008_cv_storage.sql`
+9. `009_swipes.sql`
+10. `010_connection_advice.sql`
+11. `011_peer_matching.sql`
+12. `012_candidate_order.sql`
+13. `013_student_education_fields.sql`
 
 Run them in Supabase Dashboard > **SQL Editor** before importing or updating data.
 
@@ -31,8 +38,19 @@ The application is an employability marketplace for students and employers:
 - `public.employers`
 - `public.opportunities`
 - `public.matches`
+- `public.swipes` and `public.swipe_matches` are added by the swipe migration.
 
 The tables are set up with public read access through Supabase RLS and keep the server-only service-role client for writes.
+
+Swipe decisions are intentionally private. The application exposes only ranked
+queue cards and mutual connections through authenticated Express routes; it does
+not expose individual like/pass records to browser clients. Mutual connections
+are participant-dismissable, retain their stable ID for future messaging, and can
+store a small generated networking brief in `swipe_matches.connection_advice`.
+
+Student-to-student networking uses separate `peer_swipes` and
+`student_matches` tables. This keeps opportunity matching unchanged while
+allowing students to connect with peers based on shared skills and goals.
 
 ## New foundation fields
 
@@ -46,10 +64,12 @@ and adds a public listing index.
 
 - `updated_at`, `archived_at`, `location`
 - `qualification`, `graduation_year`, `availability`
+- `institution`, `field_of_study`
 - `linkedin_url`, `portfolio_url`, `work_experience_summary`
 - `certifications`, `projects`
 - `preferred_opportunity_type`, `preferred_industry`, `preferred_location`
 - `remote_work_preference`
+- `phone`, `cv_path`
 
 ### Employer fields
 
@@ -111,6 +131,12 @@ database/005_auth_ownership.sql
 
 -- 6
 database/006_profile_media.sql
+
+-- 7
+database/007_settings.sql
+
+-- 8
+database/008_cv_storage.sql
 ```
 
 If you are applying the schema outside of Supabase, keep the same order and run each file as a separate migration transaction.
@@ -147,7 +173,6 @@ The listing endpoint hides archived and expired items by default.
 
 These remain intentionally unimplemented in this foundation:
 
-- file uploads and CV storage
 - company logo uploads
 - social connections and activity feed
 - events and event registration

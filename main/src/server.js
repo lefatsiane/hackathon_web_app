@@ -7,7 +7,12 @@ import express from "express";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { supabaseServer } from "./lib/supabase-server.js";
-import { assessFitWithGroq, scoreSkillsWithGroq } from "./lib/groq.js";
+import {
+  assessFitWithGroq,
+  createConnectionAdviceWithGroq,
+  createPeerConnectionAdviceWithGroq,
+  scoreSkillsWithGroq,
+} from "./lib/groq.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
@@ -204,8 +209,11 @@ const withProfilePictureUrl = async (profile) => {
   const { data, error } = await supabaseServer.storage
     .from(avatarBucket)
     .createSignedUrl(avatarPath, avatarUrlExpiresIn);
-  if (error) throw error;
-  return { ...publicProfile, profile_picture_url: data.signedUrl };
+  if (error) {
+    console.warn("Profile avatar is unavailable:", avatarPath, error.message);
+    return { ...publicProfile, profile_picture_url: null };
+  }
+  return { ...publicProfile, profile_picture_url: data?.signedUrl || null };
 };
 
 const createAvatarUpload = async (
@@ -375,6 +383,8 @@ const computeProfileCompleteness = (profile, type = "student") => {
       "skills",
       "location",
       "qualification",
+      "institution",
+      "field_of_study",
       "graduation_year",
       "availability",
       "linkedin_url",
@@ -435,6 +445,14 @@ const buildStudentUpdate = (body = {}) => {
     updates.location = coerceText(body.location, null);
   if (body.qualification !== undefined)
     updates.qualification = coerceText(body.qualification, null);
+  if (body.institution !== undefined)
+    updates.institution = coerceText(body.institution, null);
+  if (body.fieldOfStudy !== undefined || body.field_of_study !== undefined) {
+    updates.field_of_study = coerceText(
+      body.fieldOfStudy ?? body.field_of_study,
+      null,
+    );
+  }
   if (body.graduationYear !== undefined || body.graduation !== undefined) {
     const graduationYear = parseOptionalInt(
       body.graduationYear ?? body.graduation,
@@ -914,6 +932,16 @@ const getEmployer = async (employerId) => {
   return data;
 };
 
+const getOpportunity = async (opportunityId) => {
+  const { data, error } = await supabaseServer
+    .from("opportunities")
+    .select("*, employers(company_name, website)")
+    .eq("id", opportunityId)
+    .single();
+  if (error) throw error;
+  return data;
+};
+
 const requireOwnedProfile = async (table, profileId, authUserId) => {
   const { data, error } = await supabaseServer
     .from(table)
@@ -936,6 +964,31 @@ const getOwnedStudent = async (studentId, authUserId) => {
 const getOwnedEmployer = async (employerId, authUserId) => {
   await requireOwnedProfile("employers", employerId, authUserId);
   return getEmployer(employerId);
+};
+
+const getAuthenticatedProfiles = async (authUserId) => {
+  const [studentResult, employerResult] = await Promise.all([
+    supabaseServer
+      .from("students")
+      .select("*")
+      .eq("auth_user_id", authUserId)
+      .maybeSingle(),
+    supabaseServer
+      .from("employers")
+      .select("*")
+      .eq("auth_user_id", authUserId)
+      .maybeSingle(),
+  ]);
+  if (studentResult.error) throw studentResult.error;
+  if (employerResult.error) throw employerResult.error;
+  return { student: studentResult.data, employer: employerResult.data };
+};
+
+const getSwipeLimit = (value) => {
+  const requested = Number(value || 15);
+  return Number.isInteger(requested)
+    ? Math.max(1, Math.min(30, requested))
+    : 15;
 };
 
 const isPublicOpportunity = (opportunity) => {
@@ -965,6 +1018,650 @@ app.get("/api/health", async (_request, response) => {
   response.json({ status: "ok", database: "connected" });
 });
 
+app.get("/api/fyp/queue", requireAuth, async (request, response) => {
+  try {
+    const mode = String(request.query.mode || "student").toLowerCase();
+    const limit = getSwipeLimit(request.query.limit);
+    const page = Math.max(1, Number(request.query.page || 1));
+    if (!Number.isInteger(page)) {
+      return response.status(422).json({ error: "Page must be an integer." });
+    }
+
+    const profiles = await getAuthenticatedProfiles(request.authUser.id);
+    if (mode === "peer") {
+      if (!profiles.student) {
+        return response
+          .status(403)
+          .json({ error: "A student profile is required." });
+      }
+      const { data: swipes, error: swipesError } = await supabaseServer
+        .from("peer_swipes")
+        .select("target_student_id")
+        .eq("swiper_student_id", profiles.student.id);
+      if (swipesError) throw swipesError;
+      const swipedIds = new Set(
+        (swipes || []).map((row) => row.target_student_id),
+      );
+      const { data: students, error: studentsError } = await supabaseServer
+        .from("students")
+        .select("*")
+        .neq("id", profiles.student.id);
+      if (studentsError) throw studentsError;
+      const ownSkills = new Set(normalizeSkills(profiles.student.skills || []));
+      const ranked = (students || [])
+        .filter((student) => !student.archived_at && !swipedIds.has(student.id))
+        .map((student) => {
+          const sharedSkills = normalizeSkills(student.skills || []).filter(
+            (skill) => ownSkills.has(skill),
+          );
+          return {
+            ...student,
+            peer_match_score: sharedSkills.length
+              ? Math.min(100, sharedSkills.length * 20)
+              : 0,
+            shared_skills: sharedSkills,
+          };
+        })
+        .sort((left, right) => right.peer_match_score - left.peer_match_score);
+      const start = (page - 1) * limit;
+      return response.json({
+        mode,
+        cards: ranked.slice(start, start + limit),
+        page,
+        limit,
+        has_more: start + limit < ranked.length,
+      });
+    }
+    if (mode === "student") {
+      if (!profiles.student) {
+        return response
+          .status(403)
+          .json({ error: "A student profile is required." });
+      }
+      const [swipesResult, opportunitiesResult, matchesResult] =
+        await Promise.all([
+          supabaseServer
+            .from("swipes")
+            .select("opportunity_id")
+            .eq("student_id", profiles.student.id)
+            .eq("swiper_role", "student"),
+          supabaseServer
+            .from("opportunities")
+            .select("*, employers(*)")
+            .order("created_at", { ascending: false }),
+          supabaseServer
+            .from("matches")
+            .select("opportunity_id, match_score, reasoning")
+            .eq("student_id", profiles.student.id),
+        ]);
+      if (swipesResult.error) throw swipesResult.error;
+      if (opportunitiesResult.error) throw opportunitiesResult.error;
+      if (matchesResult.error) throw matchesResult.error;
+
+      const swiped = new Set(
+        (swipesResult.data || []).map((row) => row.opportunity_id),
+      );
+      const scores = new Map(
+        (matchesResult.data || []).map((row) => [row.opportunity_id, row]),
+      );
+      const ranked = opportunitiesResult.data
+        .filter(
+          (opportunity) =>
+            isPublicOpportunity(opportunity) && !swiped.has(opportunity.id),
+        )
+        .map((opportunity) => ({
+          ...opportunity,
+          match_score: scores.get(opportunity.id)?.match_score ?? null,
+          reasoning: scores.get(opportunity.id)?.reasoning || null,
+        }))
+        .sort((left, right) => {
+          const scoreDifference =
+            Number(right.match_score ?? -1) - Number(left.match_score ?? -1);
+          return (
+            scoreDifference ||
+            String(right.created_at).localeCompare(String(left.created_at))
+          );
+        });
+      const start = (page - 1) * limit;
+      const cards = ranked.slice(start, start + limit);
+      return response.json({
+        mode,
+        cards,
+        page,
+        limit,
+        has_more: start + limit < ranked.length,
+      });
+    }
+
+    if (mode !== "employer") {
+      return response
+        .status(422)
+        .json({ error: "Mode must be student or employer." });
+    }
+    const opportunityId =
+      request.query.opportunity_id || request.query.opportunityId;
+    if (!opportunityId) {
+      return response
+        .status(422)
+        .json({ error: "An opportunity is required for employer matching." });
+    }
+    const opportunity = await getOpportunity(opportunityId);
+    await requireOwnedProfile(
+      "employers",
+      opportunity.employer_id,
+      request.authUser.id,
+    );
+
+    const [swipesResult, studentsResult, matchesResult] = await Promise.all([
+      supabaseServer
+        .from("swipes")
+        .select("student_id")
+        .eq("opportunity_id", opportunity.id)
+        .eq("swiper_role", "employer"),
+      supabaseServer.from("students").select("*"),
+      supabaseServer
+        .from("matches")
+        .select("student_id, match_score, reasoning")
+        .eq("opportunity_id", opportunity.id),
+    ]);
+    if (swipesResult.error) throw swipesResult.error;
+    if (studentsResult.error) throw studentsResult.error;
+    if (matchesResult.error) throw matchesResult.error;
+
+    const swiped = new Set(
+      (swipesResult.data || []).map((row) => row.student_id),
+    );
+    const scores = new Map(
+      (matchesResult.data || []).map((row) => [row.student_id, row]),
+    );
+    const ranked = studentsResult.data
+      .filter((student) => !student.archived_at && !swiped.has(student.id))
+      .map((student) => ({
+        ...student,
+        match_score: scores.get(student.id)?.match_score ?? null,
+        reasoning: scores.get(student.id)?.reasoning || null,
+      }))
+      .sort(
+        (left, right) =>
+          Number(right.match_score ?? -1) - Number(left.match_score ?? -1),
+      );
+    const start = (page - 1) * limit;
+    return response.json({
+      mode,
+      opportunity: { id: opportunity.id, title: opportunity.title },
+      cards: ranked.slice(start, start + limit),
+      page,
+      limit,
+      has_more: start + limit < ranked.length,
+    });
+  } catch (error) {
+    errorResponse(response, error, "Could not load swipe queue");
+  }
+});
+
+app.post("/api/fyp/swipes", requireAuth, async (request, response) => {
+  try {
+    const decision = String(request.body?.decision || "").toLowerCase();
+    const opportunityId =
+      request.body?.opportunity_id || request.body?.opportunityId;
+    const requestedStudentId =
+      request.body?.student_id || request.body?.studentId;
+    const mode = String(request.body?.mode || "opportunity").toLowerCase();
+    if (
+      (mode !== "peer" && !opportunityId) ||
+      !["like", "pass"].includes(decision)
+    ) {
+      return response.status(422).json({
+        error:
+          mode === "peer"
+            ? "target_student_id and a like/pass decision are required."
+            : "opportunity_id and a like/pass decision are required.",
+      });
+    }
+
+    const profiles = await getAuthenticatedProfiles(request.authUser.id);
+    if (mode === "peer") {
+      if (!profiles.student)
+        return response
+          .status(403)
+          .json({ error: "A student profile is required." });
+      const targetStudentId =
+        requestedStudentId ||
+        request.body?.target_student_id ||
+        request.body?.targetStudentId;
+      if (!targetStudentId || targetStudentId === profiles.student.id)
+        return response
+          .status(422)
+          .json({ error: "A different target student is required." });
+      const targetStudent = await getStudent(targetStudentId);
+      const { data: swipe, error: swipeError } = await supabaseServer
+        .from("peer_swipes")
+        .upsert(
+          {
+            swiper_student_id: profiles.student.id,
+            target_student_id: targetStudentId,
+            decision,
+            updated_at: new Date().toISOString(),
+          },
+          { onConflict: "swiper_student_id,target_student_id" },
+        )
+        .select(
+          "id, swiper_student_id, target_student_id, decision, updated_at",
+        )
+        .single();
+      if (swipeError) throw swipeError;
+      let matched = false;
+      let match = null;
+      if (decision === "like") {
+        const { data: reciprocal, error: reciprocalError } =
+          await supabaseServer
+            .from("peer_swipes")
+            .select("id")
+            .eq("swiper_student_id", targetStudentId)
+            .eq("target_student_id", profiles.student.id)
+            .eq("decision", "like")
+            .maybeSingle();
+        if (reciprocalError) throw reciprocalError;
+        if (reciprocal) {
+          const [studentAId, studentBId] = [
+            profiles.student.id,
+            targetStudentId,
+          ].sort();
+          const advice = await createPeerConnectionAdviceWithGroq({
+            firstStudent: {
+              name: profiles.student.full_name,
+              skills: profiles.student.skills,
+              qualification: profiles.student.qualification,
+              goals: profiles.student.preferred_opportunity_type,
+            },
+            secondStudent: {
+              name: targetStudent.full_name,
+              skills: targetStudent.skills,
+              qualification: targetStudent.qualification,
+              goals: targetStudent.preferred_opportunity_type,
+            },
+          });
+          const { data: connection, error: connectionError } =
+            await supabaseServer
+              .from("student_matches")
+              .upsert(
+                {
+                  student_a_id: studentAId,
+                  student_b_id: studentBId,
+                  connection_advice: advice,
+                },
+                { onConflict: "student_a_id,student_b_id" },
+              )
+              .select(
+                "id, student_a_id, student_b_id, matched_at, connection_advice",
+              )
+              .single();
+          if (connectionError) throw connectionError;
+          matched = true;
+          match = connection;
+        }
+      }
+      return response
+        .status(201)
+        .json({ swipe, matched, match, match_type: "peer" });
+    }
+    let studentId = requestedStudentId;
+    let swiperRole;
+    const opportunity = await getOpportunity(opportunityId);
+    if (profiles.student) {
+      swiperRole = "student";
+      studentId = profiles.student.id;
+      if (!isPublicOpportunity(opportunity)) {
+        return response
+          .status(404)
+          .json({ error: "Opportunity is not available." });
+      }
+    } else if (profiles.employer) {
+      swiperRole = "employer";
+      await requireOwnedProfile(
+        "employers",
+        opportunity.employer_id,
+        request.authUser.id,
+      );
+      if (!studentId) {
+        return response
+          .status(422)
+          .json({ error: "A student is required for an employer swipe." });
+      }
+      await getStudent(studentId);
+    } else {
+      return response
+        .status(403)
+        .json({ error: "A registered profile is required." });
+    }
+
+    const { data: swipe, error: swipeError } = await supabaseServer
+      .from("swipes")
+      .upsert(
+        {
+          student_id: studentId,
+          opportunity_id: opportunity.id,
+          swiper_role: swiperRole,
+          decision,
+          updated_at: new Date().toISOString(),
+        },
+        { onConflict: "student_id,opportunity_id,swiper_role" },
+      )
+      .select(
+        "id, student_id, opportunity_id, swiper_role, decision, updated_at",
+      )
+      .single();
+    if (swipeError) throw swipeError;
+
+    let matched = false;
+    let match = null;
+    if (decision === "like") {
+      const counterpartRole = swiperRole === "student" ? "employer" : "student";
+      const { data: counterpart, error: counterpartError } =
+        await supabaseServer
+          .from("swipes")
+          .select("id")
+          .eq("student_id", studentId)
+          .eq("opportunity_id", opportunity.id)
+          .eq("swiper_role", counterpartRole)
+          .eq("decision", "like")
+          .maybeSingle();
+      if (counterpartError) throw counterpartError;
+      if (counterpart) {
+        const matchedStudent = await getStudent(studentId);
+        const connectionAdvice = await createConnectionAdviceWithGroq({
+          student: {
+            name: matchedStudent.full_name,
+            skills: matchedStudent.skills,
+            qualification: matchedStudent.qualification,
+            experience: matchedStudent.work_experience_summary,
+            goals: matchedStudent.preferred_opportunity_type,
+          },
+          employer: {
+            name: opportunity.employers?.company_name,
+            industry: opportunity.industry,
+            description: opportunity.employers?.company_description,
+          },
+          opportunity: {
+            title: opportunity.title,
+            description: opportunity.description,
+            skills: opportunity.required_skills || opportunity.preferred_skills,
+          },
+        });
+        const { data: connection, error: connectionError } =
+          await supabaseServer
+            .from("swipe_matches")
+            .upsert(
+              {
+                student_id: studentId,
+                opportunity_id: opportunity.id,
+                connection_advice: connectionAdvice,
+              },
+              { onConflict: "student_id,opportunity_id" },
+            )
+            .select(
+              "id, student_id, opportunity_id, matched_at, connection_advice",
+            )
+            .single();
+        if (connectionError) throw connectionError;
+        matched = true;
+        match = connection;
+      }
+    }
+    response.status(201).json({ swipe, matched, match });
+  } catch (error) {
+    errorResponse(response, error, "Could not record swipe");
+  }
+});
+
+const buildMatchResponse = async (connection, currentRole, profileMap) => {
+  const [opportunityResult, scoreResult] = await Promise.all([
+    supabaseServer
+      .from("opportunities")
+      .select("id, title, employer_id, employers(*)")
+      .eq("id", connection.opportunity_id)
+      .single(),
+    supabaseServer
+      .from("matches")
+      .select("match_score, reasoning")
+      .eq("student_id", connection.student_id)
+      .eq("opportunity_id", connection.opportunity_id)
+      .maybeSingle(),
+  ]);
+  if (opportunityResult.error) throw opportunityResult.error;
+  if (scoreResult.error) throw scoreResult.error;
+  const opportunity = opportunityResult.data;
+  let counterpart;
+  if (currentRole === "student") {
+    const employer = opportunity.employers;
+    counterpart = {
+      id: employer.id,
+      type: "employer",
+      name: employer.company_name || "Employer",
+      photo: null,
+      field: employer.industry || employer.location || "Employer",
+    };
+  } else {
+    const student = profileMap.get(connection.student_id);
+    counterpart = {
+      id: student.id,
+      type: "student",
+      name: student.full_name || "Graduate",
+      photo: student.profile_picture_url || null,
+      qualification: student.qualification || null,
+      field: student.preferred_industry || student.location || null,
+    };
+  }
+  return {
+    id: connection.id,
+    student_id: connection.student_id,
+    opportunity_id: connection.opportunity_id,
+    matched_at: connection.matched_at,
+    opportunity: { id: opportunity.id, title: opportunity.title },
+    counterpart,
+    match_score: scoreResult.data?.match_score ?? null,
+    reasoning: scoreResult.data?.reasoning || null,
+    connection_advice: connection.connection_advice || null,
+    messaging: { enabled: false, conversation_id: null },
+  };
+};
+
+const buildPeerMatchResponse = (connection, currentStudentId, studentMap) => {
+  const counterpartId =
+    connection.student_a_id === currentStudentId
+      ? connection.student_b_id
+      : connection.student_a_id;
+  const counterpart = studentMap.get(counterpartId);
+  return {
+    id: connection.id,
+    match_type: "peer",
+    student_id: counterpartId,
+    opportunity_id: null,
+    matched_at: connection.matched_at,
+    opportunity: { id: null, title: "Student networking connection" },
+    counterpart: {
+      id: counterpart.id,
+      type: "student",
+      name: counterpart.full_name || "Student",
+      photo: counterpart.profile_picture_url || null,
+      qualification: counterpart.qualification || null,
+      field: counterpart.preferred_industry || counterpart.location || null,
+    },
+    match_score: null,
+    reasoning: null,
+    connection_advice: connection.connection_advice || null,
+    messaging: { enabled: false, conversation_id: null },
+  };
+};
+
+app.get("/api/matches", requireAuth, async (request, response) => {
+  try {
+    const profiles = await getAuthenticatedProfiles(request.authUser.id);
+    const currentRole = profiles.student
+      ? "student"
+      : profiles.employer
+        ? "employer"
+        : null;
+    if (!currentRole)
+      return response
+        .status(403)
+        .json({ error: "A registered profile is required." });
+    let query = supabaseServer
+      .from("swipe_matches")
+      .select("*")
+      .order("matched_at", { ascending: false });
+    if (currentRole === "student")
+      query = query
+        .eq("student_id", profiles.student.id)
+        .is("student_deleted_at", null);
+    else {
+      const { data: opportunities, error: opportunitiesError } =
+        await supabaseServer
+          .from("opportunities")
+          .select("id")
+          .eq("employer_id", profiles.employer.id);
+      if (opportunitiesError) throw opportunitiesError;
+      const opportunityIds = opportunities.map((item) => item.id);
+      if (!opportunityIds.length)
+        return response.json({
+          matches: [],
+          totalMatches: 0,
+          activeConnections: 0,
+          cvAccess: 0,
+        });
+      query = query
+        .in("opportunity_id", opportunityIds)
+        .is("employer_deleted_at", null);
+    }
+    const { data: connections, error } = await query;
+    if (error) throw error;
+    const studentIds = [
+      ...new Set(connections.map((connection) => connection.student_id)),
+    ];
+    const studentsResult = studentIds.length
+      ? await supabaseServer.from("students").select("*").in("id", studentIds)
+      : { data: [], error: null };
+    if (studentsResult.error) throw studentsResult.error;
+    const studentMap = new Map(
+      (studentsResult.data || []).map((student) => [student.id, student]),
+    );
+    const matches = await Promise.all(
+      connections.map((connection) =>
+        buildMatchResponse(connection, currentRole, studentMap),
+      ),
+    );
+    if (currentRole === "student") {
+      const { data: peerConnections, error: peerError } = await supabaseServer
+        .from("student_matches")
+        .select("*")
+        .or(
+          `student_a_id.eq.${profiles.student.id},student_b_id.eq.${profiles.student.id}`,
+        );
+      if (peerError) throw peerError;
+      const peerIds = [
+        ...new Set(
+          (peerConnections || []).flatMap((item) => [
+            item.student_a_id,
+            item.student_b_id,
+          ]),
+        ),
+      ];
+      const { data: peerStudents, error: peerStudentsError } =
+        await supabaseServer
+          .from("students")
+          .select("*")
+          .in("id", peerIds.length ? peerIds : [profiles.student.id]);
+      if (peerStudentsError) throw peerStudentsError;
+      const peerMap = new Map(
+        (peerStudents || []).map((student) => [student.id, student]),
+      );
+      matches.push(
+        ...(peerConnections || [])
+          .filter((connection) => {
+            return connection.student_a_id === profiles.student.id
+              ? !connection.student_a_deleted_at
+              : !connection.student_b_deleted_at;
+          })
+          .map((connection) =>
+            buildPeerMatchResponse(connection, profiles.student.id, peerMap),
+          ),
+      );
+    }
+    response.json({
+      matches,
+      totalMatches: matches.length,
+      activeConnections: matches.length,
+      cvAccess: 0,
+    });
+  } catch (error) {
+    errorResponse(response, error, "Could not load matches");
+  }
+});
+
+app.delete("/api/matches/:matchId", requireAuth, async (request, response) => {
+  try {
+    const { data: opportunityConnection, error: opportunityLookupError } =
+      await supabaseServer
+        .from("swipe_matches")
+        .select("*")
+        .eq("id", request.params.matchId)
+        .maybeSingle();
+    const profiles = await getAuthenticatedProfiles(request.authUser.id);
+    if (!opportunityLookupError && opportunityConnection) {
+      const connection = opportunityConnection;
+      if (profiles.student?.id === connection.student_id) {
+        const { error } = await supabaseServer
+          .from("swipe_matches")
+          .update({ student_deleted_at: new Date().toISOString() })
+          .eq("id", connection.id);
+        if (error) throw error;
+      } else {
+        const opportunity = await getOpportunity(connection.opportunity_id);
+        await requireOwnedProfile(
+          "employers",
+          opportunity.employer_id,
+          request.authUser.id,
+        );
+        const { error } = await supabaseServer
+          .from("swipe_matches")
+          .update({ employer_deleted_at: new Date().toISOString() })
+          .eq("id", connection.id);
+        if (error) throw error;
+      }
+      return response.json({ deleted: true, match_id: connection.id });
+    }
+    const { data: peerConnection, error: peerLookupError } =
+      await supabaseServer
+        .from("student_matches")
+        .select("*")
+        .eq("id", request.params.matchId)
+        .single();
+    if (peerLookupError) throw peerLookupError;
+    if (
+      !profiles.student ||
+      ![peerConnection.student_a_id, peerConnection.student_b_id].includes(
+        profiles.student.id,
+      )
+    ) {
+      return response
+        .status(403)
+        .json({ error: "You do not participate in this match." });
+    }
+    const deletedField =
+      peerConnection.student_a_id === profiles.student.id
+        ? "student_a_deleted_at"
+        : "student_b_deleted_at";
+    const { error: peerDeleteError } = await supabaseServer
+      .from("student_matches")
+      .update({ [deletedField]: new Date().toISOString() })
+      .eq("id", peerConnection.id);
+    if (peerDeleteError) throw peerDeleteError;
+    return response.json({ deleted: true, match_id: peerConnection.id });
+  } catch (error) {
+    errorResponse(response, error, "Could not delete match");
+  }
+});
+
 app.get("/api/students/:studentId", requireAuth, async (request, response) => {
   try {
     const student = await getOwnedStudent(
@@ -979,6 +1676,165 @@ app.get("/api/students/:studentId", requireAuth, async (request, response) => {
     errorResponse(response, error, "Could not load student profile");
   }
 });
+
+app.get(
+  "/api/candidates/:candidateId",
+  requireAuth,
+  async (request, response) => {
+    try {
+      const { data, error } = await supabaseServer
+        .from("students")
+        .select(
+          "id, full_name, bio, skills, location, qualification, graduation_year, work_experience_summary, certifications, projects, avatar_path",
+        )
+        .eq("id", request.params.candidateId)
+        .is("archived_at", null)
+        .maybeSingle();
+      if (error) throw error;
+      if (!data)
+        return response.status(404).json({ error: "Candidate not found." });
+
+      response.json({ candidate: await withProfilePictureUrl(data) });
+    } catch (error) {
+      errorResponse(response, error, "Could not load candidate profile");
+    }
+  },
+);
+
+app.get(
+  "/api/candidates/:candidateId/employer-review",
+  requireAuth,
+  async (request, response) => {
+    try {
+      const { data: employer, error: employerError } = await supabaseServer
+        .from("employers")
+        .select("id")
+        .eq("auth_user_id", request.authUser.id)
+        .maybeSingle();
+      if (employerError) throw employerError;
+      if (!employer) {
+        return response
+          .status(403)
+          .json({ error: "Only employers can access candidate reviews." });
+      }
+
+      const student = await getStudent(request.params.candidateId);
+      const [matchResult, applicationResult] = await Promise.all([
+        supabaseServer
+          .from("swipe_matches")
+          .select("id, opportunity_id, opportunities!inner(employer_id)")
+          .eq("student_id", student.id)
+          .eq("opportunities.employer_id", employer.id)
+          .is("employer_deleted_at", null),
+        supabaseServer
+          .from("applications")
+          .select(
+            "id, opportunity_id, opportunities!inner(id, title, employer_id)",
+          )
+          .eq("student_id", student.id)
+          .neq("status", "withdrawn")
+          .eq("opportunities.employer_id", employer.id),
+      ]);
+      if (matchResult.error) throw matchResult.error;
+      if (applicationResult.error) throw applicationResult.error;
+
+      const matchedOpportunityIds = new Set();
+      const matchedConnection = (matchResult.data || []).find((match) => {
+        matchedOpportunityIds.add(match.opportunity_id);
+        return true;
+      });
+      const employerApplication = applicationResult.data?.[0] || null;
+      if (!matchedConnection && !employerApplication) {
+        return response.status(403).json({
+          error:
+            "You can only review candidates connected to your opportunities.",
+        });
+      }
+
+      const opportunityId =
+        matchedConnection?.opportunity_id ||
+        employerApplication?.opportunity_id ||
+        [...matchedOpportunityIds][0];
+      const opportunity = opportunityId
+        ? await getOpportunity(opportunityId)
+        : null;
+      const settings = await getOrCreateUserSettings(student.auth_user_id);
+      let cvUrl = null;
+      if (student.cv_path && settings.preferences?.allowCVDownload) {
+        const { data, error } = await supabaseServer.storage
+          .from(cvBucket)
+          .createSignedUrl(student.cv_path, cvUrlExpiresIn);
+        if (error) {
+          console.warn(
+            "Candidate CV is unavailable:",
+            student.cv_path,
+            error.message,
+          );
+        } else {
+          cvUrl = data?.signedUrl || null;
+        }
+      }
+
+      let assessment = null;
+      try {
+        const aiDescription = String(student.bio || "")
+          .split("\n")
+          .filter((line) => !/^(phone|email|contact)\s*:/i.test(line.trim()))
+          .join("\n");
+        assessment = await assessFitWithGroq({
+          subjectType: "candidate",
+          subject: {
+            name: student.full_name,
+            qualification: student.qualification,
+            location: student.location,
+            skills: student.skills,
+            experience: student.work_experience_summary,
+            goals: student.preferred_opportunity_type,
+            description: aiDescription,
+          },
+          targetType: "opportunity",
+          target: opportunity
+            ? {
+                name: opportunity.title,
+                title: opportunity.title,
+                industry: opportunity.industry,
+                location: opportunity.location,
+                skills:
+                  opportunity.required_skills || opportunity.preferred_skills,
+                description: opportunity.description,
+              }
+            : null,
+        });
+      } catch (assessmentError) {
+        console.error("Candidate Groq review unavailable:", assessmentError);
+      }
+
+      response.json({
+        contact: {
+          email: student.email || null,
+          phone: student.phone || null,
+          linkedin_url: student.linkedin_url || null,
+          portfolio_url: student.portfolio_url || null,
+        },
+        cv: {
+          available: Boolean(student.cv_path),
+          downloadable: Boolean(cvUrl),
+          url: cvUrl,
+        },
+        opportunity: opportunity
+          ? { id: opportunity.id, title: opportunity.title }
+          : null,
+        assessment,
+      });
+    } catch (error) {
+      errorResponse(
+        response,
+        error,
+        "Could not load employer candidate review",
+      );
+    }
+  },
+);
 
 app.patch(
   "/api/students/:studentId",
@@ -1174,6 +2030,29 @@ app.get(
           error.statusCode = 403;
           throw error;
         }
+        const [matchResult, applicationResult] = await Promise.all([
+          supabaseServer
+            .from("swipe_matches")
+            .select("id, opportunities!inner(employer_id)")
+            .eq("student_id", student.id)
+            .eq("opportunities.employer_id", employer.id)
+            .is("employer_deleted_at", null)
+            .limit(1),
+          supabaseServer
+            .from("applications")
+            .select("id, opportunities!inner(employer_id)")
+            .eq("student_id", student.id)
+            .eq("opportunities.employer_id", employer.id)
+            .neq("status", "withdrawn")
+            .limit(1),
+        ]);
+        if (matchResult.error) throw matchResult.error;
+        if (applicationResult.error) throw applicationResult.error;
+        if (!matchResult.data?.length && !applicationResult.data?.length) {
+          const error = new Error("You do not have access to this CV.");
+          error.statusCode = 403;
+          throw error;
+        }
         const settings = await getOrCreateUserSettings(student.auth_user_id);
         if (!settings.preferences?.allowCVDownload) {
           const error = new Error(
@@ -1217,6 +2096,12 @@ const getOrCreateUserSettings = async (authUserId) => {
   return created;
 };
 
+const withoutPrivateProfilePaths = (profile) => {
+  if (!profile) return null;
+  const { avatar_path, cv_path, ...publicProfile } = profile;
+  return publicProfile;
+};
+
 app.get("/api/settings", requireAuth, async (request, response) => {
   try {
     const [settings, studentResult, employerResult] = await Promise.all([
@@ -1237,8 +2122,8 @@ app.get("/api/settings", requireAuth, async (request, response) => {
     response.json({
       theme: settings.theme,
       preferences: settings.preferences,
-      student: studentResult.data,
-      employer: employerResult.data,
+      student: withoutPrivateProfilePaths(studentResult.data),
+      employer: withoutPrivateProfilePaths(employerResult.data),
     });
   } catch (error) {
     errorResponse(response, error, "Could not load settings");
@@ -1339,8 +2224,8 @@ app.put("/api/settings", requireAuth, async (request, response) => {
     response.json({
       theme: settings.theme,
       preferences: settings.preferences,
-      student,
-      employer,
+      student: withoutPrivateProfilePaths(student),
+      employer: withoutPrivateProfilePaths(employer),
     });
   } catch (error) {
     errorResponse(response, error, "Could not save settings");
@@ -1557,6 +2442,27 @@ app.post("/api/ai/feedback", async (request, response) => {
 
 app.post("/api/students", requireAuth, async (request, response) => {
   const body = request.body;
+  const { data: existingStudent, error: existingStudentError } =
+    await supabaseServer
+      .from("students")
+      .select("*")
+      .eq("auth_user_id", request.authUser.id)
+      .maybeSingle();
+  if (existingStudentError)
+    return errorResponse(
+      response,
+      existingStudentError,
+      "Could not load graduate profile",
+    );
+  if (existingStudent) {
+    return response.status(200).json({
+      student: existingStudent,
+      profile_completeness: computeProfileCompleteness(
+        existingStudent,
+        "student",
+      ),
+    });
+  }
   if (
     !body.email ||
     !body.firstName ||
@@ -1661,6 +2567,23 @@ app.post("/api/students", requireAuth, async (request, response) => {
     .select()
     .single();
 
+  if (error?.code === "23505") {
+    const { data: concurrentStudent, error: concurrentStudentError } =
+      await supabaseServer
+        .from("students")
+        .select("*")
+        .eq("auth_user_id", request.authUser.id)
+        .maybeSingle();
+    if (!concurrentStudentError && concurrentStudent) {
+      return response.status(200).json({
+        student: concurrentStudent,
+        profile_completeness: computeProfileCompleteness(
+          concurrentStudent,
+          "student",
+        ),
+      });
+    }
+  }
   if (error)
     return errorResponse(response, error, "Could not create graduate profile");
   response.status(201).json({
@@ -1671,6 +2594,27 @@ app.post("/api/students", requireAuth, async (request, response) => {
 
 app.post("/api/employers", requireAuth, async (request, response) => {
   const body = request.body;
+  const { data: existingEmployer, error: existingEmployerError } =
+    await supabaseServer
+      .from("employers")
+      .select("*")
+      .eq("auth_user_id", request.authUser.id)
+      .maybeSingle();
+  if (existingEmployerError)
+    return errorResponse(
+      response,
+      existingEmployerError,
+      "Could not load employer profile",
+    );
+  if (existingEmployer) {
+    return response.status(200).json({
+      employer: existingEmployer,
+      profile_completeness: computeProfileCompleteness(
+        existingEmployer,
+        "employer",
+      ),
+    });
+  }
   const contactName = coerceText(
     body.contactPersonName ?? body.contact_person_name,
   );
@@ -1740,6 +2684,23 @@ app.post("/api/employers", requireAuth, async (request, response) => {
     .select()
     .single();
 
+  if (error?.code === "23505") {
+    const { data: concurrentEmployer, error: concurrentEmployerError } =
+      await supabaseServer
+        .from("employers")
+        .select("*")
+        .eq("auth_user_id", request.authUser.id)
+        .maybeSingle();
+    if (!concurrentEmployerError && concurrentEmployer) {
+      return response.status(200).json({
+        employer: concurrentEmployer,
+        profile_completeness: computeProfileCompleteness(
+          concurrentEmployer,
+          "employer",
+        ),
+      });
+    }
+  }
   if (error)
     return errorResponse(response, error, "Could not create employer profile");
   response.status(201).json({
@@ -1881,6 +2842,132 @@ app.get("/api/opportunities/:opportunityId", async (request, response) => {
     errorResponse(response, error, "Could not load opportunity");
   }
 });
+
+app.get(
+  "/api/opportunities/:opportunityId/candidates",
+  async (request, response) => {
+    try {
+      const opportunity = await getOpportunity(request.params.opportunityId);
+      if (!isPublicOpportunity(opportunity)) {
+        return response.status(404).json({ error: "Opportunity not found." });
+      }
+
+      let isOwner = false;
+      if (request.headers.authorization) {
+        try {
+          const authorization = request.headers.authorization;
+          const token = authorization.startsWith("Bearer ")
+            ? authorization.slice(7).trim()
+            : null;
+          if (token) {
+            const { data } = await supabaseServer.auth.getUser(token);
+            if (data.user) {
+              const { data: employer } = await supabaseServer
+                .from("employers")
+                .select("id")
+                .eq("id", opportunity.employer_id)
+                .eq("auth_user_id", data.user.id)
+                .maybeSingle();
+              isOwner = Boolean(employer);
+            }
+          }
+        } catch {
+          // Invalid optional credentials simply receive the public applicant view.
+        }
+      }
+
+      const { data, error } = await supabaseServer
+        .from("applications")
+        .select(
+          "id, student_id, created_at, status, display_order, students(id, full_name, skills, qualification, location, bio)",
+        )
+        .eq("opportunity_id", opportunity.id)
+        .neq("status", "withdrawn")
+        .order(isOwner ? "display_order" : "created_at", {
+          ascending: true,
+          nullsFirst: false,
+        })
+        .order("created_at", { ascending: true });
+      if (error) throw error;
+
+      response.json({
+        isOwner,
+        candidates: (data || []).map((application) => ({
+          applicationId: application.id,
+          id: application.students?.id || application.student_id,
+          name: application.students?.full_name || "Candidate",
+          skills: application.students?.skills || [],
+          qualification: application.students?.qualification,
+          location: application.students?.location,
+          bio: application.students?.bio,
+          appliedAt: application.created_at,
+          ...(isOwner ? { displayOrder: application.display_order } : {}),
+        })),
+      });
+    } catch (error) {
+      errorResponse(response, error, "Could not load opportunity candidates");
+    }
+  },
+);
+
+app.patch(
+  "/api/opportunities/:opportunityId/candidates/order",
+  requireAuth,
+  async (request, response) => {
+    try {
+      const opportunity = await getOpportunity(request.params.opportunityId);
+      await requireOwnedProfile(
+        "employers",
+        opportunity.employer_id,
+        request.authUser.id,
+      );
+      const candidateIds = request.body?.candidateIds;
+      if (
+        !Array.isArray(candidateIds) ||
+        candidateIds.length !== new Set(candidateIds).size ||
+        candidateIds.some((id) => typeof id !== "string")
+      ) {
+        return response
+          .status(422)
+          .json({ error: "A candidate order is required." });
+      }
+
+      const { data: applications, error: lookupError } = await supabaseServer
+        .from("applications")
+        .select("id, student_id")
+        .eq("opportunity_id", opportunity.id)
+        .neq("status", "withdrawn");
+      if (lookupError) throw lookupError;
+      const applicationByStudent = new Map(
+        (applications || []).map((application) => [
+          application.student_id,
+          application.id,
+        ]),
+      );
+      if (
+        candidateIds.length !== applicationByStudent.size ||
+        candidateIds.some((id) => !applicationByStudent.has(id))
+      ) {
+        return response
+          .status(422)
+          .json({ error: "The candidate order is out of date." });
+      }
+
+      const updates = candidateIds.map((studentId, index) =>
+        supabaseServer
+          .from("applications")
+          .update({ display_order: index })
+          .eq("id", applicationByStudent.get(studentId)),
+      );
+      const results = await Promise.all(updates);
+      const updateError = results.find((result) => result.error)?.error;
+      if (updateError) throw updateError;
+      response.json({ saved: true });
+    } catch (error) {
+      errorResponse(response, error, "Could not save candidate order");
+    }
+  },
+);
 
 app.post(
   "/api/opportunities/:opportunityId/applications",
@@ -2218,6 +3305,25 @@ app.get(
       });
     } catch (error) {
       errorResponse(response, error, "Could not load graduate dashboard");
+    }
+  },
+);
+
+app.get(
+  "/api/employers/:employerId/opportunities",
+  requireAuth,
+  async (request, response) => {
+    try {
+      await getOwnedEmployer(request.params.employerId, request.authUser.id);
+      const { data, error } = await supabaseServer
+        .from("opportunities")
+        .select("*")
+        .eq("employer_id", request.params.employerId)
+        .order("created_at", { ascending: false });
+      if (error) throw error;
+      response.json({ opportunities: data || [] });
+    } catch (error) {
+      errorResponse(response, error, "Could not load employer opportunities");
     }
   },
 );

@@ -344,6 +344,8 @@
 
   <body>
     <script src="theme.js"></script>
+    <script src="auth-client.js"></script>
+    <script src="navigation.js"></script>
     <nav class="navbar">
       <a href="index.html" class="logo">
         <img src="logo1.jpg" alt="Gradurat Logo" />
@@ -666,7 +668,7 @@
           errorMessage.textContent = "";
 
           const jobData = {
-            employer_id: localStorage.getItem("graduRatEmployerId"),
+            employer_id: sessionStorage.getItem("graduRatEmployerId"),
 
             title: document.getElementById("jobTitle").value.trim(),
 

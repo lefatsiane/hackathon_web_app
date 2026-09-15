@@ -178,3 +178,133 @@ export const assessFitWithGroq = async ({
     next_steps: asList(assessment.next_steps).slice(0, 3),
   };
 };
+
+export const createConnectionAdviceWithGroq = async ({
+  student,
+  employer,
+  opportunity,
+}) => {
+  const fallback = {
+    summary: `This connection can explore how ${employer.name || "the employer"} can share context about the opportunity while ${student.name || "the student"} brings relevant skills and fresh ideas.`,
+    benefits: [
+      "Compare the opportunity needs with the student's current strengths.",
+      "Share practical feedback, context, and learning resources.",
+      "Start with a short conversation about goals and possible next steps.",
+    ],
+    prompts: [
+      `What would success look like for ${opportunity.title || "this opportunity"}?`,
+      "Which skills or experiences would be most useful to discuss first?",
+    ],
+  };
+  if (!process.env.GROQ_API_KEY) return fallback;
+
+  const input = JSON.stringify({
+    student: {
+      name: asText(student?.name, 120),
+      skills: asList(student?.skills),
+      qualification: asText(student?.qualification, 180),
+      experience: asText(student?.experience, 500),
+      goals: asText(student?.goals, 500),
+    },
+    employer: {
+      name: asText(employer?.name, 120),
+      industry: asText(employer?.industry, 120),
+      description: asText(employer?.description, 500),
+    },
+    opportunity: {
+      title: asText(opportunity?.title, 160),
+      description: asText(opportunity?.description, 600),
+      skills: asList(opportunity?.skills),
+    },
+  });
+  try {
+    const response = await fetch(groqApiUrl, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${process.env.GROQ_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model: groqModel,
+        temperature: 0.35,
+        response_format: { type: "json_object" },
+        messages: [
+          {
+            role: "system",
+            content:
+              "You are a professional networking coach. Return only JSON with summary (one concise sentence), benefits (exactly 3 concise practical ways the student and employer can help each other), and prompts (exactly 2 warm conversation starters). Be encouraging, specific to the supplied data, inclusive, and never invent credentials, jobs, or promises. Frame this as exploration, not a hiring guarantee.",
+          },
+          { role: "user", content: input },
+        ],
+      }),
+    });
+    if (!response.ok) return fallback;
+    const result = await response.json();
+    const advice = parseJsonObject(result.choices?.[0]?.message?.content || "");
+    const summary = asText(advice.summary, 360);
+    const benefits = asList(advice.benefits).slice(0, 3);
+    const prompts = asList(advice.prompts).slice(0, 2);
+    if (!summary || benefits.length < 3 || prompts.length < 2) return fallback;
+    return { summary, benefits, prompts };
+  } catch {
+    return fallback;
+  }
+};
+
+export const createPeerConnectionAdviceWithGroq = async ({
+  firstStudent,
+  secondStudent,
+}) => {
+  const fallback = {
+    summary: `${firstStudent.name || "You"} and ${secondStudent.name || "this student"} may benefit from comparing your skills, goals, and experiences while building a supportive professional network.`,
+    benefits: [
+      "Compare complementary skills and share practical learning resources.",
+      "Exchange perspectives, feedback, and introductions within your networks.",
+      "Explore a small collaboration or accountability goal together.",
+    ],
+    prompts: [
+      "Which skill or project are you most interested in developing next?",
+      "What kind of professional connection would be most useful to you right now?",
+    ],
+  };
+  if (!process.env.GROQ_API_KEY) return fallback;
+  try {
+    const response = await fetch(groqApiUrl, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${process.env.GROQ_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model: groqModel,
+        temperature: 0.35,
+        response_format: { type: "json_object" },
+        messages: [
+          {
+            role: "system",
+            content:
+              "You are a professional networking coach helping two students connect. Return only JSON with summary (one concise sentence), benefits (exactly 3 practical ways they can help each other), and prompts (exactly 2 warm conversation starters). Be specific to the supplied data, encouraging, inclusive, and never invent credentials or promises.",
+          },
+          {
+            role: "user",
+            content: JSON.stringify({
+              first_student: firstStudent,
+              second_student: secondStudent,
+            }),
+          },
+        ],
+      }),
+    });
+    if (!response.ok) return fallback;
+    const result = await response.json();
+    const advice = parseJsonObject(result.choices?.[0]?.message?.content || "");
+    const summary = asText(advice.summary, 360);
+    const benefits = asList(advice.benefits).slice(0, 3);
+    const prompts = asList(advice.prompts).slice(0, 2);
+    return summary && benefits.length >= 3 && prompts.length >= 2
+      ? { summary, benefits, prompts }
+      : fallback;
+  } catch {
+    return fallback;
+  }
+};
