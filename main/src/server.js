@@ -1048,20 +1048,29 @@ app.get("/api/fyp/queue", requireAuth, async (request, response) => {
         .neq("id", profiles.student.id);
       if (studentsError) throw studentsError;
       const ownSkills = new Set(normalizeSkills(profiles.student.skills || []));
-      const ranked = (students || [])
-        .filter((student) => !student.archived_at && !swipedIds.has(student.id))
-        .map((student) => {
-          const sharedSkills = normalizeSkills(student.skills || []).filter(
-            (skill) => ownSkills.has(skill),
-          );
-          return {
-            ...student,
-            peer_match_score: sharedSkills.length
-              ? Math.min(100, sharedSkills.length * 20)
-              : 0,
-            shared_skills: sharedSkills,
-          };
-        })
+      const ranked = (
+        await Promise.all(
+          (students || [])
+            .filter(
+              (student) => !student.archived_at && !swipedIds.has(student.id),
+            )
+            .map(async (student) => {
+              const sharedSkills = normalizeSkills(student.skills || []).filter(
+                (skill) => ownSkills.has(skill),
+              );
+              const visibleStudent = await getDiscoverableStudent(student);
+              if (!visibleStudent) return null;
+              return {
+                ...visibleStudent,
+                peer_match_score: sharedSkills.length
+                  ? Math.min(100, sharedSkills.length * 20)
+                  : 0,
+                shared_skills: sharedSkills,
+              };
+            }),
+        )
+      )
+        .filter(Boolean)
         .sort((left, right) => right.peer_match_score - left.peer_match_score);
       const start = (page - 1) * limit;
       return response.json({
@@ -1174,13 +1183,23 @@ app.get("/api/fyp/queue", requireAuth, async (request, response) => {
     const scores = new Map(
       (matchesResult.data || []).map((row) => [row.student_id, row]),
     );
-    const ranked = studentsResult.data
-      .filter((student) => !student.archived_at && !swiped.has(student.id))
-      .map((student) => ({
-        ...student,
-        match_score: scores.get(student.id)?.match_score ?? null,
-        reasoning: scores.get(student.id)?.reasoning || null,
-      }))
+    const ranked = (
+      await Promise.all(
+        studentsResult.data
+          .filter((student) => !student.archived_at && !swiped.has(student.id))
+          .map(async (student) => {
+            const visibleStudent = await getDiscoverableStudent(student);
+            if (!visibleStudent) return null;
+            return {
+              ...visibleStudent,
+              opportunity_id: opportunity.id,
+              match_score: scores.get(student.id)?.match_score ?? null,
+              reasoning: scores.get(student.id)?.reasoning || null,
+            };
+          }),
+      )
+    )
+      .filter(Boolean)
       .sort(
         (left, right) =>
           Number(right.match_score ?? -1) - Number(left.match_score ?? -1),
@@ -1701,6 +1720,70 @@ app.get(
   },
 );
 
+app.get("/api/candidates", requireAuth, async (request, response) => {
+  try {
+    const { data: employer, error: employerError } = await supabaseServer
+      .from("employers")
+      .select("id")
+      .eq("auth_user_id", request.authUser.id)
+      .maybeSingle();
+    if (employerError) throw employerError;
+    if (!employer) {
+      return response
+        .status(403)
+        .json({ error: "Only employers can search candidates." });
+    }
+
+    const industry = String(request.query.industry || "")
+      .trim()
+      .toLowerCase();
+    const opportunityType = String(
+      request.query.opportunity_type || request.query.opportunityType || "",
+    )
+      .trim()
+      .toLowerCase();
+    const keyword = String(request.query.keyword || "")
+      .trim()
+      .toLowerCase();
+    const { data: students, error } = await supabaseServer
+      .from("students")
+      .select(
+        "id, full_name, bio, skills, location, qualification, preferred_industry, preferred_opportunity_type, work_experience_summary, avatar_path",
+      )
+      .is("archived_at", null)
+      .order("updated_at", { ascending: false });
+    if (error) throw error;
+
+    const filtered = (students || []).filter((student) => {
+      const searchable = [
+        student.full_name,
+        student.bio,
+        student.qualification,
+        student.location,
+        ...(student.skills || []),
+      ]
+        .join(" ")
+        .toLowerCase();
+      return (
+        (!industry ||
+          String(student.preferred_industry || "").toLowerCase() ===
+            industry) &&
+        (!opportunityType ||
+          String(student.preferred_opportunity_type || "").toLowerCase() ===
+            opportunityType) &&
+        (!keyword || searchable.includes(keyword))
+      );
+    });
+    response.json({
+      candidates: (
+        await Promise.all(filtered.map(getDiscoverableStudent))
+      ).filter(Boolean),
+    });
+  } catch (error) {
+    errorResponse(response, error, "Could not search candidates");
+  }
+});
+
 app.get(
   "/api/candidates/:candidateId/employer-review",
   requireAuth,
@@ -2094,6 +2177,31 @@ const getOrCreateUserSettings = async (authUserId) => {
     .single();
   if (createError) throw createError;
   return created;
+};
+
+const getDiscoverableStudent = async (student) => {
+  const settings = await getOrCreateUserSettings(student.auth_user_id);
+  const preferences = settings.preferences || {};
+  if (
+    preferences.profileDiscoverable === false &&
+    Object.prototype.hasOwnProperty.call(preferences, "profileDiscoverable")
+  )
+    return null;
+  const visible = { ...student };
+  if (
+    preferences.showPhoto === false &&
+    Object.prototype.hasOwnProperty.call(preferences, "showPhoto")
+  )
+    visible.avatar_path = null;
+  if (
+    preferences.showInterests === false &&
+    Object.prototype.hasOwnProperty.call(preferences, "showInterests")
+  ) {
+    delete visible.preferred_industry;
+    delete visible.preferred_opportunity_type;
+    delete visible.preferred_location;
+  }
+  return withProfilePictureUrl(visible);
 };
 
 const withoutPrivateProfilePaths = (profile) => {
@@ -2834,10 +2942,27 @@ app.get("/api/opportunities/:opportunityId", async (request, response) => {
       .eq("id", request.params.opportunityId)
       .single();
     if (error) throw error;
-    if (!isPublicOpportunity(data)) {
+    let isOwner = false;
+    const authorization = request.headers.authorization || "";
+    const token = authorization.startsWith("Bearer ")
+      ? authorization.slice(7).trim()
+      : null;
+    if (token) {
+      const { data: authData } = await supabaseServer.auth.getUser(token);
+      if (authData.user) {
+        const { data: employer } = await supabaseServer
+          .from("employers")
+          .select("id")
+          .eq("id", data.employer_id)
+          .eq("auth_user_id", authData.user.id)
+          .maybeSingle();
+        isOwner = Boolean(employer);
+      }
+    }
+    if (!isOwner && !isPublicOpportunity(data)) {
       return response.status(404).json({ error: "Opportunity not found." });
     }
-    response.json({ opportunity: data });
+    response.json({ opportunity: data, isOwner });
   } catch (error) {
     errorResponse(response, error, "Could not load opportunity");
   }
@@ -2848,11 +2973,27 @@ app.get(
   async (request, response) => {
     try {
       const opportunity = await getOpportunity(request.params.opportunityId);
-      if (!isPublicOpportunity(opportunity)) {
+      let isOwner = false;
+      const authorization = request.headers.authorization || "";
+      const token = authorization.startsWith("Bearer ")
+        ? authorization.slice(7).trim()
+        : null;
+      if (token) {
+        const { data: authData } = await supabaseServer.auth.getUser(token);
+        if (authData.user) {
+          const { data: employer } = await supabaseServer
+            .from("employers")
+            .select("id")
+            .eq("id", opportunity.employer_id)
+            .eq("auth_user_id", authData.user.id)
+            .maybeSingle();
+          isOwner = Boolean(employer);
+        }
+      }
+      if (!isOwner && !isPublicOpportunity(opportunity)) {
         return response.status(404).json({ error: "Opportunity not found." });
       }
 
-      let isOwner = false;
       if (request.headers.authorization) {
         try {
           const authorization = request.headers.authorization;
@@ -3458,7 +3599,7 @@ app.post("/api/opportunities", requireAuth, async (request, response) => {
     });
   }
 
-  const status = coerceText(body.status, "draft");
+  const status = coerceText(body.status, "published");
   if (
     status &&
     !["draft", "published", "closed", "archived"].includes(status.toLowerCase())

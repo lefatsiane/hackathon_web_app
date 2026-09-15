@@ -22,7 +22,7 @@ export default function HomeScreen() {
         <View style={styles.navbar}>
           <Image source={logo} contentFit="contain" style={styles.logo} accessibilityLabel="GraduRat" />
           <View style={styles.navActions}>
-            <Pressable onPress={() => router.push('/login')} hitSlop={10}>
+            <Pressable onPress={() => router.push('/login' as never)} hitSlop={10}>
               <Text style={styles.signIn}>Sign in</Text>
             </Pressable>
             <Pressable style={styles.navButton} onPress={() => router.push('/register')}>

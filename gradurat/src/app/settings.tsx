@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { ActivityIndicator, Alert, Pressable, SafeAreaView, ScrollView, Share, StyleSheet, Switch, Text, TextInput, View } from 'react-native';
 import { deleteAccount, exportAccountData, loadSettings, saveSettings } from '@/lib/api';
 import { clearSession, logoutAllDevices, requestPasswordReset, updateEmail } from '@/lib/auth';
+import { clearActiveProfileRole, clearProfileId } from '@/lib/storage';
 import { ThemeMode, useTheme } from '@/lib/theme';
 
 type Preferences = Record<string, unknown>;
@@ -18,7 +19,7 @@ const settingsGroups = [
 
 export default function SettingsScreen() {
   const { colors, mode, setMode } = useTheme();
-  const styles = makeStyles(colors);
+  const styles = { ...makeStyles(colors), back: { display: 'none' as const } };
   const [form, setForm] = useState<Form>({ email: '', phone: '', companyName: '', companyIndustry: '', theme: mode, preferences: preferenceDefaults });
   const [role, setRole] = useState<'student' | 'employer'>('student');
   const [status, setStatus] = useState('Loading settings...');
@@ -48,8 +49,9 @@ export default function SettingsScreen() {
   };
   const securityReset = async () => { setBusy(true); try { await requestPasswordReset(form.email); setStatus(`Password reset instructions sent to ${form.email}.`); } catch (error) { setStatus(error instanceof Error ? error.message : 'Could not send reset email.'); } finally { setBusy(false); } };
   const exportData = async () => { setBusy(true); try { await Share.share({ message: await exportAccountData(), title: 'GraduRat account data' }); setStatus('Your data export is ready to share.'); } catch (error) { setStatus(error instanceof Error ? error.message : 'Could not export your data.'); } finally { setBusy(false); } };
-  const removeAccount = () => Alert.alert('Delete account', 'This permanently deletes your GraduRat account and associated data.', [{ text: 'Cancel', style: 'cancel' }, { text: 'Delete', style: 'destructive', onPress: async () => { setBusy(true); try { await deleteAccount(); await clearSession(); router.replace('/'); } catch (error) { setStatus(error instanceof Error ? error.message : 'Could not delete your account.'); } finally { setBusy(false); } } }]);
-  const logoutEverywhere = async () => { setBusy(true); try { await logoutAllDevices(); await clearSession(); router.replace('/'); } catch (error) { setStatus(error instanceof Error ? error.message : 'Could not log out of all devices.'); } finally { setBusy(false); } };
+  const clearLocalIdentity = async () => { await Promise.all([clearSession(), clearProfileId('student'), clearProfileId('employer'), clearActiveProfileRole()]); };
+  const removeAccount = () => Alert.alert('Delete account', 'This permanently deletes your GraduRat account and associated data.', [{ text: 'Cancel', style: 'cancel' }, { text: 'Delete', style: 'destructive', onPress: async () => { setBusy(true); try { await deleteAccount(); await clearLocalIdentity(); router.replace('/'); } catch (error) { setStatus(error instanceof Error ? error.message : 'Could not delete your account.'); } finally { setBusy(false); } } }]);
+  const logoutEverywhere = async () => { setBusy(true); try { await logoutAllDevices(); await clearLocalIdentity(); router.replace('/'); } catch (error) { setStatus(error instanceof Error ? error.message : 'Could not log out of all devices.'); } finally { setBusy(false); } };
 
   return <SafeAreaView style={styles.safe}><ScrollView contentContainerStyle={styles.page} keyboardShouldPersistTaps="handled">
     <Pressable onPress={() => router.back()}><Text style={styles.back}>← Back</Text></Pressable><Text style={styles.eyebrow}>ACCOUNT</Text><Text style={styles.title}>Settings</Text><Text style={styles.muted}>Manage your Gradurat account, privacy and preferences.</Text>
@@ -62,7 +64,7 @@ export default function SettingsScreen() {
       <View style={styles.card}><Text style={styles.heading}>Security</Text><Pressable style={styles.action} onPress={securityReset} disabled={busy}><Text style={styles.actionText}>Send password reset email</Text></Pressable><Pressable style={styles.action} onPress={logoutEverywhere} disabled={busy}><Text style={styles.actionText}>Log out of all devices</Text></Pressable></View>
       <View style={styles.card}><Text style={styles.heading}>Privacy & data</Text><Pressable style={styles.action} onPress={exportData} disabled={busy}><Text style={styles.actionText}>Export my data</Text></Pressable><Pressable style={styles.danger} onPress={removeAccount} disabled={busy}><Text style={styles.dangerText}>Delete account</Text></Pressable></View>
     </>}
-    {!!status && <Text style={styles.message}>{status}</Text>}<Pressable style={styles.logout} onPress={async () => { await clearSession(); router.replace('/'); }}><Text style={styles.logoutText}>Log out</Text></Pressable>
+    {!!status && <Text style={styles.message}>{status}</Text>}<Pressable style={styles.logout} onPress={async () => { await clearLocalIdentity(); router.replace('/'); }}><Text style={styles.logoutText}>Log out</Text></Pressable>
   </ScrollView></SafeAreaView>;
 }
 

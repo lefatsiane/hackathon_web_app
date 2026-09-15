@@ -2,15 +2,17 @@ import { Tabs } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { Text } from 'react-native';
 import { useTheme } from '@/lib/theme';
-import { getProfileId } from '@/lib/storage';
+import { getActiveProfileRole } from '@/lib/storage';
 
 export default function TabsLayout() {
   const { colors } = useTheme();
-  const [isEmployer, setIsEmployer] = useState(false);
+  const [role, setRole] = useState<'student' | 'employer' | null>(null);
 
   useEffect(() => {
-    getProfileId('employer').then((id) => setIsEmployer(Boolean(id)));
+    getActiveProfileRole().then(setRole);
   }, []);
+
+  const isEmployer = role === 'employer';
 
   const icon = (symbol: string, focused: boolean) => (
     <Text style={{ color: focused ? colors.blue : colors.muted, fontSize: 21 }}>{symbol}</Text>
@@ -32,9 +34,10 @@ export default function TabsLayout() {
       <Tabs.Screen name="dashboard" options={{ title: 'Dashboard', tabBarIcon: ({ focused }) => icon('⌂', focused) }} />
       <Tabs.Screen name="careers" options={{ title: 'Careers', href: isEmployer ? null : '/(tabs)/careers', tabBarIcon: ({ focused }) => icon('⌕', focused) }} />
       <Tabs.Screen name="post-job" options={{ title: 'Post job', href: isEmployer ? '/post-job' : null, tabBarIcon: ({ focused }) => icon('+', focused) }} />
-      <Tabs.Screen name="fyp" options={{ title: 'Find people', tabBarIcon: ({ focused }) => icon('✦', focused) }} />
+      <Tabs.Screen name="opportunities" options={{ title: 'Opportunities', href: isEmployer ? '/opportunities' : null, tabBarIcon: ({ focused }) => icon('▤', focused) }} />
+      <Tabs.Screen name="fyp" options={{ title: 'Find people', href: isEmployer ? '/(tabs)/fyp?mode=employer' : '/(tabs)/fyp', tabBarIcon: ({ focused }) => icon('✦', focused) }} />
       <Tabs.Screen name="matches" options={{ title: 'Matches', tabBarIcon: ({ focused }) => icon('♡', focused) }} />
-      <Tabs.Screen name="applications" options={{ title: 'Applications', tabBarIcon: ({ focused }) => icon('▤', focused) }} />
+      <Tabs.Screen name="applications" options={{ title: isEmployer ? 'Applicants' : 'Applications', tabBarIcon: ({ focused }) => icon('◎', focused) }} />
       <Tabs.Screen name="profile" options={{ title: 'Profile', tabBarIcon: ({ focused }) => icon('◉', focused) }} />
       <Tabs.Screen name="settings" options={{ title: 'Settings', tabBarIcon: ({ focused }) => icon('⚙', focused) }} />
     </Tabs>

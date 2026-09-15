@@ -3,31 +3,44 @@ import { useEffect, useState } from 'react';
 import { ActivityIndicator, Alert, Modal, Pressable, RefreshControl, SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, { runOnJS, useAnimatedStyle, useSharedValue, withSpring, withTiming } from 'react-native-reanimated';
-import { loadFypQueue, submitFypSwipe } from '@/lib/api';
+import { loadEmployerDashboard, loadFypQueue, submitFypSwipe } from '@/lib/api';
 import { useTheme } from '@/lib/theme';
+import { getActiveProfileRole, getProfileId } from '@/lib/storage';
 
 type SwipeMode = 'student' | 'peer' | 'employer';
 type CardData = Record<string, any>;
 
 export default function FypScreen() {
   const { colors } = useTheme();
-  const styles = makeStyles(colors);
-  const { mode = 'student' } = useLocalSearchParams<{ mode?: string }>();
-  const isEmployer = mode === 'employer';
-  const [activeMode, setActiveMode] = useState<SwipeMode>(isEmployer ? 'employer' : mode === 'peer' ? 'peer' : 'student');
+  const styles = { ...makeStyles(colors), back: { display: 'none' as const } };
+  const { mode } = useLocalSearchParams<{ mode?: string }>();
+  const [resolvedMode, setResolvedMode] = useState<SwipeMode>('student');
+  const [roleReady, setRoleReady] = useState(false);
+  const isEmployer = resolvedMode === 'employer';
+  const [activeMode, setActiveMode] = useState<SwipeMode>('student');
   const [cards, setCards] = useState<CardData[]>([]);
   const [index, setIndex] = useState(0);
   const [message, setMessage] = useState('Loading recommendations...');
   const [refreshing, setRefreshing] = useState(false);
   const [busy, setBusy] = useState(false);
   const [matchAdvice, setMatchAdvice] = useState<CardData | null>(null);
+  const [employerOpportunityId, setEmployerOpportunityId] = useState<string | null>(null);
   const translateX = useSharedValue(0);
   const card = cards[index];
 
   const load = async (nextMode: SwipeMode = activeMode) => {
     try {
       setMessage('');
-      const result = await loadFypQueue(nextMode, { limit: 15 });
+      let opportunityId: string | undefined;
+      if (nextMode === 'employer') {
+        const employerId = await getProfileId('employer');
+        if (!employerId) throw new Error('Register an employer profile before matching candidates.');
+        const dashboard = await loadEmployerDashboard(employerId);
+        opportunityId = dashboard.opportunities[0]?.id;
+        if (!opportunityId) throw new Error('Create an opportunity before matching candidates.');
+        setEmployerOpportunityId(opportunityId);
+      }
+      const result = await loadFypQueue(nextMode, { limit: 15, opportunityId });
       setCards(result.cards || []);
       setIndex(0);
       translateX.value = 0;
@@ -37,7 +50,15 @@ export default function FypScreen() {
     }
   };
 
-  useEffect(() => { load(activeMode); }, [activeMode]);
+  useEffect(() => {
+    getActiveProfileRole().then((role) => {
+      const nextMode: SwipeMode = mode === 'peer' && role !== 'employer' ? 'peer' : role === 'employer' || mode === 'employer' ? 'employer' : 'student';
+      setResolvedMode(nextMode);
+      setActiveMode(nextMode);
+      setRoleReady(true);
+    });
+  }, [mode]);
+  useEffect(() => { if (roleReady) load(activeMode); }, [activeMode, roleReady]);
   const refresh = async () => { setRefreshing(true); await load(); setRefreshing(false); };
 
   const decide = async (decision: 'like' | 'pass', direction: number) => {

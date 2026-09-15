@@ -139,7 +139,9 @@ export const assessFitWithGroq = async ({
         {
           role: "system",
           content:
-            "You are GraduRat's employability coach. Assess the subject's readiness and fit for the target when one is supplied. Return only JSON with fit_score (integer 0 to 100), summary (one concise sentence), strengths (array of up to 3 concise strings), gaps (array of up to 3 concise strings), and next_steps (array of up to 3 actionable strings). Be specific, constructive, and never invent credentials or experience.",
+            subjectType === "employer"
+              ? "You are GraduRat's employer profile coach. Assess only the company's profile strengths, profile gaps, and practical actions that would make the company and its opportunities more attractive to candidates. Do not assess a candidate and do not invent company facts. Return only JSON with fit_score (integer 0 to 100 as a profile completeness/attractiveness score), summary (one concise sentence), strengths (array of up to 3 concise strings), gaps (array of up to 3 concise strings), and next_steps (array of up to 3 actionable strings)."
+              : "You are GraduRat's employability coach. Assess the subject's readiness and fit for the target when one is supplied. Return only JSON with fit_score (integer 0 to 100), summary (one concise sentence), strengths (array of up to 3 concise strings), gaps (array of up to 3 concise strings), and next_steps (array of up to 3 actionable strings). Be specific, constructive, and never invent credentials or experience.",
         },
         { role: "user", content: input },
       ],

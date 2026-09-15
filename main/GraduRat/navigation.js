@@ -17,7 +17,10 @@
   const getNavigationLinks = (identity) =>
     identity.isEmployer
       ? [
+          ["opportunities.html", "Opportunities"],
+          ["candidate-explorer.html", "Candidate Explorer"],
           ["fyp.html", "Find Your People"],
+          ["applications.html", "Applicants"],
           ["matches.html", "Matches"],
           ["settings.html", "Settings"],
         ]
@@ -96,13 +99,6 @@
     const nav = document.querySelector("body > nav, body > .navbar");
     if (!nav) return;
     const identity = getIdentity();
-    if (
-      identity.isEmployer &&
-      window.location.pathname.endsWith("/careers.html")
-    ) {
-      window.location.replace("employer-dashboard.html");
-      return;
-    }
     let tools = nav.querySelector(".gradurat-nav-tools");
     if (!tools) {
       tools = document.createElement("div");

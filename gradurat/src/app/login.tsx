@@ -13,11 +13,11 @@ import {
 import { useTheme } from '@/lib/theme';
 import { loadCurrentUser } from '@/lib/api';
 import { requestPasswordReset, signIn } from '@/lib/auth';
-import { clearProfileId, saveProfileId } from '@/lib/storage';
+import { clearProfileId, saveActiveProfileRole, saveProfileId } from '@/lib/storage';
 
 export default function LoginScreen() {
   const { colors } = useTheme();
-  const styles = makeStyles(colors);
+  const styles = { ...makeStyles(colors), back: { display: 'none' as const } };
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
@@ -33,10 +33,12 @@ export default function LoginScreen() {
       if (profile.student) {
         await saveProfileId('student', profile.student.id);
         await clearProfileId('employer');
+        await saveActiveProfileRole('student');
       }
       if (profile.employer) {
         await saveProfileId('employer', profile.employer.id);
         await clearProfileId('student');
+        await saveActiveProfileRole('employer');
       }
       router.replace(`/(tabs)/dashboard?role=${profile.employer ? 'employer' : 'student'}`);
     } catch (error) {

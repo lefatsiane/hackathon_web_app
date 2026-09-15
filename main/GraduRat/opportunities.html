@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Your Opportunities | Gradurat</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background: #05070d;
+        color: #fff;
+        max-width: 1100px;
+        margin: auto;
+        padding: 32px;
+      }
+      a {
+        color: #58a6ff;
+        text-decoration: none;
+      }
+      .card {
+        border: 1px solid #263044;
+        border-radius: 14px;
+        padding: 20px;
+        margin: 16px 0;
+        background: #0b101c;
+      }
+      .muted {
+        color: #9ca6ba;
+      }
+      .button {
+        display: inline-block;
+        background: #168cff;
+        color: #fff;
+        padding: 11px 15px;
+        border-radius: 8px;
+        margin: 8px 0;
+      }
+    </style>
+  </head>
+  <body>
+    <nav>
+      <a href="employer-dashboard.html">Dashboard</a> ·
+      <a href="candidate-explorer.html">Candidate Explorer</a> ·
+      <a href="applications.html">Applicants</a> ·
+      <a href="matches.html">Matches</a>
+    </nav>
+    <main>
+      <h1>Your opportunities</h1>
+      <a class="button" href="post-job.html">Post opportunity</a>
+      <div id="content" class="muted">Loading opportunities...</div>
+    </main>
+    <script src="auth-client.js"></script>
+    <script>
+      const escapeHtml = (value) =>
+        String(value ?? "").replace(
+          /[&<>\"']/g,
+          (char) =>
+            ({
+              "&": "&amp;",
+              "<": "&lt;",
+              ">": "&gt;",
+              '\"': "&quot;",
+              "'": "&#039;",
+            })[char],
+        );
+      const load = async () => {
+        const id =
+          sessionStorage.getItem("graduRatEmployerId") ||
+          localStorage.getItem("graduRatEmployerId");
+        const content = document.getElementById("content");
+        if (!id) {
+          content.textContent = "Sign in as an employer to view opportunities.";
+          return;
+        }
+        const response = await graduratAuth.apiFetch(
+          `/api/employers/${encodeURIComponent(id)}/opportunities`,
+        );
+        const result = await graduratAuth.readJson(
+          response,
+          "Could not load opportunities.",
+        );
+        if (!response.ok) throw new Error(result.error);
+        content.innerHTML =
+          (result.opportunities || [])
+            .map(
+              (item) =>
+                `<article class="card"><h2>${escapeHtml(item.title)}</h2><p class="muted">${escapeHtml(item.type || "Opportunity")} · ${escapeHtml(item.status || "published")}</p><p class="muted">${escapeHtml(item.description || "No description provided.")}</p><a href="opportunity.html?id=${encodeURIComponent(item.id)}">View applicants →</a></article>`,
+            )
+            .join("") || "<p>No opportunities yet.</p>";
+      };
+      load().catch((error) => {
+        document.getElementById("content").textContent = error.message;
+      });
+    </script>
+  </body>
+</html>

@@ -1,14 +1,17 @@
 import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, FlatList, Pressable, RefreshControl, SafeAreaView, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
-import { loadOpportunities, Opportunity } from '@/lib/api';
+import { loadCandidates, loadOpportunities, Opportunity, Student } from '@/lib/api';
 import { useTheme } from '@/lib/theme';
 import { industries } from '@/constants/industries';
+import { getActiveProfileRole } from '@/lib/storage';
 
 export default function CareersScreen() {
   const { colors } = useTheme();
   const styles = makeStyles(colors);
   const [items, setItems] = useState<Opportunity[]>([]);
+  const [candidates, setCandidates] = useState<Student[]>([]);
+  const [employerMode, setEmployerMode] = useState(false);
   const [query, setQuery] = useState('');
   const [type, setType] = useState('all');
   const [industry, setIndustry] = useState('all');
@@ -18,6 +21,18 @@ export default function CareersScreen() {
   const load = async () => {
     try {
       setMessage('');
+      const isEmployer = await getActiveProfileRole() === 'employer';
+      setEmployerMode(isEmployer);
+      if (isEmployer) {
+        const params = new URLSearchParams();
+        if (query.trim()) params.set('keyword', query.trim());
+        if (industry !== 'all') params.set('industry', industry);
+        if (type !== 'all') params.set('opportunity_type', type);
+        const result = await loadCandidates(params.toString() ? `?${params.toString()}` : '');
+        setCandidates(result.candidates || []);
+        setItems([]);
+        return;
+      }
       const params = new URLSearchParams();
       if (query.trim()) params.set('keyword', query.trim());
       if (type !== 'all') params.set('type', type);
@@ -33,25 +48,27 @@ export default function CareersScreen() {
   const refresh = async () => { setRefreshing(true); await load(); setRefreshing(false); };
   const types = ['all', 'Full Time', 'Part Time', 'Internship', 'Graduate Programme', 'Contract'];
 
+  const employerView = employerMode;
+  const data = employerView ? candidates : items;
   return (
     <SafeAreaView style={styles.safe}>
       <FlatList
-        data={items}
+        data={data}
         keyExtractor={(item) => item.id}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refresh} tintColor={colors.blue} />}
         contentContainerStyle={styles.page}
         ListHeaderComponent={<>
-          <Text style={styles.eyebrow}>CAREER EXPLORER</Text>
-          <Text style={styles.title}>Find your next opportunity.</Text>
-          <Text style={styles.muted}>Search the same published opportunities available on the web app.</Text>
-          <TextInput value={query} onChangeText={setQuery} onSubmitEditing={load} placeholder="Search roles, skills, or companies" placeholderTextColor={colors.subtle} style={styles.input} returnKeyType="search" />
+          <Text style={styles.eyebrow}>{employerView ? 'CANDIDATE EXPLORER' : 'CAREER EXPLORER'}</Text>
+          <Text style={styles.title}>{employerView ? 'Find your next candidate.' : 'Find your next opportunity.'}</Text>
+          <Text style={styles.muted}>{employerView ? 'Search students and potential employees by fit.' : 'Search the same published opportunities available on the web app.'}</Text>
+          <TextInput value={query} onChangeText={setQuery} onSubmitEditing={load} placeholder={employerView ? 'Search candidates, skills, or qualifications' : 'Search roles, skills, or companies'} placeholderTextColor={colors.subtle} style={styles.input} returnKeyType="search" />
           <Text style={styles.filterLabel}>Industry</Text>
           <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.filters}>{['all', ...industries].map((item) => <Pressable key={item} onPress={() => setIndustry(item)} style={[styles.filter, industry === item && styles.filterActive]}><Text style={[styles.filterText, industry === item && styles.filterTextActive]}>{item === 'all' ? 'All industries' : item}</Text></Pressable>)}</ScrollView>
           <Text style={styles.filterLabel}>Opportunity type</Text>
           <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.filters}>{types.map((item) => <Pressable key={item} onPress={() => setType(item)} style={[styles.filter, type === item && styles.filterActive]}><Text style={[styles.filterText, type === item && styles.filterTextActive]}>{item === 'all' ? 'All types' : item}</Text></Pressable>)}</ScrollView>
         </>}
-        ListEmptyComponent={<View style={styles.empty}>{message ? <><ActivityIndicator color={colors.blue} /><Text style={styles.muted}>{message}</Text></> : <Text style={styles.muted}>No opportunities match these filters.</Text>}</View>}
-        renderItem={({ item }) => <Pressable style={styles.card} onPress={() => router.push({ pathname: '/opportunity/[id]', params: { id: item.id } })}><Text style={styles.cardTitle}>{item.title}</Text><Text style={styles.muted}>{item.employers?.company_name || 'Employer'} · {item.type || 'Opportunity'}</Text><View style={styles.tags}>{(item.required_skills || []).map((skill) => <Text key={skill} style={styles.tag}>{skill}</Text>)}</View><Text style={styles.reason}>{item.reasoning || item.description || 'Explore this opportunity.'}</Text><Text style={styles.link}>View opportunity →</Text></Pressable>}
+        ListEmptyComponent={<View style={styles.empty}>{message ? <><ActivityIndicator color={colors.blue} /><Text style={styles.muted}>{message}</Text></> : <Text style={styles.muted}>{employerView ? 'No candidates match these filters.' : 'No opportunities match these filters.'}</Text>}</View>}
+        renderItem={({ item }) => employerView ? <View style={styles.card}><Text style={styles.cardTitle}>{(item as Student).full_name}</Text><Text style={styles.muted}>{(item as Student).qualification || 'Graduate profile'} · {(item as Student).location || 'Location flexible'}</Text><View style={styles.tags}>{((item as Student).skills || []).map((skill) => <Text key={skill} style={styles.tag}>{skill}</Text>)}</View><Text style={styles.reason}>{(item as Student).bio || (item as Student).work_experience_summary || 'Potential candidate on GraduRat.'}</Text><Text style={styles.link}>View candidate →</Text></View> : <Pressable style={styles.card} onPress={() => router.push({ pathname: '/opportunity/[id]', params: { id: (item as Opportunity).id } })}><Text style={styles.cardTitle}>{(item as Opportunity).title}</Text><Text style={styles.muted}>{(item as Opportunity).employers?.company_name || 'Employer'} · {(item as Opportunity).type || 'Opportunity'}</Text><View style={styles.tags}>{((item as Opportunity).required_skills || []).map((skill) => <Text key={skill} style={styles.tag}>{skill}</Text>)}</View><Text style={styles.reason}>{(item as Opportunity).reasoning || (item as Opportunity).description || 'Explore this opportunity.'}</Text><Text style={styles.link}>View opportunity →</Text></Pressable>}
       />
     </SafeAreaView>
   );

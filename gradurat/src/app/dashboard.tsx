@@ -248,8 +248,8 @@ export default function DashboardScreen() {
           const feedback = await generateAiFeedback({
             subjectType: "employer",
             subject: result.employer,
-            targetType: "student",
-            target: result.candidates[0] || null,
+            targetType: "employer",
+            target: null,
           });
           setAiFeedback(feedback.assessment as typeof aiFeedback);
           const strengths = Array.isArray((feedback as { assessment?: { strengths?: string[] } }).assessment?.strengths)

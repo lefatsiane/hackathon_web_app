@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Candidate Explorer | Gradurat</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background: #05070d;
+        color: #fff;
+        max-width: 1100px;
+        margin: auto;
+        padding: 32px;
+      }
+      a {
+        color: #58a6ff;
+        text-decoration: none;
+      }
+      .controls {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin: 20px 0;
+      }
+      input,
+      select {
+        background: #0b101c;
+        color: #fff;
+        border: 1px solid #263044;
+        border-radius: 8px;
+        padding: 12px;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        gap: 16px;
+      }
+      .card {
+        border: 1px solid #263044;
+        border-radius: 14px;
+        padding: 18px;
+        background: #0b101c;
+      }
+      .muted {
+        color: #9ca6ba;
+      }
+      .tag {
+        display: inline-block;
+        color: #9ac7ff;
+        background: #10213d;
+        padding: 5px 8px;
+        border-radius: 5px;
+        margin: 3px;
+        font-size: 12px;
+      }
+    </style>
+  </head>
+  <body>
+    <nav>
+      <a href="employer-dashboard.html">Dashboard</a> ·
+      <a href="opportunities.html">Opportunities</a> ·
+      <a href="applications.html">Applicants</a> ·
+      <a href="matches.html">Matches</a>
+    </nav>
+    <main>
+      <h1>Candidate Explorer</h1>
+      <p class="muted">Search students and potential employees.</p>
+      <div class="controls">
+        <input id="keyword" placeholder="Search candidates or skills" /><select
+          id="industry"
+        >
+          <option value="">All industries</option>
+          <option>Technology</option>
+          <option>Finance</option>
+          <option>Healthcare</option>
+          <option>Engineering</option>
+          <option>Education</option>
+          <option>Law</option>
+          <option>Marketing</option>
+          <option>Government</option>
+          <option>Other</option></select
+        ><select id="type">
+          <option value="">All opportunity types</option>
+          <option>Full Time</option>
+          <option>Part Time</option>
+          <option>Internship</option>
+          <option>Graduate Programme</option>
+          <option>Contract</option></select
+        ><button id="search">Search</button>
+      </div>
+      <div id="results" class="grid">
+        <p class="muted">Loading candidates...</p>
+      </div>
+    </main>
+    <script src="auth-client.js"></script>
+    <script>
+      const escapeHtml = (value) =>
+        String(value ?? "").replace(
+          /[&<>\"']/g,
+          (c) =>
+            ({
+              "&": "&amp;",
+              "<": "&lt;",
+              ">": "&gt;",
+              '\"': "&quot;",
+              "'": "&#039;",
+            })[c],
+        );
+      const load = async () => {
+        const params = new URLSearchParams();
+        if (keyword.value.trim()) params.set("keyword", keyword.value.trim());
+        if (industry.value) params.set("industry", industry.value);
+        if (type.value) params.set("opportunity_type", type.value);
+        const response = await graduratAuth.apiFetch(
+          `/api/candidates?${params}`,
+        );
+        const result = await graduratAuth.readJson(
+          response,
+          "Could not load candidates.",
+        );
+        if (!response.ok) throw new Error(result.error);
+        results.innerHTML =
+          (result.candidates || [])
+            .map(
+              (candidate) =>
+                `<article class="card"><h2>${escapeHtml(candidate.full_name || "Candidate")}</h2><p class="muted">${escapeHtml(candidate.qualification || "Graduate profile")} · ${escapeHtml(candidate.location || "Location flexible")}</p><p>${(candidate.skills || []).map((skill) => `<span class="tag">${escapeHtml(skill)}</span>`).join("")}</p><p class="muted">${escapeHtml(candidate.bio || candidate.work_experience_summary || "Potential candidate on GraduRat.")}</p><a href="candidate.html?id=${encodeURIComponent(candidate.id)}">View candidate →</a></article>`,
+            )
+            .join("") ||
+          '<p class="muted">No candidates match these filters.</p>';
+      };
+      search.addEventListener("click", () =>
+        load().catch((error) => (results.textContent = error.message)),
+      );
+      load().catch((error) => (results.textContent = error.message));
+    </script>
+  </body>
+</html>

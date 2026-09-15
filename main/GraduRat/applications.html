@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Applicants | Gradurat</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background: #05070d;
+        color: #fff;
+        max-width: 1100px;
+        margin: auto;
+        padding: 32px;
+      }
+      a {
+        color: #58a6ff;
+        text-decoration: none;
+      }
+      .card {
+        border: 1px solid #263044;
+        border-radius: 14px;
+        padding: 18px;
+        margin: 14px 0;
+        background: #0b101c;
+        display: flex;
+        justify-content: space-between;
+        gap: 16px;
+        flex-wrap: wrap;
+      }
+      .muted {
+        color: #9ca6ba;
+      }
+      select {
+        background: #0b101c;
+        color: #fff;
+        border: 1px solid #263044;
+        border-radius: 8px;
+        padding: 9px;
+      }
+    </style>
+  </head>
+  <body>
+    <nav>
+      <a href="employer-dashboard.html">Dashboard</a> ·
+      <a href="opportunities.html">Opportunities</a> ·
+      <a href="candidate-explorer.html">Candidate Explorer</a> ·
+      <a href="matches.html">Matches</a>
+    </nav>
+    <main>
+      <h1>Applicants</h1>
+      <p class="muted">All applicants across your opportunities.</p>
+      <div id="results" class="muted">Loading applicants...</div>
+    </main>
+    <script src="auth-client.js"></script>
+    <script>
+      const escapeHtml = (value) =>
+        String(value ?? "").replace(
+          /[&<>\"']/g,
+          (c) =>
+            ({
+              "&": "&amp;",
+              "<": "&lt;",
+              ">": "&gt;",
+              '\"': "&quot;",
+              "'": "&#039;",
+            })[c],
+        );
+      const load = async () => {
+        const id =
+          sessionStorage.getItem("graduRatEmployerId") ||
+          localStorage.getItem("graduRatEmployerId");
+        if (!id) {
+          results.textContent = "Sign in as an employer to view applicants.";
+          return;
+        }
+        const response = await graduratAuth.apiFetch(
+          `/api/employers/${encodeURIComponent(id)}/applications`,
+        );
+        const result = await graduratAuth.readJson(
+          response,
+          "Could not load applicants.",
+        );
+        if (!response.ok) throw new Error(result.error);
+        results.innerHTML =
+          (result.applications || [])
+            .map(
+              (application) =>
+                `<article class="card"><div><h2>${escapeHtml(application.students?.full_name || "Candidate")}</h2><p class="muted">${escapeHtml(application.opportunities?.title || "Opportunity")}</p><a href="candidate.html?id=${encodeURIComponent(application.students?.id || "")}">View candidate details →</a></div><select data-id="${application.id}"><option value="submitted">Submitted</option><option value="reviewing">Reviewing</option><option value="shortlisted">Shortlisted</option><option value="rejected">Rejected</option></select></article>`,
+            )
+            .join("") || "<p>No applicants yet.</p>";
+        document.querySelectorAll("select[data-id]").forEach((select) => {
+          const application = result.applications.find(
+            (item) => item.id === select.dataset.id,
+          );
+          select.value = application.status;
+          select.addEventListener("change", async () => {
+            const update = await graduratAuth.apiFetch(
+              `/api/applications/${encodeURIComponent(select.dataset.id)}`,
+              {
+                method: "PATCH",
+                body: JSON.stringify({ status: select.value }),
+              },
+            );
+            if (!update.ok) select.value = application.status;
+          });
+        });
+      };
+      load().catch((error) => (results.textContent = error.message));
+    </script>
+  </body>
+</html>

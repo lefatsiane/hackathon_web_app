@@ -354,8 +354,8 @@ const renderEmployerDashboard = async () => {
   renderAiFeedback({
     profile: employer,
     subjectType: "employer",
-    target: candidates[0] || null,
-    targetType: "student",
+    target: null,
+    targetType: "employer",
   });
 
   const applicationsResult = await apiJson(

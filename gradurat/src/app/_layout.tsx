@@ -11,6 +11,7 @@ function ThemedStack() {
     <Drawer
       screenOptions={{
         headerShown: false,
+        swipeEnabled: false,
         drawerActiveTintColor: colors.blue,
         drawerInactiveTintColor: colors.muted,
         drawerStyle: { backgroundColor: colors.surface },

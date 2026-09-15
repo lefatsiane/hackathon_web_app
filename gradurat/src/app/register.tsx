@@ -12,7 +12,7 @@ import {
 import { useTheme } from "@/lib/theme";
 import { createEmployer, createStudent } from "@/lib/api";
 import { signUp } from "@/lib/auth";
-import { clearProfileId, saveProfileId } from "@/lib/storage";
+import { clearProfileId, saveActiveProfileRole, saveProfileId } from "@/lib/storage";
 
 type FormState = Record<string, string>;
 const initialForm: FormState = {
@@ -71,7 +71,7 @@ const Field = ({
   secureTextEntry?: boolean;
 }) => {
   const { colors } = useTheme();
-  const styles = makeStyles(colors);
+  const styles = { ...makeStyles(colors), back: { display: 'none' as const } };
   return <View style={styles.field}>
     <Text style={styles.label}>{label}</Text>
     <TextInput
@@ -188,6 +188,7 @@ export default function RegisterScreen() {
         });
         await saveProfileId("student", result.student.id);
         await clearProfileId("employer");
+        await saveActiveProfileRole("student");
         router.replace("/(tabs)/dashboard?role=student");
       } else {
         const result = await createEmployer({
@@ -199,6 +200,7 @@ export default function RegisterScreen() {
         });
         await saveProfileId("employer", result.employer.id);
         await clearProfileId("student");
+        await saveActiveProfileRole("employer");
         router.replace("/(tabs)/dashboard?role=employer");
       }
     } catch (error) {

@@ -1,11 +1,11 @@
-import { router, useLocalSearchParams } from 'expo-router';
+import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, Pressable, RefreshControl, SafeAreaView, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { Avatar } from '@/components/avatar';
 import { loadProfile, updateProfile } from '@/lib/api';
 import { industries } from '@/constants/industries';
 import { useTheme } from '@/lib/theme';
-import { getProfileId } from '@/lib/storage';
+import { getActiveProfileRole, getProfileId } from '@/lib/storage';
 
 type Form = Record<string, string>;
 const studentFields = [
@@ -17,9 +17,10 @@ const employerFields = [
 
 export default function ProfileScreen() {
   const { colors } = useTheme();
-  const styles = makeStyles(colors);
-  const { role = 'student' } = useLocalSearchParams<{ role?: string }>();
-  const isStudent = role !== 'employer';
+  const styles = { ...makeStyles(colors), back: { display: 'none' as const } };
+  const [activeRole, setActiveRole] = useState<'student' | 'employer' | null>(null);
+  const role = activeRole;
+  const isStudent = role === 'student';
   const profileType = isStudent ? 'students' : 'employers';
   const [id, setId] = useState<string | null>(null);
   const [picture, setPicture] = useState<string | null>(null);
@@ -33,7 +34,8 @@ export default function ProfileScreen() {
   const load = async () => {
     try {
       setMessage('');
-      const profileId = await getProfileId(isStudent ? 'student' : 'employer');
+      if (!role) return;
+      const profileId = await getProfileId(role);
       if (!profileId) throw new Error('Register a profile before editing it.');
       const result = await loadProfile(profileType, profileId);
       const profile = (result[isStudent ? 'student' : 'employer'] || {}) as Record<string, any>;
@@ -45,7 +47,10 @@ export default function ProfileScreen() {
     } catch (error) { setMessage(error instanceof Error ? error.message : 'Could not load profile.'); }
   };
 
-  useEffect(() => { load(); }, [isStudent, profileType]);
+  useEffect(() => {
+    getActiveProfileRole().then(setActiveRole);
+  }, []);
+  useEffect(() => { load(); }, [role]);
   const refresh = async () => { setRefreshing(true); await load(); setRefreshing(false); };
   const save = async () => {
     if (!id) return;
@@ -67,6 +72,7 @@ export default function ProfileScreen() {
     finally { setBusy(false); }
   };
 
+  if (!role) return <SafeAreaView style={styles.safe}><View style={styles.center}><ActivityIndicator color={colors.blue} /><Text style={styles.muted}>Loading your profile...</Text></View></SafeAreaView>;
   return <SafeAreaView style={styles.safe}><ScrollView refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refresh} tintColor={colors.blue} />} contentContainerStyle={styles.page} keyboardShouldPersistTaps="handled"><Pressable onPress={() => router.back()}><Text style={styles.back}>← Back</Text></Pressable><View style={styles.avatar}><Avatar name={form.name || (isStudent ? 'Graduate' : 'Employer')} profileId={id || ''} profileType={profileType} url={picture} size={96} editable={Boolean(id)} onChange={setPicture} /></View><Text style={styles.eyebrow}>PROFILE</Text><Text style={styles.title}>{isStudent ? 'Complete your profile' : 'Company profile'}</Text><Text style={styles.muted}>These details are used by the same matching and profile rules as the web app.</Text><View style={styles.card}>{fields.map(([key, label]) => <Field key={key} label={label} value={form[key] || ''} update={(value) => update(key, value)} multiline={['experience', 'projects', 'certifications', 'description', 'benefits'].includes(key)} />)}{isStudent && <ChoiceRow label="Preferred industry" value={form.preferred_industry || ''} values={['', ...industries]} update={(value) => update('preferred_industry', value)} />}<Pressable style={styles.primary} onPress={save} disabled={busy}>{busy ? <ActivityIndicator color={colors.text} /> : <Text style={styles.primaryText}>Save profile</Text>}</Pressable></View>{!!message && <Text style={styles.message}>{message}</Text>}</ScrollView></SafeAreaView>;
 }
 

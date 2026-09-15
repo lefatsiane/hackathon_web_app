@@ -86,6 +86,14 @@ export type OpportunityCandidate = {
   location?: string;
   bio?: string;
   appliedAt?: string;
+  displayOrder?: number | null;
+};
+
+export type CandidateReview = {
+  contact: { email?: string | null; phone?: string | null; linkedin_url?: string | null; portfolio_url?: string | null };
+  cv: { available: boolean; downloadable: boolean; url?: string | null };
+  opportunity?: { id: string; title: string } | null;
+  assessment?: { fit_score?: number; summary?: string; strengths?: string[]; gaps?: string[]; next_steps?: string[] } | null;
 };
 
 export type Application = {
@@ -142,7 +150,7 @@ export const loadOpportunities = (query = '') =>
   apiRequest<{ opportunities: Opportunity[]; page?: number; limit?: number; has_more?: boolean }>(`/api/opportunities${query}`);
 
 export const loadOpportunity = (id: string) =>
-  apiRequest<{ opportunity: OpportunityDetail }>(`/api/opportunities/${encodeURIComponent(id)}`);
+  apiRequest<{ opportunity: OpportunityDetail; isOwner?: boolean }>(`/api/opportunities/${encodeURIComponent(id)}`);
 
 export const applyToOpportunity = (opportunityId: string, studentId: string, payload: Record<string, unknown> = {}) =>
   apiRequest<{ application: { id: string; status: string } }>(`/api/opportunities/${encodeURIComponent(opportunityId)}/applications`, {
@@ -155,6 +163,12 @@ export const loadStudentApplications = (studentId: string) =>
 
 export const loadEmployerApplications = (employerId: string) =>
   apiRequest<{ applications: Application[] }>(`/api/employers/${encodeURIComponent(employerId)}/applications`);
+
+export const loadEmployerOpportunities = (employerId: string) =>
+  apiRequest<{ opportunities: Opportunity[] }>(`/api/employers/${encodeURIComponent(employerId)}/opportunities`);
+
+export const loadCandidates = (query = '') =>
+  apiRequest<{ candidates: Student[] }>(`/api/candidates${query}`);
 
 export const updateApplication = (applicationId: string, status: string) =>
   apiRequest<{ application: Application }>(`/api/applications/${encodeURIComponent(applicationId)}`, { method: 'PATCH', body: JSON.stringify({ status }) });
@@ -245,6 +259,12 @@ export const loadCvUrl = (profileId: string) =>
 
 export const loadOpportunityCandidates = (id: string) =>
   apiRequest<{ isOwner: boolean; candidates: OpportunityCandidate[] }>(`/api/opportunities/${encodeURIComponent(id)}/candidates`);
+
+export const loadCandidate = (id: string) =>
+  apiRequest<{ candidate: Student }>(`/api/candidates/${encodeURIComponent(id)}`);
+
+export const loadCandidateReview = (id: string) =>
+  apiRequest<CandidateReview>(`/api/candidates/${encodeURIComponent(id)}/employer-review`);
 
 export const createOpportunity = (payload: Record<string, unknown>) =>
   apiRequest<{ opportunity: Opportunity }>('/api/opportunities', { method: 'POST', body: JSON.stringify(payload) });
